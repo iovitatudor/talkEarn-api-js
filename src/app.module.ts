@@ -1,13 +1,21 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { UsersModule } from './users/users.module';
-import {ConfigModule} from "@nestjs/config";
+import { ConfigModule } from '@nestjs/config';
+
+import { ProjectsModule } from './modules/projects/projects.module';
+import { Project } from './modules/projects/models/projects.model';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { Category } from './modules/categories/models/categories.model';
+import { ExpertsModule } from './modules/experts/experts.module';
+import { Expert } from './modules/experts/models/experts.model';
+import { AuthService } from './modules/auth/auth.service';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
-    UsersModule,
     ConfigModule.forRoot({
       envFilePath: './.env',
+      isGlobal: true,
     }),
     SequelizeModule.forRoot({
       dialect: 'mysql',
@@ -16,9 +24,14 @@ import {ConfigModule} from "@nestjs/config";
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      models: [],
       autoLoadModels: true,
+      synchronize: true,
+      models: [Project, Category, Expert],
     }),
+    ProjectsModule,
+    CategoriesModule,
+    ExpertsModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
