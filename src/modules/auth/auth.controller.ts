@@ -20,14 +20,16 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Get App Token' })
   @UsePipes(ValidationPipe)
   @Post('/register')
-  public register(@Body() projectWithAdminDto: ProjectWithAdminDto) {
+  public register(
+    @Body() projectWithAdminDto: ProjectWithAdminDto,
+  ): Promise<object> {
     return this.authService.register(projectWithAdminDto);
   }
 
   @ApiOperation({ summary: 'Get Application Token' })
   @ApiResponse({ status: 201, type: Project })
   @Post('/login')
-  public login(@Body() loginDto: LoginDto) {
+  public login(@Body() loginDto: LoginDto): Promise<object> {
     return this.authService.login(loginDto);
   }
 }

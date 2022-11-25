@@ -7,13 +7,19 @@ import {
   Patch,
   Delete,
   ParseIntPipe,
-  HttpStatus,
+  HttpStatus, UseGuards,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Response } from 'express';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProjectsService } from './projects.service';
 import { ProjectUpdateDto } from './dto/project-update.dto';
 import { Project } from './models/projects.model';
+import { AuthGuard } from '../auth/auth.guard';
 
 @ApiTags('Projects')
 @Controller('api')
@@ -36,6 +42,8 @@ export class ProjectsController {
 
   @ApiOperation({ summary: 'Update Project' })
   @ApiResponse({ status: 201, type: Project })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('Authorization')
   @Patch('project/:id')
   public update(
     @Param('id', ParseIntPipe) id: number,
@@ -46,6 +54,8 @@ export class ProjectsController {
 
   @ApiOperation({ summary: 'Delete Project' })
   @ApiResponse({ status: 204, description: 'The project has been deleted.' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('Authorization')
   @Delete('project/:id')
   public async delete(@Param('id', ParseIntPipe) id: number, @Res() response: Response) {
     await this.projectsService.delete(id);

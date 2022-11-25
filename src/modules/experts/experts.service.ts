@@ -4,29 +4,37 @@ import { Expert } from './models/experts.model';
 import { ExpertCreateDto } from './dto/expert-create.dto';
 import { ExpertCreateExpressDto } from './dto/express-create-express.dto';
 import { ExpertUpdateDto } from './dto/expert-update.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Injectable()
 export class ExpertsService {
   constructor(@InjectModel(Expert) private expertRepository: typeof Expert) {}
 
   public async getAll() {
-    return await this.expertRepository.findAll();
+    return await this.expertRepository.findAll({
+      where: { project_id: AuthGuard.projectId },
+    });
   }
 
   public async findById(id: number) {
-    return await this.expertRepository.findOne({ where: { id } });
+    return await this.expertRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { id, project_id: AuthGuard.projectId },
+    });
   }
 
   public async update(id: number, expertDto: ExpertUpdateDto) {
     await this.validateExpert(expertDto.email, id);
     await this.expertRepository.update(expertDto, {
-      where: { id },
+      where: { id, project_id: AuthGuard.projectId },
     });
     return await this.findById(id);
   }
 
   public async destroy(id: number) {
-    return await this.expertRepository.destroy({ where: { id } });
+    return await this.expertRepository.destroy({
+      where: { id, project_id: AuthGuard.projectId },
+    });
   }
 
   async findByEmail(email: string) {

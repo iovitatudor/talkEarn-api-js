@@ -4,9 +4,10 @@ import { AuthController } from './auth.controller';
 import { ExpertsModule } from '../experts/experts.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ProjectsModule } from '../projects/projects.module';
+import { AuthGuard } from './auth.guard';
 
 @Module({
-  providers: [AuthService],
+  providers: [AuthService, AuthGuard],
   controllers: [AuthController],
   imports: [
     forwardRef(() => ProjectsModule),

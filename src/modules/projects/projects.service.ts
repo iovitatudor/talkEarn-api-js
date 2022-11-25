@@ -1,8 +1,14 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Project } from './models/projects.model';
 import { ProjectCreateDto } from './dto/project-create.dto';
 import { ProjectUpdateDto } from './dto/project-update.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Injectable()
 export class ProjectsService {
@@ -41,6 +47,9 @@ export class ProjectsService {
   }
 
   async update(id: number, projectDto: ProjectUpdateDto) {
+    if (id !== AuthGuard.projectId) {
+      throw new UnauthorizedException({ message: 'Unauthorized!' });
+    }
     await this.validateProject(projectDto.name, id);
     await this.projectRepository.update(projectDto, {
       where: { id },
@@ -49,6 +58,9 @@ export class ProjectsService {
   }
 
   async delete(id: number) {
+    if (id !== AuthGuard.projectId) {
+      throw new UnauthorizedException({ message: 'Unauthorized!' });
+    }
     // delete all experts
     // delete all categories
     // delete all services

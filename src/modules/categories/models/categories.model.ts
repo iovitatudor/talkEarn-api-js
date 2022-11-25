@@ -1,7 +1,17 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  HasMany,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { Expert } from '../../experts/models/experts.model';
+import { Project } from '../../projects/models/projects.model';
 
 interface CategoryCreateAttrs {
+  project_id: number;
   name: string;
   description: string;
   icon: string;
@@ -17,6 +27,10 @@ export class Category extends Model<Category, CategoryCreateAttrs> {
   })
   id: number;
 
+  @ForeignKey(() => Project)
+  @Column({ type: DataType.INTEGER, allowNull: false })
+  public project_id: number;
+
   @Column({ type: DataType.STRING, allowNull: false })
   name: string;
 
@@ -28,4 +42,7 @@ export class Category extends Model<Category, CategoryCreateAttrs> {
 
   @HasMany(() => Expert)
   experts: Expert[];
+
+  @BelongsTo(() => Project, 'project_id')
+  public project: Project;
 }

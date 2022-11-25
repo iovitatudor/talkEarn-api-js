@@ -11,7 +11,7 @@ import { Expert } from '../experts/models/experts.model';
 import { ProjectsService } from '../projects/projects.service';
 import { ProjectWithAdminDto } from './dto/project-with-admin.dto';
 import { LoginDto } from './dto/login.dto';
-import {Types} from "../experts/enums/types.enum";
+import { Types } from '../experts/enums/types.enum';
 
 @Injectable()
 export class AuthService {
@@ -21,12 +21,14 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  public async login(expertDto: LoginDto) {
+  public async login(expertDto: LoginDto): Promise<object> {
     const expert = await this.validate(expertDto);
     return this.generateToken(expert);
   }
 
-  public async register(projectWithAdminDto: ProjectWithAdminDto) {
+  public async register(
+    projectWithAdminDto: ProjectWithAdminDto,
+  ): Promise<object> {
     const administrator = projectWithAdminDto.administrator;
     delete projectWithAdminDto.administrator;
 
@@ -48,14 +50,19 @@ export class AuthService {
     return this.generateToken(expert);
   }
 
-  private generateToken(expert: Expert) {
-    const payload = { email: expert.email, id: expert.id };
+  private generateToken(expert: Expert): object {
+    const payload = {
+      email: expert.email,
+      id: expert.id,
+      projectId: expert.project_id,
+      name: expert.name,
+    };
     return {
       token: this.jwtService.sign(payload),
     };
   }
 
-  private async validate(expertDto: LoginDto) {
+  private async validate(expertDto: LoginDto): Promise<Expert> {
     const expert = await this.expertService.findByEmail(expertDto.email);
 
     if (!expert) {
@@ -78,7 +85,7 @@ export class AuthService {
     });
   }
 
-  private async validateProject(projectName: string) {
+  private async validateProject(projectName: string): Promise<void> {
     const projectExists = await this.projectService.getByName(projectName);
 
     if (projectExists) {
@@ -89,7 +96,7 @@ export class AuthService {
     }
   }
 
-  private async validateExpert(email: string) {
+  private async validateExpert(email: string): Promise<void> {
     const candidate = await this.expertService.findByEmail(email);
 
     if (candidate) {

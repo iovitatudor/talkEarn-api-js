@@ -11,8 +11,14 @@ async function bootstrap() {
     .setTitle('TalkEarn API')
     .setVersion('1.0.0')
     .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-      'JWT',
+      {
+        type: 'apiKey',
+        scheme: 'Bearer',
+        bearerFormat: 'JWT',
+        in: 'header',
+        name: 'Authorization',
+      },
+      'Authorization',
     )
     .build();
 

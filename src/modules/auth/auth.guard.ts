@@ -1,8 +1,17 @@
-import { CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 
+@Injectable()
 export class AuthGuard implements CanActivate {
+  static projectId: any = 0;
+  static expertId: any = 0;
+
   public constructor(private jwtService: JwtService) {}
 
   public canActivate(
@@ -14,12 +23,16 @@ export class AuthGuard implements CanActivate {
       const bearer = authHeader.split(' ')[0];
       const token = authHeader.split(' ')[1];
 
-      if (bearer !== 'bearer' || !token) {
-        throw new UnauthorizedException({ message: 'Expert is not authorized.' });
+      if (bearer !== 'Bearer' || !token) {
+        throw new UnauthorizedException({
+          message: 'Expert is not authorized.',
+        });
       }
 
       const expert = this.jwtService.verify(token);
       req.expert = expert;
+      AuthGuard.projectId = expert.projectId;
+      AuthGuard.expertId = expert.id;
 
       return true;
     } catch (e) {

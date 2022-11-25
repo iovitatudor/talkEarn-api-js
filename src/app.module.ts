@@ -8,8 +8,9 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { Category } from './modules/categories/models/categories.model';
 import { ExpertsModule } from './modules/experts/experts.module';
 import { Expert } from './modules/experts/models/experts.model';
-import { AuthService } from './modules/auth/auth.service';
 import { AuthModule } from './modules/auth/auth.module';
+import { ServicesModule } from './modules/services/services.module';
+import { Service } from './modules/services/models/services.model';
 
 @Module({
   imports: [
@@ -26,12 +27,13 @@ import { AuthModule } from './modules/auth/auth.module';
       database: process.env.DB_DATABASE,
       autoLoadModels: true,
       synchronize: true,
-      models: [Project, Category, Expert],
+      models: [Project, Category, Expert, Service],
     }),
     ProjectsModule,
     CategoriesModule,
     ExpertsModule,
     AuthModule,
+    ServicesModule,
   ],
   controllers: [],
   providers: [],
