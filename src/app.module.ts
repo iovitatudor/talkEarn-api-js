@@ -13,6 +13,8 @@ import { ServicesModule } from './modules/services/services.module';
 import { Service } from './modules/services/models/services.model';
 import { ContactsModule } from './modules/contacts/contacts.module';
 import { Contact } from './modules/contacts/models/contacts.model';
+import { ParametersModule } from './modules/parameters/parameters.module';
+import { Parameter } from './modules/parameters/models/parameters.model';
 
 @Module({
   imports: [
@@ -29,7 +31,7 @@ import { Contact } from './modules/contacts/models/contacts.model';
       database: process.env.DB_DATABASE,
       autoLoadModels: true,
       synchronize: true,
-      models: [Project, Category, Expert, Service, Contact],
+      models: [Project, Category, Expert, Service, Contact, Parameter],
     }),
     ProjectsModule,
     CategoriesModule,
@@ -37,6 +39,7 @@ import { Contact } from './modules/contacts/models/contacts.model';
     AuthModule,
     ServicesModule,
     ContactsModule,
+    ParametersModule,
   ],
   controllers: [],
   providers: [],

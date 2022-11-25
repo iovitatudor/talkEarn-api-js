@@ -9,14 +9,13 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Project } from '../../projects/models/projects.model';
 
-interface ContactCreationAttrs {
+interface ParameterCreationAttrs {
   project_id: number;
   name: string;
-  icon: string;
 }
 
-@Table({ tableName: 'contacts' })
-export class Contact extends Model<Contact, ContactCreationAttrs> {
+@Table({ tableName: 'parameters' })
+export class Parameter extends Model<Parameter, ParameterCreationAttrs> {
   @ApiProperty({ example: 1 })
   @Column({
     type: DataType.INTEGER,
@@ -30,13 +29,9 @@ export class Contact extends Model<Contact, ContactCreationAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: false })
   public project_id: number;
 
-  @ApiProperty({ example: 'Facebook' })
+  @ApiProperty({ example: 'Region' })
   @Column({ type: DataType.STRING, allowNull: false })
   public name: string;
-
-  @ApiProperty({ example: 'File' })
-  @Column({ type: DataType.STRING, allowNull: true })
-  public icon: string;
 
   @BelongsTo(() => Project)
   public project: Project;
