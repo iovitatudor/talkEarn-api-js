@@ -26,21 +26,21 @@ import { AuthGuard } from '../auth/auth.guard';
 export class ProjectsController {
   constructor(private projectsService: ProjectsService) {}
 
-  @ApiOperation({ summary: 'Get All Projects' })
+  @ApiOperation({ summary: 'Get all projects' })
   @ApiResponse({ status: 200, type: [Project] })
   @Get('/projects')
   public getAll() {
     return this.projectsService.getAll();
   }
 
-  @ApiOperation({ summary: 'Get Project By Id' })
+  @ApiOperation({ summary: 'Get project by Id' })
   @ApiResponse({ status: 200, type: [Project] })
   @Get('project/:id')
   public getById(@Param('id', ParseIntPipe) id: number) {
     return this.projectsService.getById(id);
   }
 
-  @ApiOperation({ summary: 'Update Project' })
+  @ApiOperation({ summary: 'Update project' })
   @ApiResponse({ status: 201, type: Project })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
@@ -52,7 +52,7 @@ export class ProjectsController {
     return this.projectsService.update(id, projectDto);
   }
 
-  @ApiOperation({ summary: 'Delete Project' })
+  @ApiOperation({ summary: 'Delete project' })
   @ApiResponse({ status: 204, description: 'The project has been deleted.' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')

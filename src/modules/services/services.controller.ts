@@ -19,7 +19,7 @@ import { ServiceCreateDto } from './dto/service-create.dto';
 export class ServicesController {
   public constructor(private servicesService: ServicesService) {}
 
-  @ApiOperation({ summary: 'Get All Services' })
+  @ApiOperation({ summary: 'Get all services per project' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('services')
@@ -27,7 +27,7 @@ export class ServicesController {
     return this.servicesService.getAll();
   }
 
-  @ApiOperation({ summary: 'Get Service by Id' })
+  @ApiOperation({ summary: 'Get service by Id' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('service/:id')
@@ -35,7 +35,7 @@ export class ServicesController {
     return this.servicesService.findById(id);
   }
 
-  @ApiOperation({ summary: 'Create Service' })
+  @ApiOperation({ summary: 'Create service' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Post('service')
@@ -43,7 +43,7 @@ export class ServicesController {
     return this.servicesService.store(serviceDto);
   }
 
-  @ApiOperation({ summary: 'Update Service' })
+  @ApiOperation({ summary: 'Update service' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Patch('service/:id')
@@ -54,7 +54,7 @@ export class ServicesController {
     return this.servicesService.update(id, serviceDto);
   }
 
-  @ApiOperation({ summary: 'Delete Service' })
+  @ApiOperation({ summary: 'Delete service' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Delete('service/:id')

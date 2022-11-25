@@ -20,7 +20,7 @@ import { AuthGuard } from '../auth/auth.guard';
 export class ExpertsController {
   public constructor(private expertService: ExpertsService) {}
 
-  @ApiOperation({ summary: 'Get All Experts' })
+  @ApiOperation({ summary: 'Get all experts per project' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
   @Get('experts')
@@ -28,7 +28,7 @@ export class ExpertsController {
     return this.expertService.getAll();
   }
 
-  @ApiOperation({ summary: 'Get Expert by Id' })
+  @ApiOperation({ summary: 'Get expert by Id' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
   @Get('expert/:id')
@@ -36,7 +36,7 @@ export class ExpertsController {
     return this.expertService.findById(id);
   }
 
-  @ApiOperation({ summary: 'Create Expert' })
+  @ApiOperation({ summary: 'Create expert' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
   @Post('expert')
@@ -44,7 +44,7 @@ export class ExpertsController {
     return this.expertService.store(expertDto);
   }
 
-  @ApiOperation({ summary: 'Update Expert' })
+  @ApiOperation({ summary: 'Update expert' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
   @Patch('expert/:id')
@@ -52,7 +52,7 @@ export class ExpertsController {
     return this.expertService.update(id, expertDto);
   }
 
-  @ApiOperation({ summary: 'Delete Expert' })
+  @ApiOperation({ summary: 'Delete expert' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
   @Delete('expert/:id')

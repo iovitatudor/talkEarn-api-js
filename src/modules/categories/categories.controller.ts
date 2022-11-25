@@ -20,7 +20,7 @@ import { AuthGuard } from '../auth/auth.guard';
 export class CategoriesController {
   public constructor(private categoriesService: CategoriesService) {}
 
-  @ApiOperation({ summary: 'Get All Categories' })
+  @ApiOperation({ summary: 'Get all categories per project ' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('categories')
@@ -28,7 +28,7 @@ export class CategoriesController {
     return this.categoriesService.getAll();
   }
 
-  @ApiOperation({ summary: 'Get Category by Id' })
+  @ApiOperation({ summary: 'Get category by Id' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('category/:id')
@@ -36,7 +36,7 @@ export class CategoriesController {
     return this.categoriesService.findById(id);
   }
 
-  @ApiOperation({ summary: 'Create Category' })
+  @ApiOperation({ summary: 'Create category' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Post('category')
@@ -44,7 +44,7 @@ export class CategoriesController {
     return this.categoriesService.store(expertDto);
   }
 
-  @ApiOperation({ summary: 'Update Expert' })
+  @ApiOperation({ summary: 'Update category' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Patch('category/:id')
@@ -55,7 +55,7 @@ export class CategoriesController {
     return this.categoriesService.update(id, expertDto);
   }
 
-  @ApiOperation({ summary: 'Delete Expert' })
+  @ApiOperation({ summary: 'Delete category' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Delete('category/:id')

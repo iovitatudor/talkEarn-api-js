@@ -11,6 +11,8 @@ import { Expert } from './modules/experts/models/experts.model';
 import { AuthModule } from './modules/auth/auth.module';
 import { ServicesModule } from './modules/services/services.module';
 import { Service } from './modules/services/models/services.model';
+import { ContactsModule } from './modules/contacts/contacts.module';
+import { Contact } from './modules/contacts/models/contacts.model';
 
 @Module({
   imports: [
@@ -27,13 +29,14 @@ import { Service } from './modules/services/models/services.model';
       database: process.env.DB_DATABASE,
       autoLoadModels: true,
       synchronize: true,
-      models: [Project, Category, Expert, Service],
+      models: [Project, Category, Expert, Service, Contact],
     }),
     ProjectsModule,
     CategoriesModule,
     ExpertsModule,
     AuthModule,
     ServicesModule,
+    ContactsModule,
   ],
   controllers: [],
   providers: [],
