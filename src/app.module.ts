@@ -15,6 +15,7 @@ import { ContactsModule } from './modules/contacts/contacts.module';
 import { Contact } from './modules/contacts/models/contacts.model';
 import { ParametersModule } from './modules/parameters/parameters.module';
 import { Parameter } from './modules/parameters/models/parameters.model';
+import {ContactExpert} from "./modules/contacts/models/contact-expert.model";
 
 @Module({
   imports: [
@@ -31,7 +32,15 @@ import { Parameter } from './modules/parameters/models/parameters.model';
       database: process.env.DB_DATABASE,
       autoLoadModels: true,
       synchronize: true,
-      models: [Project, Category, Expert, Service, Contact, Parameter],
+      models: [
+        Project,
+        Category,
+        Expert,
+        Service,
+        Contact,
+        ContactExpert,
+        Parameter,
+      ],
     }),
     ProjectsModule,
     CategoriesModule,

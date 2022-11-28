@@ -15,7 +15,11 @@ interface ContactCreationAttrs {
   icon: string;
 }
 
-@Table({ tableName: 'contacts' })
+@Table({
+  tableName: 'contacts',
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+})
 export class Contact extends Model<Contact, ContactCreationAttrs> {
   @ApiProperty({ example: 1 })
   @Column({

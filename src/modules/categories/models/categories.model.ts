@@ -17,7 +17,11 @@ interface CategoryCreateAttrs {
   icon: string;
 }
 
-@Table({ tableName: 'categories' })
+@Table({
+  tableName: 'categories',
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+})
 export class Category extends Model<Category, CategoryCreateAttrs> {
   @Column({
     type: DataType.INTEGER,

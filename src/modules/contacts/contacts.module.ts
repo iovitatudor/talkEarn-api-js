@@ -4,10 +4,15 @@ import { ContactsController } from './contacts.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Contact } from './models/contacts.model';
 import { AuthModule } from '../auth/auth.module';
+import { ContactExpert } from './models/contact-expert.model';
+import { Expert } from '../experts/models/experts.model';
 
 @Module({
   providers: [ContactsService],
   controllers: [ContactsController],
-  imports: [SequelizeModule.forFeature([Contact]), AuthModule],
+  imports: [
+    SequelizeModule.forFeature([Contact, ContactExpert, Expert]),
+    AuthModule,
+  ],
 })
 export class ContactsModule {}

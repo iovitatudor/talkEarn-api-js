@@ -24,7 +24,11 @@ interface ExpertCreateAttrs {
   token: string;
 }
 
-@Table({ tableName: 'experts' })
+@Table({
+  tableName: 'experts',
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+})
 export class Expert extends Model<Expert, ExpertCreateAttrs> {
   @ApiProperty({ example: 1 })
   @Column({

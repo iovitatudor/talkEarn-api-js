@@ -10,7 +10,11 @@ interface ProjectCreationAttrs {
   mode: ModeTypes;
 }
 
-@Table({ tableName: 'projects' })
+@Table({
+  tableName: 'projects',
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+})
 export class Project extends Model<Project, ProjectCreationAttrs> {
   @ApiProperty({ example: 1 })
   @Column({

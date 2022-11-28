@@ -14,6 +14,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { ContactsService } from './contacts.service';
 import { ContactUpdateDto } from './dto/contact-update.dto';
 import { ContactCreateDto } from './dto/contact-create.dto';
+import {ContactExpertCreateDto} from "./dto/contact-expert-create.dto";
 
 @ApiTags('Contacts')
 @Controller('api')
@@ -61,5 +62,21 @@ export class ContactsController {
   @Delete('contact/:id')
   public delete(@Param('id', ParseIntPipe) id: number) {
     return this.contactsService.destroy(id);
+  }
+
+  @ApiOperation({ summary: 'Set contact value and assign to an expert' })
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard)
+  @Delete('contact/:contactId/expert/:expertId')
+  public setContactValue(
+    @Param('contactId', ParseIntPipe) contactId: number,
+    @Param('expertId', ParseIntPipe) expertId: number,
+    @Body() contactExpertDto: ContactExpertCreateDto,
+  ) {
+    return this.contactsService.addContactValue(
+      contactId,
+      expertId,
+      contactExpertDto,
+    );
   }
 }

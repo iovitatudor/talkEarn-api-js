@@ -19,7 +19,11 @@ interface ServiceCreationAttrs {
   price: number;
 }
 
-@Table({ tableName: 'services' })
+@Table({
+  tableName: 'services',
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+})
 export class Service extends Model<Service, ServiceCreationAttrs> {
   @ApiProperty({ example: 1 })
   @Column({

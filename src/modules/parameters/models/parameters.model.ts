@@ -14,7 +14,11 @@ interface ParameterCreationAttrs {
   name: string;
 }
 
-@Table({ tableName: 'parameters' })
+@Table({
+  tableName: 'parameters',
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+})
 export class Parameter extends Model<Parameter, ParameterCreationAttrs> {
   @ApiProperty({ example: 1 })
   @Column({

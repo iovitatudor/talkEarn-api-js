@@ -13,6 +13,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { ServicesService } from './services.service';
 import { ServiceCreateDto } from './dto/service-create.dto';
+import { ServiceResource } from './dto/service.resource';
 
 @ApiTags('Services')
 @Controller('api')
@@ -23,16 +24,18 @@ export class ServicesController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('services')
-  public getAll() {
-    return this.servicesService.getAll();
+  public async getAll() {
+    const services = await this.servicesService.getAll();
+    return ServiceResource.collect(services);
   }
 
   @ApiOperation({ summary: 'Get service by Id' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('service/:id')
-  public getById(@Param('id', ParseIntPipe) id: number) {
-    return this.servicesService.findById(id);
+  public async getById(@Param('id', ParseIntPipe) id: number) {
+    const service = await this.servicesService.findById(id);
+    return new ServiceResource(service);
   }
 
   @ApiOperation({ summary: 'Create service' })
