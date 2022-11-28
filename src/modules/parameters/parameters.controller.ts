@@ -12,10 +12,11 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { ParametersService } from './parameters.service';
-import { ParametersResource } from './parameters.resource';
+import { ExpertParametersResource } from './resources/expert-parameters.resource';
 import { ParameterCreateDto } from './dto/parameter-create.dto';
 import { ParameterUpdateDto } from './dto/parameter-update.dto';
 import { ParameterExpertCreateDto } from './dto/parameter-expert-create.dto';
+import { ParametersResource } from './resources/parameters.resource';
 
 @ApiTags('Parameters')
 @Controller('api')
@@ -26,42 +27,46 @@ export class ParametersController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('parameters')
-  public getAll() {
-    return this.parametersService.getAll();
+  public async getAll() {
+    const parameters = await this.parametersService.getAll();
+    return ParametersResource.collect(parameters);
   }
 
   @ApiOperation({ summary: 'Get parameter by Id' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('parameter/:id')
-  public getById(@Param('id', ParseIntPipe) id: number) {
-    return this.parametersService.findById(id);
+  public async getById(@Param('id', ParseIntPipe) id: number) {
+    const parameter = await this.parametersService.findById(id);
+    return new ParametersResource(parameter);
   }
 
   @ApiOperation({ summary: 'Create parameter' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Post('parameter')
-  public create(@Body() parameterDto: ParameterCreateDto) {
-    return this.parametersService.store(parameterDto);
+  public async create(@Body() parameterDto: ParameterCreateDto) {
+    const parameter = await this.parametersService.store(parameterDto);
+    return new ParametersResource(parameter);
   }
 
   @ApiOperation({ summary: 'Update parameter' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Patch('parameter/:id')
-  public edit(
+  public async edit(
     @Param('id', ParseIntPipe) id: number,
     @Body() parameterDto: ParameterUpdateDto,
   ) {
-    return this.parametersService.update(id, parameterDto);
+    const parameter = await this.parametersService.update(id, parameterDto);
+    return new ParametersResource(parameter);
   }
 
   @ApiOperation({ summary: 'Delete parameter' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Delete('parameter/:id')
-  public delete(@Param('id', ParseIntPipe) id: number) {
+  public async delete(@Param('id', ParseIntPipe) id: number) {
     return this.parametersService.destroy(id);
   }
 
@@ -79,7 +84,7 @@ export class ParametersController {
       expertId,
       parameterExpertDto,
     );
-    return new ParametersResource(parameter);
+    return new ExpertParametersResource(parameter);
   }
 
   @ApiOperation({ summary: 'Get parameters by expert id' })
@@ -92,6 +97,6 @@ export class ParametersController {
     const parameters = await this.parametersService.getParametersByExpertId(
       expertId,
     );
-    return ParametersResource.collect(parameters);
+    return ExpertParametersResource.collect(parameters);
   }
 }

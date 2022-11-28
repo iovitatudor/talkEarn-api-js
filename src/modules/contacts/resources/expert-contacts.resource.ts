@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'sequelize';
 
 @Injectable()
-export class ContactsResource {
+export class ExpertContactsResource {
   public id: number;
   public contactId: number;
   public name: string;
@@ -19,7 +19,7 @@ export class ContactsResource {
 
   public static collect(model: Model[]) {
     return model.map((item) => {
-      return new ContactsResource(item);
+      return new ExpertContactsResource(item);
     });
   }
 }

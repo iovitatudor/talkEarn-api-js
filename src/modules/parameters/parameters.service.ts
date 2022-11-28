@@ -20,6 +20,7 @@ export class ParametersService {
   public async getAll() {
     return await this.parameterRepository.findAll({
       where: { project_id: AuthGuard.projectId },
+      include: { all: true },
     });
   }
 
@@ -27,6 +28,7 @@ export class ParametersService {
     const parameter = await this.parameterRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id: parameterId, project_id: AuthGuard.projectId },
+      include: { all: true },
     });
     if (!parameter) {
       throw new HttpException(
@@ -38,16 +40,18 @@ export class ParametersService {
   }
 
   public async destroy(id: number) {
+    await this.findById(id);
     return await this.parameterRepository.destroy({
       where: { id, project_id: AuthGuard.projectId },
     });
   }
 
-  async store(parameterDto: ParameterCreateDto) {
-    return this.parameterRepository.create({
+  public async store(parameterDto: ParameterCreateDto) {
+    const parameter = await this.parameterRepository.create({
       ...parameterDto,
       project_id: Number(AuthGuard.projectId),
     });
+    return await this.findById(parameter.id);
   }
 
   public async update(parameterId: number, parameterDto: ParameterUpdateDto) {
@@ -60,7 +64,7 @@ export class ParametersService {
     return await this.findById(parameterId);
   }
 
-  public async findParameterValueByExpertId(
+  private async findParameterValueByExpertId(
     parameterId: number,
     expertId: number,
   ) {
@@ -77,9 +81,7 @@ export class ParametersService {
     parameterExpertDto: ParameterExpertCreateDto,
   ) {
     const parameter = await this.findById(parameterId);
-
     const expert = await this.expertService.findById(expertId);
-
     const parameterExpert = await this.findParameterValueByExpertId(
       parameter.id,
       expert.id,

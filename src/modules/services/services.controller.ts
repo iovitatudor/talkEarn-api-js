@@ -13,7 +13,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { ServicesService } from './services.service';
 import { ServiceCreateDto } from './dto/service-create.dto';
-import { ServiceResource } from './services.resource';
+import { ServiceResource } from './resources/services.resource';
 
 @ApiTags('Services')
 @Controller('api')

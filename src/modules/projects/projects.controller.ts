@@ -20,6 +20,7 @@ import { ProjectsService } from './projects.service';
 import { ProjectUpdateDto } from './dto/project-update.dto';
 import { Project } from './models/projects.model';
 import { AuthGuard } from '../auth/auth.guard';
+import { ProjectsResource } from './resources/projects.resource';
 
 @ApiTags('Projects')
 @Controller('api')
@@ -27,17 +28,19 @@ export class ProjectsController {
   constructor(private projectsService: ProjectsService) {}
 
   @ApiOperation({ summary: 'Get all projects' })
-  @ApiResponse({ status: 200, type: [Project] })
+  @ApiResponse({ status: 200, type: [ProjectsResource] })
   @Get('/projects')
-  public getAll() {
-    return this.projectsService.getAll();
+  public async getAll() {
+    const projects = await this.projectsService.getAll();
+    return ProjectsResource.collect(projects);
   }
 
   @ApiOperation({ summary: 'Get project by Id' })
   @ApiResponse({ status: 200, type: [Project] })
   @Get('project/:id')
-  public getById(@Param('id', ParseIntPipe) id: number) {
-    return this.projectsService.getById(id);
+  public async getById(@Param('id', ParseIntPipe) id: number) {
+    const project = await this.projectsService.getById(id);
+    return new ProjectsResource(project);
   }
 
   @ApiOperation({ summary: 'Update project' })
@@ -45,11 +48,12 @@ export class ProjectsController {
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
   @Patch('project/:id')
-  public update(
+  public async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() projectDto: ProjectUpdateDto,
   ) {
-    return this.projectsService.update(id, projectDto);
+    const project = await this.projectsService.update(id, projectDto);
+    return new ProjectsResource(project);
   }
 
   @ApiOperation({ summary: 'Delete project' })

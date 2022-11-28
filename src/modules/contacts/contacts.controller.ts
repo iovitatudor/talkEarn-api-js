@@ -15,7 +15,8 @@ import { ContactsService } from './contacts.service';
 import { ContactUpdateDto } from './dto/contact-update.dto';
 import { ContactCreateDto } from './dto/contact-create.dto';
 import { ContactExpertCreateDto } from './dto/contact-expert-create.dto';
-import {ContactsResource} from "./contacts.resource";
+import { ExpertContactsResource } from './resources/expert-contacts.resource';
+import { ContactsResource } from './resources/contacts.resource';
 
 @ApiTags('Contacts')
 @Controller('api')
@@ -26,35 +27,39 @@ export class ContactsController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('contacts')
-  public getAll() {
-    return this.contactsService.getAll();
+  public async getAll() {
+    const contacts = await this.contactsService.getAll();
+    return ContactsResource.collect(contacts);
   }
 
   @ApiOperation({ summary: 'Get contact by Id' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('contact/:id')
-  public getById(@Param('id', ParseIntPipe) id: number) {
-    return this.contactsService.findById(id);
+  public async getById(@Param('id', ParseIntPipe) id: number) {
+    const contact = await this.contactsService.findById(id);
+    return new ContactsResource(contact);
   }
 
   @ApiOperation({ summary: 'Create contact' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Post('contact')
-  public create(@Body() contactDto: ContactCreateDto) {
-    return this.contactsService.store(contactDto);
+  public async create(@Body() contactDto: ContactCreateDto) {
+    const contact = await this.contactsService.store(contactDto);
+    return new ContactsResource(contact);
   }
 
   @ApiOperation({ summary: 'Update contact' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Patch('contact/:id')
-  public edit(
+  public async edit(
     @Param('id', ParseIntPipe) id: number,
     @Body() contactDto: ContactUpdateDto,
   ) {
-    return this.contactsService.update(id, contactDto);
+    const contact = await this.contactsService.update(id, contactDto);
+    return new ContactsResource(contact);
   }
 
   @ApiOperation({ summary: 'Delete contact' })
@@ -79,7 +84,7 @@ export class ContactsController {
       expertId,
       contactExpertDto,
     );
-    return new ContactsResource(contact);
+    return new ExpertContactsResource(contact);
   }
 
   @ApiOperation({ summary: 'Get contacts by expert id' })
@@ -90,6 +95,6 @@ export class ContactsController {
     @Param('expertId', ParseIntPipe) expertId: number,
   ) {
     const contacts = await this.contactsService.getContactsByExpertId(expertId);
-    return ContactsResource.collect(contacts);
+    return ExpertContactsResource.collect(contacts);
   }
 }

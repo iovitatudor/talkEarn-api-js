@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'sequelize';
 
 @Injectable()
-export class ParametersResource {
+export class ExpertParametersResource {
   public id: number;
   public parameterId: number;
   public name: string;
@@ -17,7 +17,7 @@ export class ParametersResource {
 
   public static collect(model: Model[]) {
     return model.map((item) => {
-      return new ParametersResource(item);
+      return new ExpertParametersResource(item);
     });
   }
 }

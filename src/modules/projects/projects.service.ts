@@ -18,35 +18,30 @@ export class ProjectsService {
 
   async getAll() {
     return this.projectRepository.findAll({
-      // include: [
-      //   {
-      //     model: Expert,
-      //     as: 'experts',
-      //     attributes: [
-      //       'name',
-      //       'email',
-      //       ['available', 'online'],
-      //       'profession',
-      //       'price',
-      //     ],
-      //   },
-      // ],
       attributes: ['id', 'name', 'url', 'mode'],
+      include: { all: true },
     });
   }
 
-  async getById(id) {
-    return this.projectRepository.findOne({
-      where: { id },
+  async getById(projectId) {
+    const project = await this.projectRepository.findOne({
+      where: { id: projectId },
       attributes: ['id', 'name', 'url', 'mode'],
+      include: { all: true },
     });
+    if (!project) {
+      throw new HttpException('Project was not found.', HttpStatus.BAD_REQUEST);
+    }
+    return project;
   }
 
-  async create(dto: ProjectCreateDto) {
-    return this.projectRepository.create(dto);
+  async create(projectDto: ProjectCreateDto) {
+    await this.validateProject(projectDto.name);
+    return await this.projectRepository.create(projectDto);
   }
 
   async update(id: number, projectDto: ProjectUpdateDto) {
+    await this.getById(id);
     if (id !== AuthGuard.projectId) {
       throw new UnauthorizedException({ message: 'Unauthorized!' });
     }
@@ -58,6 +53,7 @@ export class ProjectsService {
   }
 
   async delete(id: number) {
+    await this.getById(id);
     if (id !== AuthGuard.projectId) {
       throw new UnauthorizedException({ message: 'Unauthorized!' });
     }
@@ -73,7 +69,7 @@ export class ProjectsService {
     return await this.projectRepository.findOne({ where: { name } });
   }
 
-  private async validateProject(projectName, id) {
+  private async validateProject(projectName, id = 0) {
     const project = await this.getByName(projectName);
     if (project && project.id !== id) {
       throw new HttpException(

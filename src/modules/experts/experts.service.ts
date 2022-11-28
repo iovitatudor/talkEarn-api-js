@@ -13,6 +13,7 @@ export class ExpertsService {
   public async getAll() {
     return await this.expertRepository.findAll({
       where: { project_id: AuthGuard.projectId },
+      include: { all: true },
     });
   }
 
@@ -20,6 +21,7 @@ export class ExpertsService {
     const expert = await this.expertRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
+      include: { all: true },
     });
 
     if (!expert) {
@@ -37,6 +39,7 @@ export class ExpertsService {
   }
 
   public async destroy(id: number) {
+    await this.findById(id);
     return await this.expertRepository.destroy({
       where: { id, project_id: AuthGuard.projectId },
     });
@@ -51,7 +54,11 @@ export class ExpertsService {
   }
 
   async store(expertDto: ExpertCreateDto) {
-    return this.expertRepository.create(expertDto);
+    const expert = await this.expertRepository.create({
+      ...expertDto,
+      project_id: AuthGuard.projectId,
+    });
+    return await this.findById(expert.id);
   }
 
   private async validateExpert(expertEmail: string, id: number) {

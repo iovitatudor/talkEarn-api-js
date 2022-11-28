@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
+import { CategoriesResource } from './resources/categories.resource';
 import { CategoryCreateDto } from './dto/category-create.dto';
 import { CategoryUpdateDto } from './dto/category-update.dto';
 import { AuthGuard } from '../auth/auth.guard';
@@ -24,35 +25,39 @@ export class CategoriesController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('categories')
-  public getAll() {
-    return this.categoriesService.getAll();
+  public async getAll() {
+    const categories = await this.categoriesService.getAll();
+    return CategoriesResource.collect(categories);
   }
 
   @ApiOperation({ summary: 'Get category by Id' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('category/:id')
-  public getById(@Param('id', ParseIntPipe) id: number) {
-    return this.categoriesService.findById(id);
+  public async getById(@Param('id', ParseIntPipe) id: number) {
+    const category = await this.categoriesService.findById(id);
+    return new CategoriesResource(category);
   }
 
   @ApiOperation({ summary: 'Create category' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Post('category')
-  public create(@Body() expertDto: CategoryCreateDto) {
-    return this.categoriesService.store(expertDto);
+  public async create(@Body() expertDto: CategoryCreateDto) {
+    const category = await this.categoriesService.store(expertDto);
+    return new CategoriesResource(category);
   }
 
   @ApiOperation({ summary: 'Update category' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Patch('category/:id')
-  public edit(
+  public async edit(
     @Param('id', ParseIntPipe) id: number,
     @Body() expertDto: CategoryUpdateDto,
   ) {
-    return this.categoriesService.update(id, expertDto);
+    const category = await this.categoriesService.update(id, expertDto);
+    return new CategoriesResource(category);
   }
 
   @ApiOperation({ summary: 'Delete category' })
