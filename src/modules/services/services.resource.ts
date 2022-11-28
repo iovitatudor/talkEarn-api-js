@@ -4,7 +4,6 @@ import { Model } from 'sequelize';
 @Injectable()
 export class ServiceResource {
   public id: number;
-  public expertId: number;
   public name: string;
   public description: string;
   public image: string;
@@ -12,7 +11,6 @@ export class ServiceResource {
 
   public constructor(service) {
     this.id = service.id;
-    this.expertId = service.expert_id;
     this.name = service.name;
     this.description = service.description;
     this.image = service.image;

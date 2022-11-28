@@ -17,10 +17,15 @@ export class ExpertsService {
   }
 
   public async findById(id: number) {
-    return await this.expertRepository.findOne({
+    const expert = await this.expertRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
     });
+
+    if (!expert) {
+      throw new HttpException('Expert was not found.', HttpStatus.BAD_REQUEST);
+    }
+    return expert;
   }
 
   public async update(id: number, expertDto: ExpertUpdateDto) {

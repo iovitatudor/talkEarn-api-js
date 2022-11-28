@@ -15,7 +15,8 @@ import { ContactsModule } from './modules/contacts/contacts.module';
 import { Contact } from './modules/contacts/models/contacts.model';
 import { ParametersModule } from './modules/parameters/parameters.module';
 import { Parameter } from './modules/parameters/models/parameters.model';
-import {ContactExpert} from "./modules/contacts/models/contact-expert.model";
+import { ContactExpert } from './modules/contacts/models/contact-expert.model';
+import { ParameterExpert } from './modules/parameters/models/parameter-expert';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import {ContactExpert} from "./modules/contacts/models/contact-expert.model";
         Contact,
         ContactExpert,
         Parameter,
+        ParameterExpert
       ],
     }),
     ProjectsModule,

@@ -14,7 +14,8 @@ import { AuthGuard } from '../auth/auth.guard';
 import { ContactsService } from './contacts.service';
 import { ContactUpdateDto } from './dto/contact-update.dto';
 import { ContactCreateDto } from './dto/contact-create.dto';
-import {ContactExpertCreateDto} from "./dto/contact-expert-create.dto";
+import { ContactExpertCreateDto } from './dto/contact-expert-create.dto';
+import {ContactsResource} from "./contacts.resource";
 
 @ApiTags('Contacts')
 @Controller('api')
@@ -67,16 +68,28 @@ export class ContactsController {
   @ApiOperation({ summary: 'Set contact value and assign to an expert' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
-  @Delete('contact/:contactId/expert/:expertId')
-  public setContactValue(
+  @Post('contact/:contactId/expert/:expertId')
+  public async setContactValue(
     @Param('contactId', ParseIntPipe) contactId: number,
     @Param('expertId', ParseIntPipe) expertId: number,
     @Body() contactExpertDto: ContactExpertCreateDto,
   ) {
-    return this.contactsService.addContactValue(
+    const contact = await this.contactsService.addContactValue(
       contactId,
       expertId,
       contactExpertDto,
     );
+    return new ContactsResource(contact);
+  }
+
+  @ApiOperation({ summary: 'Get contacts by expert id' })
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard)
+  @Get('contacts/expert/:expertId')
+  public async getExpertsParameters(
+    @Param('expertId', ParseIntPipe) expertId: number,
+  ) {
+    const contacts = await this.contactsService.getContactsByExpertId(expertId);
+    return ContactsResource.collect(contacts);
   }
 }

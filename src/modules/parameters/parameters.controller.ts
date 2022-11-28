@@ -12,8 +12,10 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { ParametersService } from './parameters.service';
+import { ParametersResource } from './parameters.resource';
 import { ParameterCreateDto } from './dto/parameter-create.dto';
 import { ParameterUpdateDto } from './dto/parameter-update.dto';
+import { ParameterExpertCreateDto } from './dto/parameter-expert-create.dto';
 
 @ApiTags('Parameters')
 @Controller('api')
@@ -61,5 +63,35 @@ export class ParametersController {
   @Delete('parameter/:id')
   public delete(@Param('id', ParseIntPipe) id: number) {
     return this.parametersService.destroy(id);
+  }
+
+  @ApiOperation({ summary: 'Set parameter value and assign to an expert' })
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard)
+  @Post('parameter/:parameterId/expert/:expertId')
+  public async setParameterValue(
+    @Param('parameterId', ParseIntPipe) parameterId: number,
+    @Param('expertId', ParseIntPipe) expertId: number,
+    @Body() parameterExpertDto: ParameterExpertCreateDto,
+  ) {
+    const parameter = await this.parametersService.addParameterValue(
+      parameterId,
+      expertId,
+      parameterExpertDto,
+    );
+    return new ParametersResource(parameter);
+  }
+
+  @ApiOperation({ summary: 'Get parameters by expert id' })
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard)
+  @Get('parameters/expert/:expertId')
+  public async getExpertsParameters(
+    @Param('expertId', ParseIntPipe) expertId: number,
+  ) {
+    const parameters = await this.parametersService.getParametersByExpertId(
+      expertId,
+    );
+    return ParametersResource.collect(parameters);
   }
 }

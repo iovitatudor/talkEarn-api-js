@@ -1,14 +1,16 @@
 import { InjectModel } from '@nestjs/sequelize';
-import { Injectable } from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
 import { Service } from './models/services.model';
 import { ServiceCreateDto } from './dto/service-create.dto';
 import { ServiceUpdateDto } from './dto/service-update.dto';
+import {ExpertsService} from "../experts/experts.service";
 
 @Injectable()
 export class ServicesService {
   constructor(
     @InjectModel(Service) private serviceRepository: typeof Service,
+    private expertService: ExpertsService,
   ) {}
 
   public async getAll() {
@@ -43,5 +45,15 @@ export class ServicesService {
       where: { id, project_id: AuthGuard.projectId },
     });
     return await this.findById(id);
+  }
+
+  public async findServicesByExpertId(expertId: number) {
+    const expert = await this.expertService.findById(expertId);
+    if (!expert) {
+      throw new HttpException('Expert is not found.', HttpStatus.BAD_REQUEST);
+    }
+    return await this.serviceRepository.findAll({
+      where: { expert_id: expertId, project_id: AuthGuard.projectId },
+    });
   }
 }
