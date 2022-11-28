@@ -7,7 +7,8 @@ import {
   Patch,
   Delete,
   ParseIntPipe,
-  HttpStatus, UseGuards,
+  HttpStatus,
+  UseGuards, HttpCode,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -60,6 +61,7 @@ export class ProjectsController {
   @ApiResponse({ status: 204, description: 'The project has been deleted.' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
+  @HttpCode(204)
   @Delete('project/:id')
   public async delete(@Param('id', ParseIntPipe) id: number, @Res() response: Response) {
     await this.projectsService.delete(id);

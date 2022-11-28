@@ -7,7 +7,7 @@ import {
   Get,
   Patch,
   Post,
-  ParseIntPipe,
+  ParseIntPipe, HttpCode,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
@@ -65,6 +65,7 @@ export class ParametersController {
   @ApiOperation({ summary: 'Delete parameter' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
+  @HttpCode(204)
   @Delete('parameter/:id')
   public async delete(@Param('id', ParseIntPipe) id: number) {
     return this.parametersService.destroy(id);

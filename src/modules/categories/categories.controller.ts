@@ -7,7 +7,7 @@ import {
   Get,
   Patch,
   Post,
-  ParseIntPipe,
+  ParseIntPipe, HttpCode,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
@@ -63,6 +63,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Delete category' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
+  @HttpCode(204)
   @Delete('category/:id')
   public delete(@Param('id', ParseIntPipe) id: number) {
     return this.categoriesService.destroy(id);

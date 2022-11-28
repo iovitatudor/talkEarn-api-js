@@ -7,7 +7,7 @@ import {
   Get,
   Patch,
   Post,
-  ParseIntPipe,
+  ParseIntPipe, HttpCode,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
@@ -65,6 +65,7 @@ export class ContactsController {
   @ApiOperation({ summary: 'Delete contact' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
+  @HttpCode(204)
   @Delete('contact/:id')
   public delete(@Param('id', ParseIntPipe) id: number) {
     return this.contactsService.destroy(id);

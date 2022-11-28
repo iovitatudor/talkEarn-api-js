@@ -7,7 +7,7 @@ import {
   Get,
   Patch,
   Post,
-  ParseIntPipe,
+  ParseIntPipe, HttpCode,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ExpertsService } from './experts.service';
@@ -60,6 +60,7 @@ export class ExpertsController {
   @ApiOperation({ summary: 'Delete expert' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
+  @HttpCode(204)
   @Delete('expert/:id')
   public async delete(@Param('id', ParseIntPipe) id: number) {
     return this.expertService.destroy(id);

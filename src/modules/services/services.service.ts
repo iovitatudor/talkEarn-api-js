@@ -1,10 +1,10 @@
 import { InjectModel } from '@nestjs/sequelize';
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
 import { Service } from './models/services.model';
 import { ServiceCreateDto } from './dto/service-create.dto';
 import { ServiceUpdateDto } from './dto/service-update.dto';
-import {ExpertsService} from "../experts/experts.service";
+import { ExpertsService } from '../experts/experts.service';
 
 @Injectable()
 export class ServicesService {
@@ -16,28 +16,36 @@ export class ServicesService {
   public async getAll() {
     return await this.serviceRepository.findAll({
       where: { project_id: AuthGuard.projectId },
+      include: { all: true },
     });
   }
 
   public async findById(id: number) {
-    return await this.serviceRepository.findOne({
+    const service = await this.serviceRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
+      include: { all: true },
     });
+    if (!service) {
+      throw new HttpException('Service was not found.', HttpStatus.BAD_REQUEST);
+    }
+    return service;
   }
 
   public async destroy(id: number) {
+    await this.findById(id);
     return await this.serviceRepository.destroy({
       where: { id, project_id: AuthGuard.projectId },
     });
   }
 
   async store(serviceDto: ServiceCreateDto) {
-    return this.serviceRepository.create({
+    const service = await this.serviceRepository.create({
       ...serviceDto,
       project_id: Number(AuthGuard.projectId),
       expert_id: Number(AuthGuard.expertId),
     });
+    return await this.findById(service.id);
   }
 
   public async update(id: number, serviceDto: ServiceUpdateDto) {
