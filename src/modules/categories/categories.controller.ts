@@ -33,7 +33,7 @@ export class CategoriesController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('categories')
-  public async getAll() {
+  public async getAll(): Promise<CategoriesResource[]> {
     const categories = await this.categoriesService.getAll();
     return CategoriesResource.collect(categories);
   }
@@ -43,7 +43,7 @@ export class CategoriesController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('category/:id')
-  public async getById(@Param('id', ParseIntPipe) id: number) {
+  public async getById(@Param('id', ParseIntPipe) id: number): Promise<CategoriesResource> {
     const category = await this.categoriesService.findById(id);
     return new CategoriesResource(category);
   }
@@ -53,7 +53,7 @@ export class CategoriesController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard, AdministratorGuard)
   @Post('category')
-  public async create(@Body() expertDto: CategoryCreateDto) {
+  public async create(@Body() expertDto: CategoryCreateDto): Promise<CategoriesResource> {
     const category = await this.categoriesService.store(expertDto);
     return new CategoriesResource(category);
   }
@@ -66,7 +66,7 @@ export class CategoriesController {
   public async edit(
     @Param('id', ParseIntPipe) id: number,
     @Body() expertDto: CategoryUpdateDto,
-  ) {
+  ): Promise<CategoriesResource> {
     const category = await this.categoriesService.update(id, expertDto);
     return new CategoriesResource(category);
   }
@@ -77,7 +77,7 @@ export class CategoriesController {
   @UseGuards(AuthGuard, AdministratorGuard)
   @HttpCode(204)
   @Delete('category/:id')
-  public delete(@Param('id', ParseIntPipe) id: number) {
+  public delete(@Param('id', ParseIntPipe) id: number): Promise<number> {
     return this.categoriesService.destroy(id);
   }
 }

@@ -1,11 +1,11 @@
 import {
   BelongsTo,
   Column,
-  DataType,
   ForeignKey,
   HasMany,
-  Model,
   Table,
+  DataType,
+  Model,
 } from 'sequelize-typescript';
 import { Expert } from '../../experts/models/experts.model';
 import { Project } from '../../projects/models/projects.model';

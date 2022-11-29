@@ -21,7 +21,7 @@ export class CategoriesResource {
     this.icon = category.icon;
   }
 
-  public static collect(model: Model[]) {
+  public static collect(model: Model[]): CategoriesResource[] {
     return model.map((item) => {
       return new CategoriesResource(item);
     });

@@ -1,5 +1,5 @@
 import { InjectModel } from '@nestjs/sequelize';
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Category } from './models/categories.model';
 import { CategoryUpdateDto } from './dto/category-update.dto';
 import { CategoryCreateDto } from './dto/category-create.dto';
@@ -11,14 +11,14 @@ export class CategoriesService {
     @InjectModel(Category) private categoryRepository: typeof Category,
   ) {}
 
-  public async getAll() {
+  public async getAll(): Promise<Category[]> {
     return await this.categoryRepository.findAll({
       where: { project_id: AuthGuard.projectId },
       include: { all: true },
     });
   }
 
-  public async findById(id: number) {
+  public async findById(id: number): Promise<Category> {
     const category = await this.categoryRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
@@ -33,13 +33,13 @@ export class CategoriesService {
     return category;
   }
 
-  public async destroy(id: number) {
+  public async destroy(id: number): Promise<number> {
     return await this.categoryRepository.destroy({
       where: { id, project_id: AuthGuard.projectId },
     });
   }
 
-  async store(expertDto: CategoryCreateDto) {
+  async store(expertDto: CategoryCreateDto): Promise<Category> {
     const category = await this.categoryRepository.create({
       ...expertDto,
       project_id: Number(AuthGuard.projectId),
@@ -47,7 +47,7 @@ export class CategoriesService {
     return await this.findById(category.id);
   }
 
-  public async update(id: number, expertDto: CategoryUpdateDto) {
+  public async update(id: number, expertDto: CategoryUpdateDto): Promise<Category> {
     await this.categoryRepository.update(expertDto, {
       where: { id, project_id: AuthGuard.projectId },
     });
