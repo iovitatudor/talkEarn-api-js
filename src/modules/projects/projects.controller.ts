@@ -17,7 +17,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Response } from 'express';
+import e, { Response } from 'express';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { ProjectsService } from './projects.service';
@@ -32,7 +32,7 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Get all projects' })
   @ApiResponse({ status: 200, type: [ProjectsResource] })
   @Get('/projects')
-  public async getAll() {
+  public async getAll(): Promise<ProjectsResource[]> {
     const projects = await this.projectsService.getAll();
     return ProjectsResource.collect(projects);
   }
@@ -40,7 +40,9 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Get project by Id' })
   @ApiResponse({ status: 200, type: ProjectsResource })
   @Get('project/:id')
-  public async getById(@Param('id', ParseIntPipe) id: number) {
+  public async getById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ProjectsResource> {
     const project = await this.projectsService.getById(id);
     return new ProjectsResource(project);
   }
@@ -53,7 +55,7 @@ export class ProjectsController {
   public async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() projectDto: ProjectUpdateDto,
-  ) {
+  ): Promise<ProjectsResource> {
     const project = await this.projectsService.update(id, projectDto);
     return new ProjectsResource(project);
   }
@@ -67,7 +69,7 @@ export class ProjectsController {
   public async delete(
     @Param('id', ParseIntPipe) id: number,
     @Res() response: Response,
-  ) {
+  ): Promise<e.Response<any, Record<string, any>>> {
     await this.projectsService.delete(id);
     return response
       .status(HttpStatus.NO_CONTENT)

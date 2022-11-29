@@ -13,14 +13,14 @@ export class ServicesService {
     private expertService: ExpertsService,
   ) {}
 
-  public async getAll() {
+  public async getAll(): Promise<Service[]> {
     return await this.serviceRepository.findAll({
       where: { project_id: AuthGuard.projectId },
       include: { all: true },
     });
   }
 
-  public async findById(id: number) {
+  public async findById(id: number): Promise<Service> {
     const service = await this.serviceRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
@@ -32,14 +32,14 @@ export class ServicesService {
     return service;
   }
 
-  public async destroy(id: number) {
+  public async destroy(id: number): Promise<number> {
     await this.findById(id);
     return await this.serviceRepository.destroy({
       where: { id, project_id: AuthGuard.projectId },
     });
   }
 
-  async store(serviceDto: ServiceCreateDto) {
+  public async store(serviceDto: ServiceCreateDto): Promise<Service> {
     const service = await this.serviceRepository.create({
       ...serviceDto,
       project_id: Number(AuthGuard.projectId),
@@ -48,14 +48,17 @@ export class ServicesService {
     return await this.findById(service.id);
   }
 
-  public async update(id: number, serviceDto: ServiceUpdateDto) {
+  public async update(
+    id: number,
+    serviceDto: ServiceUpdateDto,
+  ): Promise<Service> {
     await this.serviceRepository.update(serviceDto, {
       where: { id, project_id: AuthGuard.projectId },
     });
     return await this.findById(id);
   }
 
-  public async findServicesByExpertId(expertId: number) {
+  public async findServicesByExpertId(expertId: number): Promise<Service[]> {
     const expert = await this.expertService.findById(expertId);
     if (!expert) {
       throw new HttpException('Expert is not found.', HttpStatus.BAD_REQUEST);

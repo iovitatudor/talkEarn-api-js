@@ -3,11 +3,12 @@ import {
   Controller,
   Param,
   UseGuards,
+  HttpCode,
   Delete,
   Get,
   Patch,
   Post,
-  ParseIntPipe, HttpCode,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ExpertsService } from './experts.service';
@@ -26,7 +27,7 @@ export class ExpertsController {
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
   @Get('experts')
-  public async getAll() {
+  public async getAll(): Promise<ExpertsResource[]> {
     const experts = await this.expertService.getAll();
     return ExpertsResource.collect(experts);
   }
@@ -35,7 +36,7 @@ export class ExpertsController {
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
   @Get('expert/:id')
-  public async getById(@Param('id', ParseIntPipe) id: number) {
+  public async getById(@Param('id', ParseIntPipe) id: number): Promise<ExpertsResource> {
     const expert = await this.expertService.findById(id);
     return new ExpertsResource(expert);
   }
@@ -44,7 +45,7 @@ export class ExpertsController {
   @UseGuards(AuthGuard, AdministratorGuard)
   @ApiBearerAuth('Authorization')
   @Post('expert')
-  public async create(@Body() expertDto: ExpertCreateDto) {
+  public async create(@Body() expertDto: ExpertCreateDto): Promise<ExpertsResource> {
     const expert = await this.expertService.store(expertDto);
     return new ExpertsResource(expert);
   }
@@ -53,7 +54,10 @@ export class ExpertsController {
   @UseGuards(AuthGuard, AdministratorGuard)
   @ApiBearerAuth('Authorization')
   @Patch('expert/:id')
-  public async edit(@Param('id', ParseIntPipe) id: number, @Body() expertDto: ExpertUpdateDto) {
+  public async edit(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() expertDto: ExpertUpdateDto,
+  ): Promise<ExpertsResource> {
     const expert = await this.expertService.update(id, expertDto);
     return new ExpertsResource(expert);
   }
@@ -63,7 +67,7 @@ export class ExpertsController {
   @ApiBearerAuth('Authorization')
   @HttpCode(204)
   @Delete('expert/:id')
-  public async delete(@Param('id', ParseIntPipe) id: number) {
+  public async delete(@Param('id', ParseIntPipe) id: number): Promise<number> {
     return this.expertService.destroy(id);
   }
 }

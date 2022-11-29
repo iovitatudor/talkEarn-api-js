@@ -17,14 +17,14 @@ export class ContactsService {
     private expertService: ExpertsService,
   ) {}
 
-  public async getAll() {
+  public async getAll(): Promise<Contact[]> {
     return await this.contactRepository.findAll({
       where: { project_id: AuthGuard.projectId },
       include: { all: true },
     });
   }
 
-  public async findById(contactId: number) {
+  public async findById(contactId: number): Promise<Contact> {
     const contact = await this.contactRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id: contactId, project_id: AuthGuard.projectId },
@@ -36,14 +36,14 @@ export class ContactsService {
     return contact;
   }
 
-  public async destroy(id: number) {
+  public async destroy(id: number): Promise<number> {
     const contact = await this.findById(id);
     return await this.contactRepository.destroy({
       where: { id: contact.id, project_id: AuthGuard.projectId },
     });
   }
 
-  async store(contactDto: ContactCreateDto) {
+  async store(contactDto: ContactCreateDto): Promise<Contact> {
     const contact = await this.contactRepository.create({
       ...contactDto,
       project_id: Number(AuthGuard.projectId),
@@ -51,7 +51,7 @@ export class ContactsService {
     return await this.findById(contact.id);
   }
 
-  public async update(id: number, contactDto: ContactUpdateDto) {
+  public async update(id: number, contactDto: ContactUpdateDto): Promise<Contact> {
     await this.contactRepository.update(contactDto, {
       where: { id, project_id: AuthGuard.projectId },
     });
@@ -62,7 +62,7 @@ export class ContactsService {
     contactId: number,
     expertId: number,
     contactExpertDto: ContactExpertCreateDto,
-  ) {
+  ): Promise<ContactExpert> {
     const contact = await this.findById(contactId);
     const expert = await this.expertService.findById(expertId);
     const contactExpert = await this.findContactValueByExpertId(
@@ -86,7 +86,9 @@ export class ContactsService {
     return await this.findContactValueByExpertId(contact.id, expert.id);
   }
 
-  public async getContactsByExpertId(expertId: number) {
+  public async getContactsByExpertId(
+    expertId: number,
+  ): Promise<ContactExpert[]> {
     const expert = await this.expertService.findById(expertId);
 
     if (!expert) {
@@ -102,7 +104,7 @@ export class ContactsService {
   private async findContactValueByExpertId(
     contactId: number,
     expertId: number,
-  ) {
+  ): Promise<ContactExpert> {
     return await this.contactExpertRepository.findOne({
       rejectOnEmpty: undefined,
       where: { contact_id: contactId, expert_id: expertId },

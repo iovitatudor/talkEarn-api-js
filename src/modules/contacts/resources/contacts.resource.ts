@@ -13,7 +13,7 @@ export class ContactsResource {
     this.icon = contact?.icon;
   }
 
-  public static collect(model: Model[]) {
+  public static collect(model: Model[]): ContactsResource[] {
     return model.map((item) => {
       return new ContactsResource(item);
     });

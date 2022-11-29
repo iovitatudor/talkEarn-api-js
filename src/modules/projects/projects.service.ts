@@ -16,14 +16,14 @@ export class ProjectsService {
     @InjectModel(Project) private projectRepository: typeof Project,
   ) {}
 
-  async getAll() {
+  async getAll(): Promise<Project[]> {
     return this.projectRepository.findAll({
       attributes: ['id', 'name', 'url', 'mode'],
       include: { all: true },
     });
   }
 
-  async getById(projectId) {
+  async getById(projectId): Promise<Project> {
     const project = await this.projectRepository.findOne({
       where: { id: projectId },
       attributes: ['id', 'name', 'url', 'mode'],
@@ -35,12 +35,12 @@ export class ProjectsService {
     return project;
   }
 
-  async create(projectDto: ProjectCreateDto) {
+  async create(projectDto: ProjectCreateDto): Promise<Project> {
     await this.validateProject(projectDto.name);
     return await this.projectRepository.create(projectDto);
   }
 
-  async update(id: number, projectDto: ProjectUpdateDto) {
+  async update(id: number, projectDto: ProjectUpdateDto): Promise<Project> {
     await this.getById(id);
     if (id !== AuthGuard.projectId) {
       throw new UnauthorizedException({ message: 'Unauthorized!' });
@@ -52,7 +52,7 @@ export class ProjectsService {
     return await this.getById(id);
   }
 
-  async delete(id: number) {
+  async delete(id: number): Promise<number> {
     await this.getById(id);
     if (id !== AuthGuard.projectId) {
       throw new UnauthorizedException({ message: 'Unauthorized!' });
@@ -65,11 +65,11 @@ export class ProjectsService {
     return await this.projectRepository.destroy({ where: { id } });
   }
 
-  async getByName(name: string) {
+  async getByName(name: string): Promise<Project> {
     return await this.projectRepository.findOne({ where: { name } });
   }
 
-  private async validateProject(projectName, id = 0) {
+  private async validateProject(projectName, id = 0): Promise<void> {
     const project = await this.getByName(projectName);
     if (project && project.id !== id) {
       throw new HttpException(

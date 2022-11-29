@@ -11,7 +11,7 @@ export class ParametersResource {
     this.name = parameter.name;
   }
 
-  public static collect(model: Model[]) {
+  public static collect(model: Model[]): ParametersResource[] {
     return model.map((item) => {
       return new ParametersResource(item);
     });

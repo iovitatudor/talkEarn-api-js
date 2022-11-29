@@ -1,7 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import { Model } from 'sequelize';
 
-@Injectable()
 export class ServiceResource {
   public id: number;
   public name: string;
@@ -17,7 +15,7 @@ export class ServiceResource {
     this.price = service.price;
   }
 
-  public static collect(model: Model[]) {
+  public static collect(model: Model[]): ServiceResource[] {
     return model.map((item) => {
       return new ServiceResource(item);
     });

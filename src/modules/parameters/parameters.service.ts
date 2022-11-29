@@ -17,14 +17,14 @@ export class ParametersService {
     private expertService: ExpertsService,
   ) {}
 
-  public async getAll() {
+  public async getAll(): Promise<Parameter[]> {
     return await this.parameterRepository.findAll({
       where: { project_id: AuthGuard.projectId },
       include: { all: true },
     });
   }
 
-  public async findById(parameterId: number) {
+  public async findById(parameterId: number): Promise<Parameter> {
     const parameter = await this.parameterRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id: parameterId, project_id: AuthGuard.projectId },
@@ -39,14 +39,14 @@ export class ParametersService {
     return parameter;
   }
 
-  public async destroy(id: number) {
+  public async destroy(id: number): Promise<number> {
     await this.findById(id);
     return await this.parameterRepository.destroy({
       where: { id, project_id: AuthGuard.projectId },
     });
   }
 
-  public async store(parameterDto: ParameterCreateDto) {
+  public async store(parameterDto: ParameterCreateDto): Promise<Parameter> {
     const parameter = await this.parameterRepository.create({
       ...parameterDto,
       project_id: Number(AuthGuard.projectId),
@@ -54,7 +54,10 @@ export class ParametersService {
     return await this.findById(parameter.id);
   }
 
-  public async update(parameterId: number, parameterDto: ParameterUpdateDto) {
+  public async update(
+    parameterId: number,
+    parameterDto: ParameterUpdateDto,
+  ): Promise<Parameter> {
     await this.findById(parameterId);
 
     await this.parameterRepository.update(parameterDto, {
@@ -67,7 +70,7 @@ export class ParametersService {
   private async findParameterValueByExpertId(
     parameterId: number,
     expertId: number,
-  ) {
+  ): Promise<ParameterExpert> {
     return await this.parameterExpertRepository.findOne({
       rejectOnEmpty: undefined,
       where: { parameter_id: parameterId, expert_id: expertId },
@@ -79,7 +82,7 @@ export class ParametersService {
     parameterId: number,
     expertId: number,
     parameterExpertDto: ParameterExpertCreateDto,
-  ) {
+  ): Promise<ParameterExpert> {
     const parameter = await this.findById(parameterId);
     const expert = await this.expertService.findById(expertId);
     const parameterExpert = await this.findParameterValueByExpertId(
@@ -103,7 +106,9 @@ export class ParametersService {
     return await this.findParameterValueByExpertId(parameter.id, expert.id);
   }
 
-  public async getParametersByExpertId(expertId: number) {
+  public async getParametersByExpertId(
+    expertId: number,
+  ): Promise<ParameterExpert[]> {
     await this.expertService.findById(expertId);
 
     return await this.parameterExpertRepository.findAll({

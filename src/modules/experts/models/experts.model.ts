@@ -30,7 +30,6 @@ interface ExpertCreateAttrs {
   updatedAt: 'updated_at',
 })
 export class Expert extends Model<Expert, ExpertCreateAttrs> {
-  @ApiProperty({ example: 1 })
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -47,11 +46,9 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
   @Column({ type: DataType.INTEGER })
   public category_id: number;
 
-  @ApiProperty({ example: 'John Doe' })
   @Column({ type: DataType.STRING, allowNull: false })
   public name: string;
 
-  @ApiProperty({ example: 'john@email.com' })
   @Column({ type: DataType.STRING, allowNull: false })
   public email: string;
 
@@ -61,7 +58,6 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
   @Column({ type: DataType.BOOLEAN, defaultValue: 0 })
   public available: boolean;
 
-  @ApiProperty({ example: 'File' })
   @Column({ type: DataType.STRING, allowNull: true })
   public avatar: string;
 
@@ -69,7 +65,6 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
   @Column({ type: DataType.STRING, allowNull: true })
   public profession: string;
 
-  @ApiProperty({ example: 20 })
   @Column({ type: DataType.STRING, allowNull: true, defaultValue: 0 })
   public price: number;
 

@@ -11,27 +11,27 @@ import * as bcrypt from 'bcryptjs';
 export class ExpertsService {
   constructor(@InjectModel(Expert) private expertRepository: typeof Expert) {}
 
-  public async getAll() {
+  public async getAll(): Promise<Expert[]> {
     return await this.expertRepository.findAll({
       where: { project_id: AuthGuard.projectId },
       include: { all: true },
     });
   }
 
-  public async findById(id: number) {
+  public async findById(id: number): Promise<Expert> {
     const expert = await this.expertRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
       include: { all: true },
     });
 
-    // if (!expert) {
-    //   throw new HttpException('Expert was not found.', HttpStatus.BAD_REQUEST);
-    // }
+    if (!expert) {
+      throw new HttpException('Expert was not found.', HttpStatus.BAD_REQUEST);
+    }
     return expert;
   }
 
-  public async update(id: number, expertDto: ExpertUpdateDto) {
+  public async update(id: number, expertDto: ExpertUpdateDto): Promise<Expert> {
     await this.validateExpert(expertDto.email, id);
     await this.expertRepository.update(expertDto, {
       where: { id, project_id: AuthGuard.projectId },
@@ -39,24 +39,24 @@ export class ExpertsService {
     return await this.findById(id);
   }
 
-  public async destroy(id: number) {
+  public async destroy(id: number): Promise<number> {
     await this.findById(id);
     return await this.expertRepository.destroy({
       where: { id, project_id: AuthGuard.projectId },
     });
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<Expert> {
     return await this.expertRepository.findOne({ where: { email } });
   }
 
-  async partialStore(expertDto: ExpertCreateExpressDto) {
+  async partialStore(expertDto: ExpertCreateExpressDto): Promise<Expert> {
     await this.validateExpert(expertDto.email, 0);
 
     return await this.expertRepository.create({ ...expertDto });
   }
 
-  async store(expertDto: ExpertCreateDto) {
+  async store(expertDto: ExpertCreateDto): Promise<Expert> {
     await this.validateExpert(expertDto.email, 0);
 
     const hashPassword = await bcrypt.hash(expertDto.password, 5);
@@ -68,7 +68,7 @@ export class ExpertsService {
     return await this.findById(expert.id);
   }
 
-  private async validateExpert(expertEmail: string, id: number) {
+  private async validateExpert(expertEmail: string, id: number): Promise<void> {
     const expert = await this.findByEmail(expertEmail);
     if (expert && expert.id !== id) {
       throw new HttpException(

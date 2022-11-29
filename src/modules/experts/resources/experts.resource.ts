@@ -1,7 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import { Model } from 'sequelize';
 
-@Injectable()
 export class ExpertsResource {
   public id: number;
   public categoryId: number;
@@ -27,7 +25,7 @@ export class ExpertsResource {
     this.type = expert.type;
   }
 
-  public static collect(model: Model[]) {
+  public static collect(model: Model[]): ExpertsResource[] {
     return model.map((item) => {
       return new ExpertsResource(item);
     });

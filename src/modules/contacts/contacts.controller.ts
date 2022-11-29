@@ -3,11 +3,12 @@ import {
   Body,
   Param,
   UseGuards,
+  HttpCode,
   Delete,
   Get,
   Patch,
   Post,
-  ParseIntPipe, HttpCode,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -28,7 +29,7 @@ export class ContactsController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('contacts')
-  public async getAll() {
+  public async getAll(): Promise<ContactsResource[]> {
     const contacts = await this.contactsService.getAll();
     return ContactsResource.collect(contacts);
   }
@@ -37,7 +38,7 @@ export class ContactsController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('contact/:id')
-  public async getById(@Param('id', ParseIntPipe) id: number) {
+  public async getById(@Param('id', ParseIntPipe) id: number): Promise<ContactsResource> {
     const contact = await this.contactsService.findById(id);
     return new ContactsResource(contact);
   }
@@ -46,7 +47,7 @@ export class ContactsController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard, AdministratorGuard)
   @Post('contact')
-  public async create(@Body() contactDto: ContactCreateDto) {
+  public async create(@Body() contactDto: ContactCreateDto): Promise<ContactsResource> {
     const contact = await this.contactsService.store(contactDto);
     return new ContactsResource(contact);
   }
@@ -58,7 +59,7 @@ export class ContactsController {
   public async edit(
     @Param('id', ParseIntPipe) id: number,
     @Body() contactDto: ContactUpdateDto,
-  ) {
+  ): Promise<ContactsResource> {
     const contact = await this.contactsService.update(id, contactDto);
     return new ContactsResource(contact);
   }
@@ -68,7 +69,7 @@ export class ContactsController {
   @UseGuards(AuthGuard, AdministratorGuard)
   @HttpCode(204)
   @Delete('contact/:id')
-  public delete(@Param('id', ParseIntPipe) id: number) {
+  public delete(@Param('id', ParseIntPipe) id: number): Promise<number> {
     return this.contactsService.destroy(id);
   }
 
@@ -80,7 +81,7 @@ export class ContactsController {
     @Param('contactId', ParseIntPipe) contactId: number,
     @Param('expertId', ParseIntPipe) expertId: number,
     @Body() contactExpertDto: ContactExpertCreateDto,
-  ) {
+  ): Promise<ExpertContactsResource> {
     const contact = await this.contactsService.addContactValue(
       contactId,
       expertId,
@@ -95,7 +96,7 @@ export class ContactsController {
   @Get('contacts/expert/:expertId')
   public async getExpertsParameters(
     @Param('expertId', ParseIntPipe) expertId: number,
-  ) {
+  ): Promise<ExpertContactsResource[]> {
     const contacts = await this.contactsService.getContactsByExpertId(expertId);
     return ExpertContactsResource.collect(contacts);
   }

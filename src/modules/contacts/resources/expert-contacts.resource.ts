@@ -17,7 +17,7 @@ export class ExpertContactsResource {
     this.icon = contactValue.contact.icon;
   }
 
-  public static collect(model: Model[]) {
+  public static collect(model: Model[]): ExpertContactsResource[] {
     return model.map((item) => {
       return new ExpertContactsResource(item);
     });

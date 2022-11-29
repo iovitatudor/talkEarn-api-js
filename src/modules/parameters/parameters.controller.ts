@@ -3,11 +3,13 @@ import {
   Body,
   Param,
   UseGuards,
+  HttpCode,
   Delete,
   Get,
   Patch,
   Post,
-  ParseIntPipe, HttpCode,
+  ParseIntPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -28,7 +30,7 @@ export class ParametersController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('parameters')
-  public async getAll() {
+  public async getAll(): Promise<ParametersResource[]> {
     const parameters = await this.parametersService.getAll();
     return ParametersResource.collect(parameters);
   }
@@ -37,7 +39,7 @@ export class ParametersController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('parameter/:id')
-  public async getById(@Param('id', ParseIntPipe) id: number) {
+  public async getById(@Param('id', ParseIntPipe) id: number): Promise<ParametersResource> {
     const parameter = await this.parametersService.findById(id);
     return new ParametersResource(parameter);
   }
@@ -46,7 +48,9 @@ export class ParametersController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard, AdministratorGuard)
   @Post('parameter')
-  public async create(@Body() parameterDto: ParameterCreateDto) {
+  public async create(
+    @Body() parameterDto: ParameterCreateDto,
+  ): Promise<ParametersResource> {
     const parameter = await this.parametersService.store(parameterDto);
     return new ParametersResource(parameter);
   }
@@ -58,7 +62,7 @@ export class ParametersController {
   public async edit(
     @Param('id', ParseIntPipe) id: number,
     @Body() parameterDto: ParameterUpdateDto,
-  ) {
+  ): Promise<ParametersResource> {
     const parameter = await this.parametersService.update(id, parameterDto);
     return new ParametersResource(parameter);
   }
@@ -66,9 +70,9 @@ export class ParametersController {
   @ApiOperation({ summary: 'Delete parameter' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard, AdministratorGuard)
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('parameter/:id')
-  public async delete(@Param('id', ParseIntPipe) id: number) {
+  public async delete(@Param('id', ParseIntPipe) id: number): Promise<number> {
     return this.parametersService.destroy(id);
   }
 
@@ -80,7 +84,7 @@ export class ParametersController {
     @Param('parameterId', ParseIntPipe) parameterId: number,
     @Param('expertId', ParseIntPipe) expertId: number,
     @Body() parameterExpertDto: ParameterExpertCreateDto,
-  ) {
+  ): Promise<ExpertParametersResource> {
     const parameter = await this.parametersService.addParameterValue(
       parameterId,
       expertId,
@@ -95,7 +99,7 @@ export class ParametersController {
   @Get('parameters/expert/:expertId')
   public async getExpertsParameters(
     @Param('expertId', ParseIntPipe) expertId: number,
-  ) {
+  ): Promise<ExpertParametersResource[]> {
     const parameters = await this.parametersService.getParametersByExpertId(
       expertId,
     );

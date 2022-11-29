@@ -1,9 +1,7 @@
-import { Injectable } from '@nestjs/common';
 import { Model } from 'sequelize';
-import { ApiProperty } from '@nestjs/swagger';
 import { ModeTypes } from '../enums/mode-types.enum';
+import { ApiProperty } from '@nestjs/swagger';
 
-@Injectable()
 export class ProjectsResource {
   @ApiProperty({ example: 1 })
   public id: number;
@@ -21,7 +19,7 @@ export class ProjectsResource {
     this.mode = project.mode;
   }
 
-  public static collect(model: Model[]) {
+  public static collect(model: Model[]): ProjectsResource[] {
     return model.map((item) => {
       return new ProjectsResource(item);
     });

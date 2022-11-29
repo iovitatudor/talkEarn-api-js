@@ -7,18 +7,15 @@ import {
   Get,
   Patch,
   Post,
-  ParseIntPipe, HttpCode,
+  ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { ServicesService } from './services.service';
 import { ServiceCreateDto } from './dto/service-create.dto';
 import { ServiceResource } from './resources/services.resource';
-import {AdministratorGuard} from "../auth/guards/administrator.guard";
+import { AdministratorGuard } from '../auth/guards/administrator.guard';
 
 @ApiTags('Services')
 @Controller('api')
@@ -29,7 +26,7 @@ export class ServicesController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('services')
-  public async getAll() {
+  public async getAll(): Promise<ServiceResource[]> {
     const services = await this.servicesService.getAll();
     return ServiceResource.collect(services);
   }
@@ -38,7 +35,9 @@ export class ServicesController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('service/:id')
-  public async getById(@Param('id', ParseIntPipe) id: number) {
+  public async getById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ServiceResource> {
     const service = await this.servicesService.findById(id);
     return new ServiceResource(service);
   }
@@ -47,7 +46,9 @@ export class ServicesController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard, AdministratorGuard)
   @Post('service')
-  public async create(@Body() serviceDto: ServiceCreateDto) {
+  public async create(
+    @Body() serviceDto: ServiceCreateDto,
+  ): Promise<ServiceResource> {
     const service = await this.servicesService.store(serviceDto);
     return new ServiceResource(service);
   }
@@ -59,7 +60,7 @@ export class ServicesController {
   public async edit(
     @Param('id', ParseIntPipe) id: number,
     @Body() serviceDto: ServiceCreateDto,
-  ) {
+  ): Promise<ServiceResource> {
     const service = await this.servicesService.update(id, serviceDto);
     return new ServiceResource(service);
   }
@@ -69,7 +70,7 @@ export class ServicesController {
   @UseGuards(AuthGuard, AdministratorGuard)
   @HttpCode(204)
   @Delete('service/:id')
-  public async delete(@Param('id', ParseIntPipe) id: number) {
+  public async delete(@Param('id', ParseIntPipe) id: number): Promise<number> {
     return await this.servicesService.destroy(id);
   }
 
@@ -77,7 +78,9 @@ export class ServicesController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('services/expert/:expertId')
-  public async getExpertServices(@Param('expertId', ParseIntPipe) expertId: number) {
+  public async getExpertServices(
+    @Param('expertId', ParseIntPipe) expertId: number,
+  ): Promise<ServiceResource[]> {
     const services = await this.servicesService.findServicesByExpertId(
       expertId,
     );

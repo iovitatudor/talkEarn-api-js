@@ -1,5 +1,4 @@
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
-import { ApiProperty } from '@nestjs/swagger';
 import { Expert } from '../../experts/models/experts.model';
 import { ModeTypes } from '../enums/mode-types.enum';
 
