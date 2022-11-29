@@ -12,6 +12,7 @@ import { ProjectsService } from '../projects/projects.service';
 import { ProjectWithAdminDto } from './dto/project-with-admin.dto';
 import { LoginDto } from './dto/login.dto';
 import { Types } from '../experts/enums/types.enum';
+import { AuthResource } from './resources/auth.resource';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,8 @@ export class AuthService {
 
   public async login(expertDto: LoginDto): Promise<object> {
     const expert = await this.validate(expertDto);
-    return this.generateToken(expert);
+    const token = await this.generateToken(expert);
+    return new AuthResource({ ...token, expert });
   }
 
   public async register(
@@ -46,7 +48,9 @@ export class AuthService {
       type: Types.Administrator,
     });
 
-    return this.generateToken(expert);
+    const token = await this.generateToken(expert);
+
+    return new AuthResource({ ...token, expert });
   }
 
   private generateToken(expert: Expert): object {

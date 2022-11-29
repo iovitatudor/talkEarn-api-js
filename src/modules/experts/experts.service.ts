@@ -25,9 +25,9 @@ export class ExpertsService {
       include: { all: true },
     });
 
-    if (!expert) {
-      throw new HttpException('Expert was not found.', HttpStatus.BAD_REQUEST);
-    }
+    // if (!expert) {
+    //   throw new HttpException('Expert was not found.', HttpStatus.BAD_REQUEST);
+    // }
     return expert;
   }
 
