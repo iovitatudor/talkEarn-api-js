@@ -10,7 +10,8 @@ import {
   ParseIntPipe, HttpCode,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { ContactsService } from './contacts.service';
 import { ContactUpdateDto } from './dto/contact-update.dto';
 import { ContactCreateDto } from './dto/contact-create.dto';
@@ -43,7 +44,7 @@ export class ContactsController {
 
   @ApiOperation({ summary: 'Create contact' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @Post('contact')
   public async create(@Body() contactDto: ContactCreateDto) {
     const contact = await this.contactsService.store(contactDto);
@@ -52,7 +53,7 @@ export class ContactsController {
 
   @ApiOperation({ summary: 'Update contact' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @Patch('contact/:id')
   public async edit(
     @Param('id', ParseIntPipe) id: number,
@@ -64,7 +65,7 @@ export class ContactsController {
 
   @ApiOperation({ summary: 'Delete contact' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @HttpCode(204)
   @Delete('contact/:id')
   public delete(@Param('id', ParseIntPipe) id: number) {
@@ -73,7 +74,7 @@ export class ContactsController {
 
   @ApiOperation({ summary: 'Set contact value and assign to an expert' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @Post('contact/:contactId/expert/:expertId')
   public async setContactValue(
     @Param('contactId', ParseIntPipe) contactId: number,

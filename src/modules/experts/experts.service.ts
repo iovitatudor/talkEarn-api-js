@@ -4,7 +4,8 @@ import { Expert } from './models/experts.model';
 import { ExpertCreateDto } from './dto/expert-create.dto';
 import { ExpertCreateExpressDto } from './dto/express-create-express.dto';
 import { ExpertUpdateDto } from './dto/expert-update.dto';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class ExpertsService {
@@ -50,12 +51,18 @@ export class ExpertsService {
   }
 
   async partialStore(expertDto: ExpertCreateExpressDto) {
-    return this.expertRepository.create({ ...expertDto });
+    await this.validateExpert(expertDto.email, 0);
+
+    return await this.expertRepository.create({ ...expertDto });
   }
 
   async store(expertDto: ExpertCreateDto) {
+    await this.validateExpert(expertDto.email, 0);
+
+    const hashPassword = await bcrypt.hash(expertDto.password, 5);
     const expert = await this.expertRepository.create({
       ...expertDto,
+      password: hashPassword,
       project_id: AuthGuard.projectId,
     });
     return await this.findById(expert.id);

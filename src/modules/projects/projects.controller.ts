@@ -8,7 +8,8 @@ import {
   Delete,
   ParseIntPipe,
   HttpStatus,
-  UseGuards, HttpCode,
+  UseGuards,
+  HttpCode,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -17,10 +18,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { ProjectsService } from './projects.service';
 import { ProjectUpdateDto } from './dto/project-update.dto';
-import { Project } from './models/projects.model';
-import { AuthGuard } from '../auth/auth.guard';
 import { ProjectsResource } from './resources/projects.resource';
 
 @ApiTags('Projects')
@@ -37,7 +38,7 @@ export class ProjectsController {
   }
 
   @ApiOperation({ summary: 'Get project by Id' })
-  @ApiResponse({ status: 200, type: [Project] })
+  @ApiResponse({ status: 200, type: ProjectsResource })
   @Get('project/:id')
   public async getById(@Param('id', ParseIntPipe) id: number) {
     const project = await this.projectsService.getById(id);
@@ -45,8 +46,8 @@ export class ProjectsController {
   }
 
   @ApiOperation({ summary: 'Update project' })
-  @ApiResponse({ status: 201, type: Project })
-  @UseGuards(AuthGuard)
+  @ApiResponse({ status: 201, type: ProjectsResource })
+  @UseGuards(AuthGuard, AdministratorGuard)
   @ApiBearerAuth('Authorization')
   @Patch('project/:id')
   public async update(
@@ -58,12 +59,15 @@ export class ProjectsController {
   }
 
   @ApiOperation({ summary: 'Delete project' })
-  @ApiResponse({ status: 204, description: 'The project has been deleted.' })
-  @UseGuards(AuthGuard)
+  @ApiResponse({ status: 204, description: 'No content' })
+  @UseGuards(AuthGuard, AdministratorGuard)
   @ApiBearerAuth('Authorization')
   @HttpCode(204)
   @Delete('project/:id')
-  public async delete(@Param('id', ParseIntPipe) id: number, @Res() response: Response) {
+  public async delete(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() response: Response,
+  ) {
     await this.projectsService.delete(id);
     return response
       .status(HttpStatus.NO_CONTENT)

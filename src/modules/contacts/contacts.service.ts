@@ -1,6 +1,6 @@
 import { InjectModel } from '@nestjs/sequelize';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
 import { Contact } from './models/contacts.model';
 import { ContactCreateDto } from './dto/contact-create.dto';
 import { ContactUpdateDto } from './dto/contact-update.dto';

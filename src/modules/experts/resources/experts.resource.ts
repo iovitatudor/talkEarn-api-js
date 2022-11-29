@@ -5,6 +5,7 @@ import { Model } from 'sequelize';
 export class ExpertsResource {
   public id: number;
   public categoryId: number;
+  public projectId: number;
   public name: string;
   public email: string;
   public active: boolean;
@@ -12,10 +13,12 @@ export class ExpertsResource {
   public avatar: string;
   public profession: string;
   public price: string;
+  public type: string;
 
   public constructor(expert) {
     this.id = expert.id;
     this.categoryId = expert.category_id;
+    this.projectId = expert.project_id;
     this.name = expert.name;
     this.email = expert.email;
     this.active = expert.active;
@@ -23,6 +26,7 @@ export class ExpertsResource {
     this.avatar = expert.avatar;
     this.profession = expert.profession;
     this.price = expert.price;
+    this.type = expert.type;
   }
 
   public static collect(model: Model[]) {

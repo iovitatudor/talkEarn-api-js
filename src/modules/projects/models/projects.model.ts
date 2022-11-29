@@ -16,7 +16,6 @@ interface ProjectCreationAttrs {
   updatedAt: 'updated_at',
 })
 export class Project extends Model<Project, ProjectCreationAttrs> {
-  @ApiProperty({ example: 1 })
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -25,15 +24,12 @@ export class Project extends Model<Project, ProjectCreationAttrs> {
   })
   public id: number;
 
-  @ApiProperty({ example: 'talkEarn' })
   @Column({ type: DataType.STRING, allowNull: false })
   public name: string;
 
-  @ApiProperty({ example: 'https://talkearn.crypto' })
   @Column({ type: DataType.STRING, allowNull: false })
   public url: string;
 
-  @ApiProperty({ example: ModeTypes.Development })
   @Column({
     type: DataType.ENUM(...Object.values(ModeTypes)),
     allowNull: false,

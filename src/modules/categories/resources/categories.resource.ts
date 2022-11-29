@@ -1,9 +1,17 @@
 import { Model } from 'sequelize';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CategoriesResource {
+  @ApiProperty({ example: 1 })
   public id: number;
+
+  @ApiProperty({ example: 'Trading' })
   public name: string;
+
+  @ApiProperty({ example: 'Short Description of Trading' })
   public description: string;
+
+  @ApiProperty({ example: 'File' })
   public icon: string;
 
   public constructor(category) {

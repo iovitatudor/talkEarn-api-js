@@ -3,7 +3,7 @@ import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import { Category } from './models/categories.model';
 import { CategoryUpdateDto } from './dto/category-update.dto';
 import { CategoryCreateDto } from './dto/category-create.dto';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 @Injectable()
 export class CategoriesService {

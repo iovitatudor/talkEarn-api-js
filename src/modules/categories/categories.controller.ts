@@ -3,25 +3,33 @@ import {
   Body,
   Param,
   UseGuards,
+  HttpCode,
   Delete,
   Get,
   Patch,
   Post,
-  ParseIntPipe, HttpCode,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import { CategoriesResource } from './resources/categories.resource';
 import { CategoryCreateDto } from './dto/category-create.dto';
 import { CategoryUpdateDto } from './dto/category-update.dto';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { AdministratorGuard } from '../auth/guards/administrator.guard';
 
 @ApiTags('Categories')
 @Controller('api')
 export class CategoriesController {
   public constructor(private categoriesService: CategoriesService) {}
 
-  @ApiOperation({ summary: 'Get all categories per project ' })
+  @ApiOperation({ summary: 'Get all categories per project' })
+  @ApiResponse({ status: 200, type: [CategoriesResource] })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('categories')
@@ -31,6 +39,7 @@ export class CategoriesController {
   }
 
   @ApiOperation({ summary: 'Get category by Id' })
+  @ApiResponse({ status: 200, type: CategoriesResource })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('category/:id')
@@ -40,8 +49,9 @@ export class CategoriesController {
   }
 
   @ApiOperation({ summary: 'Create category' })
+  @ApiResponse({ status: 200, type: CategoriesResource })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @Post('category')
   public async create(@Body() expertDto: CategoryCreateDto) {
     const category = await this.categoriesService.store(expertDto);
@@ -49,8 +59,9 @@ export class CategoriesController {
   }
 
   @ApiOperation({ summary: 'Update category' })
+  @ApiResponse({ status: 201, type: CategoriesResource })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @Patch('category/:id')
   public async edit(
     @Param('id', ParseIntPipe) id: number,
@@ -61,8 +72,9 @@ export class CategoriesController {
   }
 
   @ApiOperation({ summary: 'Delete category' })
+  @ApiResponse({ status: 204, description: 'No content' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @HttpCode(204)
   @Delete('category/:id')
   public delete(@Param('id', ParseIntPipe) id: number) {

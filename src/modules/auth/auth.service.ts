@@ -30,15 +30,14 @@ export class AuthService {
     projectWithAdminDto: ProjectWithAdminDto,
   ): Promise<object> {
     const administrator = projectWithAdminDto.administrator;
+    const password = administrator.password;
     delete projectWithAdminDto.administrator;
 
     await this.validateProject(projectWithAdminDto.name);
 
-    await this.validateExpert(administrator.email);
-
     const project = await this.projectService.create(projectWithAdminDto);
 
-    const hashPassword = await bcrypt.hash(administrator.password, 5);
+    const hashPassword = await bcrypt.hash(password, 5);
 
     const expert = await this.expertService.partialStore({
       ...administrator,
@@ -56,6 +55,7 @@ export class AuthService {
       id: expert.id,
       projectId: expert.project_id,
       name: expert.name,
+      type: expert.type,
     };
     return {
       token: this.jwtService.sign(payload),
@@ -91,17 +91,6 @@ export class AuthService {
     if (projectExists) {
       throw new HttpException(
         'Project name already exists',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  private async validateExpert(email: string): Promise<void> {
-    const candidate = await this.expertService.findByEmail(email);
-
-    if (candidate) {
-      throw new HttpException(
-        'Expert email already exists',
         HttpStatus.BAD_REQUEST,
       );
     }

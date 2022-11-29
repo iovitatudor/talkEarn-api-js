@@ -8,7 +8,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Project } from './models/projects.model';
 import { ProjectCreateDto } from './dto/project-create.dto';
 import { ProjectUpdateDto } from './dto/project-update.dto';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 @Injectable()
 export class ProjectsService {

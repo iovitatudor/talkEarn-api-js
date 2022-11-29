@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'sequelize';
+import { ApiProperty } from '@nestjs/swagger';
+import { ModeTypes } from '../enums/mode-types.enum';
 
 @Injectable()
 export class ProjectsResource {
+  @ApiProperty({ example: 1 })
   public id: number;
+  @ApiProperty({ example: 'talkEarn' })
   public name: string;
+  @ApiProperty({ example: 'https://talkEarn.crypto' })
   public url: string;
+  @ApiProperty({ example: ModeTypes.Development })
   public mode: string;
 
   public constructor(project) {

@@ -10,7 +10,8 @@ import {
   ParseIntPipe, HttpCode,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { ParametersService } from './parameters.service';
 import { ExpertParametersResource } from './resources/expert-parameters.resource';
 import { ParameterCreateDto } from './dto/parameter-create.dto';
@@ -43,7 +44,7 @@ export class ParametersController {
 
   @ApiOperation({ summary: 'Create parameter' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @Post('parameter')
   public async create(@Body() parameterDto: ParameterCreateDto) {
     const parameter = await this.parametersService.store(parameterDto);
@@ -52,7 +53,7 @@ export class ParametersController {
 
   @ApiOperation({ summary: 'Update parameter' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @Patch('parameter/:id')
   public async edit(
     @Param('id', ParseIntPipe) id: number,
@@ -64,7 +65,7 @@ export class ParametersController {
 
   @ApiOperation({ summary: 'Delete parameter' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @HttpCode(204)
   @Delete('parameter/:id')
   public async delete(@Param('id', ParseIntPipe) id: number) {
@@ -73,7 +74,7 @@ export class ParametersController {
 
   @ApiOperation({ summary: 'Set parameter value and assign to an expert' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @Post('parameter/:parameterId/expert/:expertId')
   public async setParameterValue(
     @Param('parameterId', ParseIntPipe) parameterId: number,

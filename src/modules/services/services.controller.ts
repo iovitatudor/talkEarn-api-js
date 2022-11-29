@@ -7,15 +7,18 @@ import {
   Get,
   Patch,
   Post,
-  Res,
   ParseIntPipe, HttpCode,
 } from '@nestjs/common';
-import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
-import { AuthGuard } from '../auth/auth.guard';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { AuthGuard } from '../auth/guards/auth.guard';
 import { ServicesService } from './services.service';
 import { ServiceCreateDto } from './dto/service-create.dto';
 import { ServiceResource } from './resources/services.resource';
-import { Response } from 'express';
+import {AdministratorGuard} from "../auth/guards/administrator.guard";
 
 @ApiTags('Services')
 @Controller('api')
@@ -42,7 +45,7 @@ export class ServicesController {
 
   @ApiOperation({ summary: 'Create service' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @Post('service')
   public async create(@Body() serviceDto: ServiceCreateDto) {
     const service = await this.servicesService.store(serviceDto);
@@ -51,7 +54,7 @@ export class ServicesController {
 
   @ApiOperation({ summary: 'Update service' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @Patch('service/:id')
   public async edit(
     @Param('id', ParseIntPipe) id: number,
@@ -63,7 +66,7 @@ export class ServicesController {
 
   @ApiOperation({ summary: 'Delete service' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @HttpCode(204)
   @Delete('service/:id')
   public async delete(@Param('id', ParseIntPipe) id: number) {

@@ -14,7 +14,8 @@ import { ExpertsService } from './experts.service';
 import { ExpertsResource } from './resources/experts.resource';
 import { ExpertCreateDto } from './dto/expert-create.dto';
 import { ExpertUpdateDto } from './dto/expert-update.dto';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { AdministratorGuard } from '../auth/guards/administrator.guard';
 
 @ApiTags('Experts')
 @Controller('api')
@@ -40,7 +41,7 @@ export class ExpertsController {
   }
 
   @ApiOperation({ summary: 'Create expert' })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @ApiBearerAuth('Authorization')
   @Post('expert')
   public async create(@Body() expertDto: ExpertCreateDto) {
@@ -49,7 +50,7 @@ export class ExpertsController {
   }
 
   @ApiOperation({ summary: 'Update expert' })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @ApiBearerAuth('Authorization')
   @Patch('expert/:id')
   public async edit(@Param('id', ParseIntPipe) id: number, @Body() expertDto: ExpertUpdateDto) {
@@ -58,7 +59,7 @@ export class ExpertsController {
   }
 
   @ApiOperation({ summary: 'Delete expert' })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdministratorGuard)
   @ApiBearerAuth('Authorization')
   @HttpCode(204)
   @Delete('expert/:id')
