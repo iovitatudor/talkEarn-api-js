@@ -8,9 +8,9 @@ import {
   Get,
   Patch,
   Post,
-  ParseIntPipe,
+  ParseIntPipe, UseInterceptors, UploadedFile,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags} from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { ContactsService } from './contacts.service';
@@ -19,6 +19,8 @@ import { ContactCreateDto } from './dto/contact-create.dto';
 import { ContactExpertCreateDto } from './dto/contact-expert-create.dto';
 import { ExpertContactsResource } from './resources/expert-contacts.resource';
 import { ContactsResource } from './resources/contacts.resource';
+import {FileInterceptor} from "@nestjs/platform-express";
+import {Express} from "express";
 
 @ApiTags('Contacts')
 @Controller('api')
@@ -45,22 +47,30 @@ export class ContactsController {
 
   @ApiOperation({ summary: 'Create contact' })
   @ApiBearerAuth('Authorization')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('icon'))
   @UseGuards(AuthGuard, AdministratorGuard)
   @Post('contact')
-  public async create(@Body() contactDto: ContactCreateDto): Promise<ContactsResource> {
-    const contact = await this.contactsService.store(contactDto);
+  public async create(
+    @Body() contactDto: ContactCreateDto,
+    @UploadedFile() icon: Express.Multer.File,
+  ): Promise<ContactsResource> {
+    const contact = await this.contactsService.store(contactDto, icon);
     return new ContactsResource(contact);
   }
 
   @ApiOperation({ summary: 'Update contact' })
   @ApiBearerAuth('Authorization')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('icon'))
   @UseGuards(AuthGuard, AdministratorGuard)
   @Patch('contact/:id')
   public async edit(
     @Param('id', ParseIntPipe) id: number,
     @Body() contactDto: ContactUpdateDto,
+    @UploadedFile() icon: Express.Multer.File,
   ): Promise<ContactsResource> {
-    const contact = await this.contactsService.update(id, contactDto);
+    const contact = await this.contactsService.update(id, contactDto, icon);
     return new ContactsResource(contact);
   }
 

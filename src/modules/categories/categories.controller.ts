@@ -9,9 +9,11 @@ import {
   Patch,
   Post,
   ParseIntPipe,
+  UseInterceptors, UploadedFile,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -22,6 +24,8 @@ import { CategoryCreateDto } from './dto/category-create.dto';
 import { CategoryUpdateDto } from './dto/category-update.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {Express} from "express";
 
 @ApiTags('Categories')
 @Controller('api')
@@ -43,7 +47,9 @@ export class CategoriesController {
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('category/:id')
-  public async getById(@Param('id', ParseIntPipe) id: number): Promise<CategoriesResource> {
+  public async getById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<CategoriesResource> {
     const category = await this.categoriesService.findById(id);
     return new CategoriesResource(category);
   }
@@ -51,23 +57,31 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Create category' })
   @ApiResponse({ status: 200, type: CategoriesResource })
   @ApiBearerAuth('Authorization')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('icon'))
   @UseGuards(AuthGuard, AdministratorGuard)
   @Post('category')
-  public async create(@Body() expertDto: CategoryCreateDto): Promise<CategoriesResource> {
-    const category = await this.categoriesService.store(expertDto);
+  public async create(
+    @Body() categoryDto: CategoryCreateDto,
+    @UploadedFile() icon: Express.Multer.File,
+  ): Promise<CategoriesResource> {
+    const category = await this.categoriesService.store(categoryDto, icon);
     return new CategoriesResource(category);
   }
 
   @ApiOperation({ summary: 'Update category' })
   @ApiResponse({ status: 201, type: CategoriesResource })
   @ApiBearerAuth('Authorization')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('icon'))
   @UseGuards(AuthGuard, AdministratorGuard)
   @Patch('category/:id')
   public async edit(
     @Param('id', ParseIntPipe) id: number,
-    @Body() expertDto: CategoryUpdateDto,
+    @Body() categoryDto: CategoryUpdateDto,
+    @UploadedFile() icon: Express.Multer.File,
   ): Promise<CategoriesResource> {
-    const category = await this.categoriesService.update(id, expertDto);
+    const category = await this.categoriesService.update(id, categoryDto, icon);
     return new CategoriesResource(category);
   }
 

@@ -3,10 +3,14 @@ import { IsString } from 'class-validator';
 
 export class ContactUpdateDto {
   @IsString()
-  @ApiProperty({ example: 'Facebook', description: 'Contact name' })
+  @ApiProperty({ example: 'Facebook', required: false })
   name: string;
 
-  @IsString()
-  @ApiProperty({ example: 'File', description: 'contact icon' })
-  icon: string;
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: false,
+    example: 'File',
+  })
+  public icon: Express.Multer.File;
 }

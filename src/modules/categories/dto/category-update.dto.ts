@@ -3,17 +3,18 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CategoryUpdateDto {
   @IsString()
-  @ApiProperty({ example: 'Trading', description: 'Category name' })
+  @ApiProperty({ example: 'Trading', required: false })
   name: string;
 
   @IsString()
-  @ApiProperty({
-    example: 'Category Description',
-    description: 'Category description',
-  })
+  @ApiProperty({ example: 'Category Description', required: false })
   description: string;
 
-  @IsString()
-  @ApiProperty({ example: 'File', description: 'Category icon' })
-  icon: string;
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: false,
+    example: 'File',
+  })
+  public icon: Express.Multer.File;
 }

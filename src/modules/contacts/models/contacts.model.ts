@@ -12,7 +12,7 @@ import { Project } from '../../projects/models/projects.model';
 interface ContactCreationAttrs {
   project_id: number;
   name: string;
-  icon: string;
+  icon: Express.Multer.File;
 }
 
 @Table({
@@ -40,7 +40,7 @@ export class Contact extends Model<Contact, ContactCreationAttrs> {
 
   @ApiProperty({ example: 'File' })
   @Column({ type: DataType.STRING, allowNull: true })
-  public icon: string;
+  public icon: Express.Multer.File;
 
   @BelongsTo(() => Project)
   public project: Project;

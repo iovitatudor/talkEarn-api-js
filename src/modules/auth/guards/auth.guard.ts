@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
 
       if (bearer !== 'Bearer' || !token) {
         throw new UnauthorizedException({
-          message: 'Expert is not authorized.',
+          message: 'You are not authorized.',
         });
       }
 
@@ -36,7 +36,7 @@ export class AuthGuard implements CanActivate {
 
       return true;
     } catch (e) {
-      throw new UnauthorizedException({ message: 'Expert is not authorized.' });
+      throw new UnauthorizedException({ message: 'You are not authorized.' });
     }
   }
 }

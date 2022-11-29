@@ -9,14 +9,23 @@ import {
   Patch,
   Post,
   ParseIntPipe,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ExpertsService } from './experts.service';
 import { ExpertsResource } from './resources/experts.resource';
 import { ExpertCreateDto } from './dto/expert-create.dto';
 import { ExpertUpdateDto } from './dto/expert-update.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
+import { FileInterceptor} from "@nestjs/platform-express";
+import { Express } from 'express';
 
 @ApiTags('Experts')
 @Controller('api')
@@ -44,21 +53,29 @@ export class ExpertsController {
   @ApiOperation({ summary: 'Create expert' })
   @UseGuards(AuthGuard, AdministratorGuard)
   @ApiBearerAuth('Authorization')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('avatar'))
   @Post('expert')
-  public async create(@Body() expertDto: ExpertCreateDto): Promise<ExpertsResource> {
-    const expert = await this.expertService.store(expertDto);
+  public async create(
+    @Body() expertDto: ExpertCreateDto,
+    @UploadedFile() avatar: Express.Multer.File,
+  ): Promise<ExpertsResource> {
+    const expert = await this.expertService.store(expertDto, avatar);
     return new ExpertsResource(expert);
   }
 
   @ApiOperation({ summary: 'Update expert' })
   @UseGuards(AuthGuard, AdministratorGuard)
   @ApiBearerAuth('Authorization')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('avatar'))
   @Patch('expert/:id')
   public async edit(
     @Param('id', ParseIntPipe) id: number,
     @Body() expertDto: ExpertUpdateDto,
+    @UploadedFile() avatar: Express.Multer.File,
   ): Promise<ExpertsResource> {
-    const expert = await this.expertService.update(id, expertDto);
+    const expert = await this.expertService.update(id, expertDto, avatar);
     return new ExpertsResource(expert);
   }
 

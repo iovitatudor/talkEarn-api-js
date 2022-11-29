@@ -6,6 +6,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { Category } from '../categories/models/categories.model';
 import { Project } from '../projects/models/projects.model';
 import { AuthModule } from '../auth/auth.module';
+import { FilesModule } from '../../common/files/files.module';
 
 @Module({
   controllers: [ExpertsController],
@@ -13,6 +14,7 @@ import { AuthModule } from '../auth/auth.module';
   imports: [
     SequelizeModule.forFeature([Expert, Project, Category]),
     forwardRef(() => AuthModule),
+    FilesModule,
   ],
   exports: [ExpertsService],
 })

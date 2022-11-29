@@ -1,18 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ServiceUpdateDto {
-  @ApiProperty({ example: 'Trading', description: 'Service name' })
+  @ApiProperty({ example: 'Trading', required: false })
   name: string;
 
-  @ApiProperty({
-    example: 'Service Description',
-    description: 'Service description',
-  })
+  @ApiProperty({ example: 'Service Description', required: false })
   description: string;
 
-  @ApiProperty({ example: 'File', description: 'Service icon' })
-  image: string;
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: false,
+    example: 'File',
+  })
+  public image: Express.Multer.File;
 
-  @ApiProperty({ example: '20', description: 'Service price' })
+  @ApiProperty({ example: '20', required: false })
   price: number;
 }

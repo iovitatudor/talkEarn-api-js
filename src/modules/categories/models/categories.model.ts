@@ -14,7 +14,7 @@ interface CategoryCreateAttrs {
   project_id: number;
   name: string;
   description: string;
-  icon: string;
+  icon: Express.Multer.File;
 }
 
 @Table({
@@ -42,7 +42,7 @@ export class Category extends Model<Category, CategoryCreateAttrs> {
   description: string;
 
   @Column({ type: DataType.STRING, allowNull: true })
-  icon: string;
+  icon: Express.Multer.File;
 
   @HasMany(() => Expert)
   experts: Expert[];

@@ -7,6 +7,7 @@ import { ContactUpdateDto } from './dto/contact-update.dto';
 import { ContactExpert } from './models/contact-expert.model';
 import { ContactExpertCreateDto } from './dto/contact-expert-create.dto';
 import { ExpertsService } from '../experts/experts.service';
+import { FilesService } from '../../common/files/files.service';
 
 @Injectable()
 export class ContactsService {
@@ -15,6 +16,7 @@ export class ContactsService {
     @InjectModel(ContactExpert)
     private contactExpertRepository: typeof ContactExpert,
     private expertService: ExpertsService,
+    private fileService: FilesService,
   ) {}
 
   public async getAll(): Promise<Contact[]> {
@@ -43,18 +45,35 @@ export class ContactsService {
     });
   }
 
-  async store(contactDto: ContactCreateDto): Promise<Contact> {
+  async store(contactDto: ContactCreateDto, icon: any): Promise<Contact> {
+    let fileName = null;
+    if (icon) {
+      fileName = await this.fileService.createFile(icon);
+    }
+
     const contact = await this.contactRepository.create({
       ...contactDto,
+      icon: fileName,
       project_id: Number(AuthGuard.projectId),
     });
     return await this.findById(contact.id);
   }
 
-  public async update(id: number, contactDto: ContactUpdateDto): Promise<Contact> {
-    await this.contactRepository.update(contactDto, {
-      where: { id, project_id: AuthGuard.projectId },
-    });
+  public async update(
+    id: number,
+    contactDto: ContactUpdateDto,
+    icon: any,
+  ): Promise<Contact> {
+    let fileName = null;
+    if (icon) {
+      fileName = await this.fileService.createFile(icon);
+    }
+    await this.contactRepository.update(
+      { ...contactDto, icon: fileName },
+      {
+        returning: undefined,
+        where: { id, project_id: AuthGuard.projectId }
+      });
     return await this.findById(id);
   }
 

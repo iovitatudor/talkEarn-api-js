@@ -10,26 +10,36 @@ export class ExpertCreateDto {
 
   @IsEmail()
   @IsNotEmpty()
-  @ApiProperty({ example: 'john@email.com', description: 'Expert email' })
+  @ApiProperty({ example: 'john@email.com' })
   public email: string;
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'password', description: 'Expert access password' })
+  @ApiProperty({ example: 'password' })
   public password: string;
 
   public project_id: number;
 
+  @ApiProperty({ example: '1' })
   public category_id: number;
 
+  @ApiProperty({ example: true, required: false })
   public active: boolean;
 
   public available: string;
 
-  public avatar: string;
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: false,
+    example: 'File',
+  })
+  public avatar: Express.Multer.File;
 
+  @ApiProperty({ example: 'Developer', required: false })
   public profession: string;
 
+  @ApiProperty({ example: 20, required: false })
   public price: number;
 
   public type: Types;

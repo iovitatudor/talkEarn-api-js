@@ -5,12 +5,14 @@ import { Service } from './models/services.model';
 import { ServiceCreateDto } from './dto/service-create.dto';
 import { ServiceUpdateDto } from './dto/service-update.dto';
 import { ExpertsService } from '../experts/experts.service';
+import { FilesService } from '../../common/files/files.service';
 
 @Injectable()
 export class ServicesService {
   constructor(
     @InjectModel(Service) private serviceRepository: typeof Service,
     private expertService: ExpertsService,
+    private fileService: FilesService,
   ) {}
 
   public async getAll(): Promise<Service[]> {
@@ -39,22 +41,43 @@ export class ServicesService {
     });
   }
 
-  public async store(serviceDto: ServiceCreateDto): Promise<Service> {
+  public async store(
+    serviceDto: ServiceCreateDto,
+    image: any,
+  ): Promise<Service> {
+    let fileName = null;
+    if (image) {
+      fileName = await this.fileService.createFile(image);
+    }
+
     const service = await this.serviceRepository.create({
       ...serviceDto,
+      image: fileName,
       project_id: Number(AuthGuard.projectId),
       expert_id: Number(AuthGuard.expertId),
     });
+
     return await this.findById(service.id);
   }
 
   public async update(
     id: number,
     serviceDto: ServiceUpdateDto,
+    image: any,
   ): Promise<Service> {
-    await this.serviceRepository.update(serviceDto, {
-      where: { id, project_id: AuthGuard.projectId },
-    });
+    let fileName = null;
+    if (image) {
+      fileName = await this.fileService.createFile(image);
+    }
+
+    await this.serviceRepository.update(
+      { ...serviceDto, image: fileName },
+      {
+        returning: undefined,
+        where: { id, project_id: AuthGuard.projectId },
+      },
+    );
+
     return await this.findById(id);
   }
 

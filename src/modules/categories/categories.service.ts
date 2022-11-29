@@ -4,11 +4,13 @@ import { Category } from './models/categories.model';
 import { CategoryUpdateDto } from './dto/category-update.dto';
 import { CategoryCreateDto } from './dto/category-create.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { FilesService } from '../../common/files/files.service';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectModel(Category) private categoryRepository: typeof Category,
+    private fileService: FilesService,
   ) {}
 
   public async getAll(): Promise<Category[]> {
@@ -39,18 +41,38 @@ export class CategoriesService {
     });
   }
 
-  async store(expertDto: CategoryCreateDto): Promise<Category> {
+  public async store(
+    expertDto: CategoryCreateDto,
+    icon: any,
+  ): Promise<Category> {
+    let fileName = null;
+    if (icon) {
+      fileName = await this.fileService.createFile(icon);
+    }
+
     const category = await this.categoryRepository.create({
       ...expertDto,
+      icon: fileName,
       project_id: Number(AuthGuard.projectId),
     });
     return await this.findById(category.id);
   }
 
-  public async update(id: number, expertDto: CategoryUpdateDto): Promise<Category> {
-    await this.categoryRepository.update(expertDto, {
-      where: { id, project_id: AuthGuard.projectId },
-    });
+  public async update(
+    id: number,
+    expertDto: CategoryUpdateDto,
+    icon: any,
+  ): Promise<Category> {
+    let fileName = null;
+    if (icon) {
+      fileName = await this.fileService.createFile(icon);
+    }
+    await this.categoryRepository.update(
+      { ...expertDto, icon: fileName },
+      {
+        returning: undefined,
+        where: { id, project_id: AuthGuard.projectId }
+      });
     return await this.findById(id);
   }
 }

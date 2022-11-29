@@ -9,13 +9,21 @@ import {
   Post,
   ParseIntPipe,
   HttpCode,
+  UseInterceptors, UploadedFile,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { ServicesService } from './services.service';
 import { ServiceCreateDto } from './dto/service-create.dto';
 import { ServiceResource } from './resources/services.resource';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {Express} from "express";
 
 @ApiTags('Services')
 @Controller('api')
@@ -44,24 +52,30 @@ export class ServicesController {
 
   @ApiOperation({ summary: 'Create service' })
   @ApiBearerAuth('Authorization')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('image'))
   @UseGuards(AuthGuard, AdministratorGuard)
   @Post('service')
   public async create(
     @Body() serviceDto: ServiceCreateDto,
+    @UploadedFile() image: Express.Multer.File,
   ): Promise<ServiceResource> {
-    const service = await this.servicesService.store(serviceDto);
+    const service = await this.servicesService.store(serviceDto, image);
     return new ServiceResource(service);
   }
 
   @ApiOperation({ summary: 'Update service' })
   @ApiBearerAuth('Authorization')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('image'))
   @UseGuards(AuthGuard, AdministratorGuard)
   @Patch('service/:id')
   public async edit(
     @Param('id', ParseIntPipe) id: number,
     @Body() serviceDto: ServiceCreateDto,
+    @UploadedFile() image: Express.Multer.File,
   ): Promise<ServiceResource> {
-    const service = await this.servicesService.update(id, serviceDto);
+    const service = await this.servicesService.update(id, serviceDto, image);
     return new ServiceResource(service);
   }
 

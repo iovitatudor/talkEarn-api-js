@@ -4,21 +4,21 @@ import { ApiProperty } from '@nestjs/swagger';
 export class ServiceCreateDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'Trading', description: 'Service name' })
+  @ApiProperty({ example: 'Trading' })
   name: string;
 
   @IsString()
-  @ApiProperty({
-    example: 'Service Description',
-    description: 'Service description',
-  })
+  @ApiProperty({ example: 'Service Description', required: false })
   description: string;
 
-  @ApiProperty({ example: 'File', description: 'Service icon' })
-  image: string;
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: false,
+    example: 'File',
+  })
+  public image: Express.Multer.File;
 
-  @IsNumber()
-  @IsNotEmpty()
-  @ApiProperty({ example: '20', description: 'Service price' })
+  @ApiProperty({ example: 20, required: false})
   price: number;
 }

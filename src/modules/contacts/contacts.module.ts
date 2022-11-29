@@ -7,6 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { ContactExpert } from './models/contact-expert.model';
 import { Expert } from '../experts/models/experts.model';
 import { ExpertsModule } from '../experts/experts.module';
+import { FilesModule } from '../../common/files/files.module';
 
 @Module({
   providers: [ContactsService],
@@ -15,6 +16,7 @@ import { ExpertsModule } from '../experts/experts.module';
     SequelizeModule.forFeature([Contact, ContactExpert, Expert]),
     AuthModule,
     ExpertsModule,
+    FilesModule,
   ],
 })
 export class ContactsModule {}

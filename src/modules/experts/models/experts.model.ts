@@ -18,7 +18,7 @@ interface ExpertCreateAttrs {
   email: string;
   profession: string;
   available: string;
-  avatar: string;
+  avatar: Express.Multer.File;
   price: number;
   password: string;
   token: string;
@@ -59,7 +59,7 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
   public available: boolean;
 
   @Column({ type: DataType.STRING, allowNull: true })
-  public avatar: string;
+  public avatar: Express.Multer.File;
 
   @ApiProperty({ example: 'Trader' })
   @Column({ type: DataType.STRING, allowNull: true })

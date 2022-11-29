@@ -17,9 +17,15 @@ import { ParametersModule } from './modules/parameters/parameters.module';
 import { Parameter } from './modules/parameters/models/parameters.model';
 import { ContactExpert } from './modules/contacts/models/contact-expert.model';
 import { ParameterExpert } from './modules/parameters/models/parameter-expert';
+import { FilesModule } from './common/files/files.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import * as path from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: path.resolve(__dirname, 'static'),
+    }),
     ConfigModule.forRoot({
       envFilePath: './.env',
       isGlobal: true,
@@ -51,6 +57,7 @@ import { ParameterExpert } from './modules/parameters/models/parameter-expert';
     ServicesModule,
     ContactsModule,
     ParametersModule,
+    FilesModule,
   ],
   controllers: [],
   providers: [],

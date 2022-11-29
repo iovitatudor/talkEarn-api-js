@@ -6,10 +6,14 @@ import { ExpertCreateExpressDto } from './dto/express-create-express.dto';
 import { ExpertUpdateDto } from './dto/expert-update.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import * as bcrypt from 'bcryptjs';
+import { FilesService } from '../../common/files/files.service';
 
 @Injectable()
 export class ExpertsService {
-  constructor(@InjectModel(Expert) private expertRepository: typeof Expert) {}
+  constructor(
+    @InjectModel(Expert) private expertRepository: typeof Expert,
+    private fileService: FilesService,
+  ) {}
 
   public async getAll(): Promise<Expert[]> {
     return await this.expertRepository.findAll({
@@ -31,11 +35,26 @@ export class ExpertsService {
     return expert;
   }
 
-  public async update(id: number, expertDto: ExpertUpdateDto): Promise<Expert> {
+  public async update(
+    id: number,
+    expertDto: ExpertUpdateDto,
+    avatar: any,
+  ): Promise<Expert> {
     await this.validateExpert(expertDto.email, id);
-    await this.expertRepository.update(expertDto, {
-      where: { id, project_id: AuthGuard.projectId },
-    });
+
+    let fileName = null;
+
+    if (avatar) {
+      fileName = await this.fileService.createFile(avatar);
+    }
+
+    await this.expertRepository.update(
+      { ...expertDto, avatar: fileName },
+      {
+        returning: undefined,
+        where: { id, project_id: AuthGuard.projectId },
+      },
+    );
     return await this.findById(id);
   }
 
@@ -56,12 +75,19 @@ export class ExpertsService {
     return await this.expertRepository.create({ ...expertDto });
   }
 
-  async store(expertDto: ExpertCreateDto): Promise<Expert> {
+  async store(expertDto: ExpertCreateDto, avatar: any): Promise<Expert> {
     await this.validateExpert(expertDto.email, 0);
+    let fileName = null;
+
+    if (avatar) {
+      fileName = await this.fileService.createFile(avatar);
+    }
 
     const hashPassword = await bcrypt.hash(expertDto.password, 5);
+
     const expert = await this.expertRepository.create({
       ...expertDto,
+      avatar: fileName,
       password: hashPassword,
       project_id: AuthGuard.projectId,
     });
