@@ -60,6 +60,7 @@ export class ExpertsService {
 
   public async destroy(id: number): Promise<number> {
     await this.findById(id);
+
     return await this.expertRepository.destroy({
       where: { id, project_id: AuthGuard.projectId },
     });

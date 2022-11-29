@@ -2,6 +2,11 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ServiceCreateDto {
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({ example: 1 })
+  expert_id: number;
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: 'Trading' })

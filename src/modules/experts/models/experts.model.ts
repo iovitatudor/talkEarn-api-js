@@ -5,11 +5,15 @@ import {
   ForeignKey,
   DataType,
   Model,
+  HasMany,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 import { Project } from '../../projects/models/projects.model';
 import { Category } from '../../categories/models/categories.model';
 import { Types } from '../enums/types.enum';
+import { Service } from '../../services/models/services.model';
+import { ContactExpert } from '../../contacts/models/contact-expert.model';
+import { ParameterExpert } from '../../parameters/models/parameter-expert';
 
 interface ExpertCreateAttrs {
   project_id: number;
@@ -83,4 +87,13 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
 
   @BelongsTo(() => Category, 'category_id')
   public category: Category;
+
+  @HasMany(() => Service, { onDelete: 'cascade' })
+  public services: Service[];
+
+  @HasMany(() => ContactExpert, { onDelete: 'cascade' })
+  public contacts: ContactExpert[];
+
+  @HasMany(() => ParameterExpert, { onDelete: 'cascade' })
+  public parameters: ParameterExpert[];
 }

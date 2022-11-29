@@ -54,7 +54,6 @@ export class ServicesService {
       ...serviceDto,
       image: fileName,
       project_id: Number(AuthGuard.projectId),
-      expert_id: Number(AuthGuard.expertId),
     });
 
     return await this.findById(service.id);

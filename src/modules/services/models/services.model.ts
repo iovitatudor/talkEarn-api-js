@@ -58,9 +58,9 @@ export class Service extends Model<Service, ServiceCreationAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: true })
   public price: number;
 
-  @BelongsTo(() => Project)
+  @BelongsTo(() => Project, { onDelete: 'cascade' })
   public project: Project;
 
-  @BelongsTo(() => Expert)
+  @BelongsTo(() => Expert, { onDelete: 'cascade' })
   public experts: Expert;
 }

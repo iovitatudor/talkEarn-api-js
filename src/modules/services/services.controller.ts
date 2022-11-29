@@ -24,6 +24,7 @@ import { ServiceResource } from './resources/services.resource';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {Express} from "express";
+import {ServiceUpdateDto} from "./dto/service-update.dto";
 
 @ApiTags('Services')
 @Controller('api')
@@ -72,7 +73,7 @@ export class ServicesController {
   @Patch('service/:id')
   public async edit(
     @Param('id', ParseIntPipe) id: number,
-    @Body() serviceDto: ServiceCreateDto,
+    @Body() serviceDto: ServiceUpdateDto,
     @UploadedFile() image: Express.Multer.File,
   ): Promise<ServiceResource> {
     const service = await this.servicesService.update(id, serviceDto, image);
