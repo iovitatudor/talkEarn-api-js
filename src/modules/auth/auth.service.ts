@@ -12,7 +12,6 @@ import { ProjectsService } from '../projects/projects.service';
 import { ProjectWithAdminDto } from './dto/project-with-admin.dto';
 import { LoginDto } from './dto/login.dto';
 import { Types } from '../experts/enums/types.enum';
-import { AuthResource } from './resources/auth.resource';
 
 @Injectable()
 export class AuthService {

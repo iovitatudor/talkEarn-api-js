@@ -25,7 +25,7 @@ import { CategoryUpdateDto } from './dto/category-update.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {Express} from "express";
+import { Express } from 'express';
 
 @ApiTags('Categories')
 @Controller('api')

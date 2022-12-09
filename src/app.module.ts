@@ -19,7 +19,10 @@ import { ContactExpert } from './modules/contacts/models/contact-expert.model';
 import { ParameterExpert } from './modules/parameters/models/parameter-expert';
 import { FilesModule } from './common/files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { CallsSocketsModule } from './sockets/calls-socket/calls-sockets.module';
+import { CallsModule } from './modules/calls/calls.module';
 import * as path from 'path';
+import { TwilioModule } from 'nestjs-twilio';
 
 @Module({
   imports: [
@@ -47,7 +50,7 @@ import * as path from 'path';
         Contact,
         ContactExpert,
         Parameter,
-        ParameterExpert
+        ParameterExpert,
       ],
     }),
     ProjectsModule,
@@ -58,6 +61,8 @@ import * as path from 'path';
     ContactsModule,
     ParametersModule,
     FilesModule,
+    CallsModule,
+    CallsSocketsModule,
   ],
   controllers: [],
   providers: [],

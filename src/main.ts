@@ -4,8 +4,21 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || 5000;
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: '*',
+    allowedHeaders:
+      'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
+    methods: 'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
+    credentials: true,
+  });
+
+  // app.enableCors({
+  //   origin: ['http://localhost:3000', 'http://localhost:8080'],
+  //   methods: ['GET', 'POST'],
+  //   credentials: true,
+  // });
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('TalkEarn API')
