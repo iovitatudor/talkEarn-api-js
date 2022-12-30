@@ -30,7 +30,7 @@ export class ExpertUpdateDto {
     required: false,
     example: 'File',
   })
-  public avatar: Express.Multer.File;
+  public avatar: string;
 
   @ApiProperty({ example: 'Trader', required: false })
   public profession: string;

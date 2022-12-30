@@ -17,6 +17,7 @@ export class ExpertsService {
 
   public async getAll(): Promise<Expert[]> {
     return await this.expertRepository.findAll({
+      order: [['id', 'DESC']],
       where: { project_id: AuthGuard.projectId },
       include: { all: true },
     });
@@ -41,20 +42,16 @@ export class ExpertsService {
     avatar: any,
   ): Promise<Expert> {
     await this.validateExpert(expertDto.email, id);
-
-    let fileName = null;
-
+    let data = { ...expertDto };
     if (avatar) {
-      fileName = await this.fileService.createFile(avatar);
+      const fileName = await this.fileService.createFile(avatar);
+      data = { ...expertDto, avatar: fileName };
     }
 
-    await this.expertRepository.update(
-      { ...expertDto, avatar: fileName },
-      {
-        returning: undefined,
-        where: { id, project_id: AuthGuard.projectId },
-      },
-    );
+    await this.expertRepository.update(data, {
+      returning: undefined,
+      where: { id, project_id: AuthGuard.projectId },
+    });
     return await this.findById(id);
   }
 
@@ -78,17 +75,16 @@ export class ExpertsService {
 
   async store(expertDto: ExpertCreateDto, avatar: any): Promise<Expert> {
     await this.validateExpert(expertDto.email, 0);
-    let fileName = null;
-
+    let data = { ...expertDto };
     if (avatar) {
-      fileName = await this.fileService.createFile(avatar);
+      const fileName = await this.fileService.createFile(avatar);
+      data = { ...expertDto, avatar: fileName };
     }
 
     const hashPassword = await bcrypt.hash(expertDto.password, 5);
 
     const expert = await this.expertRepository.create({
-      ...expertDto,
-      avatar: fileName,
+      ...data,
       password: hashPassword,
       project_id: AuthGuard.projectId,
     });

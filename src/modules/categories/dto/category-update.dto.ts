@@ -16,5 +16,5 @@ export class CategoryUpdateDto {
     required: false,
     example: 'File',
   })
-  public icon: Express.Multer.File;
+  public icon: string;
 }

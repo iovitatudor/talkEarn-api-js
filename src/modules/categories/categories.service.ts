@@ -15,6 +15,7 @@ export class CategoriesService {
 
   public async getAll(): Promise<Category[]> {
     return await this.categoryRepository.findAll({
+      order: [['id', 'DESC']],
       where: { project_id: AuthGuard.projectId },
       include: { all: true },
     });
@@ -42,7 +43,7 @@ export class CategoriesService {
   }
 
   public async store(
-    expertDto: CategoryCreateDto,
+    categoryDto: CategoryCreateDto,
     icon: any,
   ): Promise<Category> {
     let fileName = null;
@@ -51,7 +52,7 @@ export class CategoriesService {
     }
 
     const category = await this.categoryRepository.create({
-      ...expertDto,
+      ...categoryDto,
       icon: fileName,
       project_id: Number(AuthGuard.projectId),
     });
@@ -60,19 +61,18 @@ export class CategoriesService {
 
   public async update(
     id: number,
-    expertDto: CategoryUpdateDto,
+    categoryDto: CategoryUpdateDto,
     icon: any,
   ): Promise<Category> {
-    let fileName = null;
+    let data = { ...categoryDto };
     if (icon) {
-      fileName = await this.fileService.createFile(icon);
+      const fileName = await this.fileService.createFile(icon);
+      data = { ...categoryDto, icon: fileName };
     }
-    await this.categoryRepository.update(
-      { ...expertDto, icon: fileName },
-      {
-        returning: undefined,
-        where: { id, project_id: AuthGuard.projectId }
-      });
+    await this.categoryRepository.update(data, {
+      returning: undefined,
+      where: { id, project_id: AuthGuard.projectId },
+    });
     return await this.findById(id);
   }
 }
