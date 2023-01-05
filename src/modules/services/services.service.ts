@@ -64,19 +64,16 @@ export class ServicesService {
     serviceDto: ServiceUpdateDto,
     image: any,
   ): Promise<Service> {
-    let fileName = null;
+    let servicesData = { ...serviceDto };
     if (image) {
-      fileName = await this.fileService.createFile(image);
+      const fileName = await this.fileService.createFile(image);
+      servicesData = { ...serviceDto, image: fileName };
     }
 
-    await this.serviceRepository.update(
-      { ...serviceDto, image: fileName },
-      {
-        returning: undefined,
-        where: { id, project_id: AuthGuard.projectId },
-      },
-    );
-
+    await this.serviceRepository.update(servicesData, {
+      returning: undefined,
+      where: { id, project_id: AuthGuard.projectId },
+    });
     return await this.findById(id);
   }
 
@@ -86,6 +83,7 @@ export class ServicesService {
       throw new HttpException('Expert is not found.', HttpStatus.BAD_REQUEST);
     }
     return await this.serviceRepository.findAll({
+      order: [['id', 'DESC']],
       where: { expert_id: expertId, project_id: AuthGuard.projectId },
     });
   }

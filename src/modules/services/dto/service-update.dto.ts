@@ -13,7 +13,7 @@ export class ServiceUpdateDto {
     required: false,
     example: 'File',
   })
-  public image: Express.Multer.File;
+  public image: string;
 
   @ApiProperty({ example: '20', required: false })
   price: number;

@@ -15,7 +15,7 @@ interface ServiceCreationAttrs {
   expert_id: number;
   name: string;
   description: string;
-  image: Express.Multer.File;
+  image: string;
   price: number;
 }
 
@@ -48,7 +48,7 @@ export class Service extends Model<Service, ServiceCreationAttrs> {
 
   @ApiProperty({ example: 'File' })
   @Column({ type: DataType.STRING, allowNull: true })
-  public image: Express.Multer.File;
+  public image: string;
 
   @ApiProperty({ example: 'Short description' })
   @Column({ type: DataType.TEXT, allowNull: true })

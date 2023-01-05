@@ -9,7 +9,7 @@ import {
   Patch,
   Post,
   ParseIntPipe,
-  HttpStatus,
+  HttpStatus, ParseArrayPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -20,6 +20,7 @@ import { ParameterCreateDto } from './dto/parameter-create.dto';
 import { ParameterUpdateDto } from './dto/parameter-update.dto';
 import { ParameterExpertCreateDto } from './dto/parameter-expert-create.dto';
 import { ParametersResource } from './resources/parameters.resource';
+import {ParameterCreateBulkDto} from "./dto/parameter-create-bulk.dto";
 
 @ApiTags('Parameters')
 @Controller('api')
@@ -91,6 +92,26 @@ export class ParametersController {
       parameterExpertDto,
     );
     return new ExpertParametersResource(parameter);
+  }
+
+  @ApiOperation({
+    summary: 'Set bulk parameter values and assign to an expert',
+  })
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard, AdministratorGuard)
+  @Post('parameter/expert/:expertId')
+  public async setBulkParameterValue(
+    @Param('expertId', ParseIntPipe) expertId: number,
+    @Body() parameterCreateBulkDto: Array<any>,
+    // @Body(new ParseArrayPipe({ items: ParameterCreateBulkDto }))
+    // parameterCreateBulkDto: ParameterCreateBulkDto[],
+  ) {
+    const parameters = await this.parametersService.addBulkParameters(
+      expertId,
+      parameterCreateBulkDto,
+    );
+    return parameters;
+    // return new ExpertParametersResource(parameter);
   }
 
   @ApiOperation({ summary: 'Get parameters by expert id' })

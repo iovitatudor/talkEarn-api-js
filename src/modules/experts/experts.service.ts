@@ -91,6 +91,23 @@ export class ExpertsService {
     return await this.findById(expert.id);
   }
 
+  async toggleStatus(expertId: number): Promise<Expert> {
+    const expert = await this.findById(expertId);
+    let available = true;
+    if (expert.available) {
+      available = false;
+    }
+
+    await this.expertRepository.update(
+      { available },
+      {
+        returning: undefined,
+        where: { id: expertId, project_id: AuthGuard.projectId },
+      },
+    );
+    return await this.findById(expertId);
+  }
+
   private async validateExpert(expertEmail: string, id: number): Promise<void> {
     const expert = await this.findByEmail(expertEmail);
     if (expert && expert.id !== id) {

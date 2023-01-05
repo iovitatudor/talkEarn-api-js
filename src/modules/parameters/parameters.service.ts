@@ -7,6 +7,7 @@ import { ParameterUpdateDto } from './dto/parameter-update.dto';
 import { ParameterExpertCreateDto } from './dto/parameter-expert-create.dto';
 import { ExpertsService } from '../experts/experts.service';
 import { ParameterExpert } from './models/parameter-expert';
+import { ParameterCreateBulkDto } from './dto/parameter-create-bulk.dto';
 
 @Injectable()
 export class ParametersService {
@@ -115,5 +116,40 @@ export class ParametersService {
       where: { expert_id: expertId },
       include: { all: true },
     });
+  }
+
+  public async addBulkParameters(expertId: number, parameters: Array<any>) {
+    await this.expertService.findById(expertId);
+
+    parameters.map(async (parameter) => {
+      const parameterExpert = await this.findParameterValueByExpertId(
+        parameter.id,
+        expertId,
+      );
+
+      if (!parameterExpert) {
+        await this.parameterExpertRepository.create({
+          value: parameter.value,
+          parameter_id: parameter.id,
+          expert_id: expertId,
+        });
+      } else {
+        await this.parameterExpertRepository.update(
+          {
+            value: parameter.value,
+          },
+          {
+            returning: undefined,
+            where: { id: parameterExpert.id },
+          },
+        );
+      }
+    });
+
+    return true;
+    // return await this.parameterExpertRepository.findAll({
+    //   where: { expert_id: expertId },
+    //   include: { all: true },
+    // });
   }
 }

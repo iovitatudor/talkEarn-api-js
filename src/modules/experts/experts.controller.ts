@@ -26,6 +26,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { FileInterceptor} from "@nestjs/platform-express";
 import { Express } from 'express';
+import {Expert} from "./models/experts.model";
 
 @ApiTags('Experts')
 @Controller('api')
@@ -86,5 +87,15 @@ export class ExpertsController {
   @Delete('expert/:id')
   public async delete(@Param('id', ParseIntPipe) id: number): Promise<number> {
     return this.expertService.destroy(id);
+  }
+
+  @ApiOperation({ summary: 'Toggle expert status' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('Authorization')
+  @HttpCode(201)
+  @Patch('expert/status/:id')
+  public async toggleStatus(@Param('id', ParseIntPipe) id: number): Promise<ExpertsResource> {
+    const expert = await this.expertService.toggleStatus(id);
+    return new ExpertsResource(expert);
   }
 }
