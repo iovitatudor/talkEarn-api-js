@@ -32,6 +32,9 @@ export class ExpertUpdateDto {
   })
   public avatar: string;
 
+  @ApiProperty({ example: 'Video Link', required: false })
+  public video: string;
+
   @ApiProperty({ example: 'Trader', required: false })
   public profession: string;
 

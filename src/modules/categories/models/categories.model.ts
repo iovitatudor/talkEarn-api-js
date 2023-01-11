@@ -13,6 +13,7 @@ import { Project } from '../../projects/models/projects.model';
 interface CategoryCreateAttrs {
   project_id: number;
   name: string;
+  slug: string;
   description: string;
   icon: string;
 }
@@ -38,7 +39,10 @@ export class Category extends Model<Category, CategoryCreateAttrs> {
   @Column({ type: DataType.STRING, allowNull: false })
   name: string;
 
-  @Column({ type: DataType.STRING, allowNull: true })
+  @Column({ type: DataType.STRING, allowNull: false })
+  slug: string;
+
+  @Column({ type: DataType.TEXT, allowNull: true })
   description: string;
 
   @Column({ type: DataType.STRING, allowNull: true })

@@ -22,10 +22,13 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { CallsSocketsModule } from './sockets/calls-socket/calls-sockets.module';
 import { CallsModule } from './modules/calls/calls.module';
 import * as path from 'path';
-import { TwilioModule } from 'nestjs-twilio';
+import { PaginateModule } from 'nestjs-sequelize-paginate';
 
 @Module({
   imports: [
+    PaginateModule.forRoot({
+      url: 'http://localhost:5000',
+    }),
     ServeStaticModule.forRoot({
       rootPath: path.resolve(__dirname, 'static'),
     }),

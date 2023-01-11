@@ -4,13 +4,14 @@ import {
   Param,
   UseGuards,
   HttpCode,
+  UseInterceptors,
+  UploadedFile,
+  Query,
   Delete,
   Get,
   Patch,
   Post,
   ParseIntPipe,
-  UseInterceptors,
-  UploadedFile,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -18,15 +19,14 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ExpertsService } from './experts.service';
 import { ExpertsResource } from './resources/experts.resource';
 import { ExpertCreateDto } from './dto/expert-create.dto';
 import { ExpertUpdateDto } from './dto/expert-update.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
-import { FileInterceptor} from "@nestjs/platform-express";
 import { Express } from 'express';
-import {Expert} from "./models/experts.model";
 
 @ApiTags('Experts')
 @Controller('api')
@@ -37,9 +37,19 @@ export class ExpertsController {
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
   @Get('experts')
-  public async getAll(): Promise<ExpertsResource[]> {
-    const experts = await this.expertService.getAll();
-    return ExpertsResource.collect(experts);
+  public async getAll(@Query() query) {
+    const page = query.page;
+    const limit = query.limit;
+    const active = query.active;
+    const online = query.online;
+
+    const experts = await this.expertService.getAll(
+      limit,
+      page,
+      active,
+      online,
+    );
+    return ExpertsResource.collect(experts.data, experts.meta);
   }
 
   @ApiOperation({ summary: 'Get expert by Id' })
@@ -97,5 +107,17 @@ export class ExpertsController {
   public async toggleStatus(@Param('id', ParseIntPipe) id: number): Promise<ExpertsResource> {
     const expert = await this.expertService.toggleStatus(id);
     return new ExpertsResource(expert);
+  }
+
+  @ApiOperation({ summary: 'Search experts per project' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('Authorization')
+  @Get('experts/search')
+  public async search(@Query() query) {
+    const page = query.page;
+    const search = query.search;
+
+    const experts = await this.expertService.search(page, search);
+    return ExpertsResource.collect(experts.data, experts.meta);
   }
 }

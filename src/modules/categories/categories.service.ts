@@ -50,9 +50,11 @@ export class CategoriesService {
     if (icon) {
       fileName = await this.fileService.createFile(icon);
     }
+    const slug = this.createSlug(categoryDto.name);
 
     const category = await this.categoryRepository.create({
       ...categoryDto,
+      slug,
       icon: fileName,
       project_id: Number(AuthGuard.projectId),
     });
@@ -69,10 +71,28 @@ export class CategoriesService {
       const fileName = await this.fileService.createFile(icon);
       data = { ...categoryDto, icon: fileName };
     }
-    await this.categoryRepository.update(data, {
-      returning: undefined,
-      where: { id, project_id: AuthGuard.projectId },
-    });
+
+    const slug = this.createSlug(categoryDto.name);
+
+    await this.categoryRepository.update(
+      { ...data, slug },
+      {
+        returning: undefined,
+        where: { id, project_id: AuthGuard.projectId },
+      },
+    );
     return await this.findById(id);
+  }
+
+  private createSlug(text: string) {
+    return text
+      .toString()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]+/g, '')
+      .replace(/--+/g, '-');
   }
 }

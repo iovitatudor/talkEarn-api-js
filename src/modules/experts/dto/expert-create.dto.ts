@@ -36,6 +36,9 @@ export class ExpertCreateDto {
   })
   public avatar: string;
 
+  @ApiProperty({ example: 'Video Link', required: false })
+  public video: string;
+
   @ApiProperty({ example: 'Developer', required: false })
   public profession: string;
 

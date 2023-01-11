@@ -7,6 +7,7 @@ import { ExpertUpdateDto } from './dto/expert-update.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import * as bcrypt from 'bcryptjs';
 import { FilesService } from '../../common/files/files.service';
+import {Op} from "sequelize";
 
 @Injectable()
 export class ExpertsService {
@@ -15,19 +16,45 @@ export class ExpertsService {
     private fileService: FilesService,
   ) {}
 
-  public async getAll(): Promise<Expert[]> {
-    return await this.expertRepository.findAll({
-      order: [['id', 'DESC']],
-      where: { project_id: AuthGuard.projectId },
-      include: { all: true },
+  public async getAll(limit = 30, page = 1, active = null, online = null) {
+    const where = { project_id: AuthGuard.projectId, type: 'Employee' };
+    if (active) where['active'] = active;
+    if (online) where['available'] = online;
+
+    const totalItems = await this.expertRepository.count({
+      where: { ...where },
     });
+
+    const totalPages = totalItems / limit;
+    let offset = 0;
+    if (totalItems > page) {
+      offset = Math.floor((totalItems / totalPages) * page - limit);
+    }
+
+    const data = await this.expertRepository.findAll({
+      order: [['id', 'DESC']],
+      where: { ...where },
+      include: { all: true, nested: true },
+      limit,
+      offset,
+    });
+
+    return {
+      data,
+      meta: {
+        itemsPerPage: limit,
+        totalItems,
+        currentPage: page,
+        totalPages: Math.ceil(totalPages),
+      },
+    };
   }
 
   public async findById(id: number): Promise<Expert> {
     const expert = await this.expertRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
-      include: { all: true },
+      include: { all: true, nested: true },
     });
 
     if (!expert) {
@@ -48,10 +75,19 @@ export class ExpertsService {
       data = { ...expertDto, avatar: fileName };
     }
 
-    await this.expertRepository.update(data, {
-      returning: undefined,
-      where: { id, project_id: AuthGuard.projectId },
-    });
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, 5);
+    }
+
+    const slug = this.createSlug(expertDto.name);
+
+    await this.expertRepository.update(
+      { ...data, slug },
+      {
+        returning: undefined,
+        where: { id, project_id: AuthGuard.projectId },
+      },
+    );
     return await this.findById(id);
   }
 
@@ -69,8 +105,9 @@ export class ExpertsService {
 
   async partialStore(expertDto: ExpertCreateExpressDto): Promise<Expert> {
     await this.validateExpert(expertDto.email, 0);
+    const slug = this.createSlug(expertDto.name);
 
-    return await this.expertRepository.create({ ...expertDto });
+    return await this.expertRepository.create({ ...expertDto, slug });
   }
 
   async store(expertDto: ExpertCreateDto, avatar: any): Promise<Expert> {
@@ -82,16 +119,18 @@ export class ExpertsService {
     }
 
     const hashPassword = await bcrypt.hash(expertDto.password, 5);
+    const slug = this.createSlug(expertDto.name);
 
     const expert = await this.expertRepository.create({
       ...data,
+      slug,
       password: hashPassword,
       project_id: AuthGuard.projectId,
     });
     return await this.findById(expert.id);
   }
 
-  async toggleStatus(expertId: number): Promise<Expert> {
+  public async toggleStatus(expertId: number): Promise<Expert> {
     const expert = await this.findById(expertId);
     let available = true;
     if (expert.available) {
@@ -108,6 +147,39 @@ export class ExpertsService {
     return await this.findById(expertId);
   }
 
+  public async search(page = 1, search: '') {
+    const where = { project_id: AuthGuard.projectId, type: 'Employee' };
+    where[Op.or] = [
+      { name: { [Op.like]: `%${search}%` } },
+      { profession: { [Op.like]: `%${search}%` } },
+    ];
+    const totalItems = await this.expertRepository.count({
+      where: { ...where },
+    });
+    const totalPages = totalItems / 40;
+    let offset = 0;
+    if (totalItems > page)
+      offset = Math.floor((totalItems / totalPages) * page - 40);
+
+    const data = await this.expertRepository.findAll({
+      order: [['id', 'DESC']],
+      where: { ...where },
+      include: { all: true, nested: true },
+      limit: 40,
+      offset,
+    });
+
+    return {
+      data,
+      meta: {
+        itemsPerPage: 40,
+        totalItems,
+        currentPage: page,
+        totalPages: Math.ceil(totalPages),
+      },
+    };
+  }
+
   private async validateExpert(expertEmail: string, id: number): Promise<void> {
     const expert = await this.findByEmail(expertEmail);
     if (expert && expert.id !== id) {
@@ -116,5 +188,17 @@ export class ExpertsService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  private createSlug(text: string) {
+    return text
+      .toString()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]+/g, '')
+      .replace(/--+/g, '-');
   }
 }

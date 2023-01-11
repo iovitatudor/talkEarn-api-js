@@ -19,10 +19,12 @@ interface ExpertCreateAttrs {
   project_id: number;
   category_id: number;
   name: string;
+  slug: string;
   email: string;
   profession: string;
   available: string;
   avatar: string;
+  video: string;
   price: number;
   password: string;
   token: string;
@@ -51,6 +53,9 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
   public category_id: number;
 
   @Column({ type: DataType.STRING, allowNull: false })
+  public slug: string;
+
+  @Column({ type: DataType.STRING, allowNull: false })
   public name: string;
 
   @Column({ type: DataType.STRING, allowNull: false })
@@ -64,6 +69,9 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
 
   @Column({ type: DataType.STRING, allowNull: true })
   public avatar: string;
+
+  @Column({ type: DataType.TEXT, allowNull: true })
+  public video: string;
 
   @ApiProperty({ example: 'Trader' })
   @Column({ type: DataType.STRING, allowNull: true })
