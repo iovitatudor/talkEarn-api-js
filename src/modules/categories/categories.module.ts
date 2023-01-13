@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -6,6 +6,7 @@ import { Category } from './models/categories.model';
 import { Expert } from '../experts/models/experts.model';
 import { AuthModule } from '../auth/auth.module';
 import { FilesModule } from '../../common/files/files.module';
+import { ProjectsModule } from '../projects/projects.module';
 
 @Module({
   controllers: [CategoriesController],
@@ -14,6 +15,7 @@ import { FilesModule } from '../../common/files/files.module';
     SequelizeModule.forFeature([Category, Expert]),
     AuthModule,
     FilesModule,
+    forwardRef(() => ProjectsModule),
   ],
 })
 export class CategoriesModule {}

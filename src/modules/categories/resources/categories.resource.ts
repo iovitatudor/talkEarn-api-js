@@ -1,17 +1,17 @@
-import {Model} from 'sequelize';
-import {ApiProperty} from '@nestjs/swagger';
+import { Model } from 'sequelize';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CategoriesResource {
-  @ApiProperty({example: 1})
+  @ApiProperty({ example: 1 })
   public id: number;
 
-  @ApiProperty({example: 'Trading'})
+  @ApiProperty({ example: 'Trading' })
   public name: string;
 
-  @ApiProperty({example: 'Category Slug'})
+  @ApiProperty({ example: 'Category Slug' })
   public slug: string;
 
-  @ApiProperty({example: 'Short Description of Trading'})
+  @ApiProperty({ example: 'Short Description of Trading' })
   public description: string;
 
   @ApiProperty({ example: 'File' })
@@ -23,7 +23,7 @@ export class CategoriesResource {
       this.name = category.name;
       this.slug = category.slug;
       this.description = category.description;
-      this.icon = category.icon;
+      this.icon = process.env.BASE_URL + category.icon;
     }
   }
 

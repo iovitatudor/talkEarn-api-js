@@ -26,6 +26,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
+import { ClientGuard } from '../auth/guards/client.guard';
 
 @ApiTags('Categories')
 @Controller('api')
@@ -35,7 +36,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Get all categories per project' })
   @ApiResponse({ status: 200, type: [CategoriesResource] })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(ClientGuard)
   @Get('categories')
   public async getAll(): Promise<CategoriesResource[]> {
     const categories = await this.categoriesService.getAll();
@@ -45,12 +46,24 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Get category by Id' })
   @ApiResponse({ status: 200, type: CategoriesResource })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(ClientGuard)
   @Get('category/:id')
   public async getById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<CategoriesResource> {
     const category = await this.categoriesService.findById(id);
+    return new CategoriesResource(category);
+  }
+
+  @ApiOperation({ summary: 'Get category by slug' })
+  @ApiResponse({ status: 200, type: CategoriesResource })
+  @ApiBearerAuth('Authorization')
+  @UseGuards(ClientGuard)
+  @Get('category/slug/:slug')
+  public async getBySlug(
+    @Param('slug') slug: string,
+  ): Promise<CategoriesResource> {
+    const category = await this.categoriesService.findBySlug(slug);
     return new CategoriesResource(category);
   }
 

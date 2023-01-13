@@ -24,7 +24,8 @@ export class AuthService {
   public async login(expertDto: LoginDto): Promise<object> {
     const expert = await this.validate(expertDto);
     const token = await this.generateToken(expert);
-    return { ...token, expert };
+    const project = await this.projectService.getById(expert.project_id);
+    return { ...token, expert, project };
   }
 
   public async register(
@@ -49,7 +50,7 @@ export class AuthService {
 
     const token = await this.generateToken(expert);
 
-    return { ...token, expert };
+    return { ...token, expert, project };
   }
 
   private generateToken(expert: Expert): object {

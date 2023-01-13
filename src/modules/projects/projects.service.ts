@@ -9,11 +9,13 @@ import { Project } from './models/projects.model';
 import { ProjectCreateDto } from './dto/project-create.dto';
 import { ProjectUpdateDto } from './dto/project-update.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     @InjectModel(Project) private projectRepository: typeof Project,
+    private jwtService: JwtService,
   ) {}
 
   async getAll(): Promise<Project[]> {
@@ -26,7 +28,7 @@ export class ProjectsService {
   async getById(projectId): Promise<Project> {
     const project = await this.projectRepository.findOne({
       where: { id: projectId },
-      attributes: ['id', 'name', 'url', 'mode'],
+      attributes: ['id', 'name', 'url', 'mode', 'token'],
       include: { all: true },
     });
     if (!project) {
@@ -37,7 +39,13 @@ export class ProjectsService {
 
   async create(projectDto: ProjectCreateDto): Promise<Project> {
     await this.validateProject(projectDto.name);
-    return await this.projectRepository.create(projectDto);
+    const payload = {
+      name: projectDto.name,
+      url: projectDto.url,
+      uniqueId: Math.floor(Math.random() * Date.now()),
+    };
+    const token = this.jwtService.sign(payload);
+    return await this.projectRepository.create({ ...projectDto, token });
   }
 
   async update(id: number, projectDto: ProjectUpdateDto): Promise<Project> {
@@ -67,6 +75,14 @@ export class ProjectsService {
 
   async getByName(name: string): Promise<Project> {
     return await this.projectRepository.findOne({ where: { name } });
+  }
+
+  async findByToken(token: string): Promise<Project> {
+    return await this.projectRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { token },
+      include: { all: true },
+    });
   }
 
   private async validateProject(projectName, id = 0): Promise<void> {

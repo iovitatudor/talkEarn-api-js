@@ -6,9 +6,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { ProjectsModule } from '../projects/projects.module';
 import { AuthGuard } from './guards/auth.guard';
 import { AdministratorGuard } from './guards/administrator.guard';
+import { ClientGuard } from './guards/client.guard';
 
 @Module({
-  providers: [AuthService, AuthGuard, AdministratorGuard],
+  providers: [AuthService, AuthGuard, AdministratorGuard, ClientGuard],
   controllers: [AuthController],
   imports: [
     forwardRef(() => ProjectsModule),

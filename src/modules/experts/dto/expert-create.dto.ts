@@ -26,6 +26,9 @@ export class ExpertCreateDto {
   @ApiProperty({ example: true, required: false })
   public active: boolean;
 
+  @ApiProperty({ example: true, required: false })
+  public recommended: boolean;
+
   public available: string;
 
   @ApiProperty({

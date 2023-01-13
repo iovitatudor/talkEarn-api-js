@@ -9,6 +9,8 @@ export class ProjectsResource {
   public name: string;
   @ApiProperty({ example: 'https://talkEarn.crypto' })
   public url: string;
+  @ApiProperty({ example: 'token...' })
+  public token: string;
   @ApiProperty({ example: ModeTypes.Development })
   public mode: string;
 
@@ -16,6 +18,7 @@ export class ProjectsResource {
     this.id = project.id;
     this.name = project.name;
     this.url = project.url;
+    this.token = project.token;
     this.mode = project.mode;
   }
 

@@ -22,6 +22,8 @@ interface ExpertCreateAttrs {
   slug: string;
   email: string;
   profession: string;
+  // recommended: boolean;
+  // active: string;
   available: string;
   avatar: string;
   video: string;
@@ -60,6 +62,9 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
 
   @Column({ type: DataType.STRING, allowNull: false })
   public email: string;
+
+  @Column({ type: DataType.BOOLEAN, defaultValue: 1 })
+  public recommended: boolean;
 
   @Column({ type: DataType.BOOLEAN, defaultValue: 1 })
   public active: boolean;

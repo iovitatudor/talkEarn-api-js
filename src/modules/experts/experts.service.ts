@@ -7,7 +7,7 @@ import { ExpertUpdateDto } from './dto/expert-update.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import * as bcrypt from 'bcryptjs';
 import { FilesService } from '../../common/files/files.service';
-import {Op} from "sequelize";
+import { Op } from 'sequelize';
 
 @Injectable()
 export class ExpertsService {
@@ -16,10 +16,19 @@ export class ExpertsService {
     private fileService: FilesService,
   ) {}
 
-  public async getAll(limit = 30, page = 1, active = null, online = null) {
+  public async getAll(
+    limit = 30,
+    page = 1,
+    active = null,
+    online = null,
+    recommended = null,
+    category_id = null,
+  ) {
     const where = { project_id: AuthGuard.projectId, type: 'Employee' };
     if (active) where['active'] = active;
     if (online) where['available'] = online;
+    if (recommended) where['recommended'] = recommended;
+    if (category_id) where['category_id'] = category_id;
 
     const totalItems = await this.expertRepository.count({
       where: { ...where },
@@ -54,6 +63,19 @@ export class ExpertsService {
     const expert = await this.expertRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
+      include: { all: true, nested: true },
+    });
+
+    if (!expert) {
+      throw new HttpException('Expert was not found.', HttpStatus.BAD_REQUEST);
+    }
+    return expert;
+  }
+
+  public async findBySlug(slug: string): Promise<Expert> {
+    const expert = await this.expertRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { slug, project_id: AuthGuard.projectId },
       include: { all: true, nested: true },
     });
 

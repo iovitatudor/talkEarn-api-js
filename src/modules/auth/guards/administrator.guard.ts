@@ -13,6 +13,7 @@ export class AdministratorGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const req = context.switchToHttp().getRequest();
+    console.log(req.expert);
     try {
       if (req.expert.type !== Types.Administrator) {
         throw new UnauthorizedException({

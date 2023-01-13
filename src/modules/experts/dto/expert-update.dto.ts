@@ -22,6 +22,9 @@ export class ExpertUpdateDto {
   @ApiProperty({ example: '1', required: false })
   public active: boolean;
 
+  @ApiProperty({ example: '1', required: false })
+  public recommended: boolean;
+
   public available: boolean;
 
   @ApiProperty({

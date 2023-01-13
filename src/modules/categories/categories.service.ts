@@ -36,6 +36,21 @@ export class CategoriesService {
     return category;
   }
 
+  public async findBySlug(slug: string): Promise<Category> {
+    const category = await this.categoryRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { slug, project_id: AuthGuard.projectId },
+      include: { all: true },
+    });
+    if (!category) {
+      throw new HttpException(
+        'Category was not found.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return category;
+  }
+
   public async destroy(id: number): Promise<number> {
     return await this.categoryRepository.destroy({
       where: { id, project_id: AuthGuard.projectId },

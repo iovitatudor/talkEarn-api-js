@@ -1,8 +1,7 @@
 import {Model} from 'sequelize';
 import {CategoriesResource} from '../../categories/resources/categories.resource';
-import {ExpertParametersResource} from "../../parameters/resources/expert-parameters.resource";
-import {ServiceResource} from "../../services/resources/services.resource";
-import {ParametersValueResource} from "../../parameters/resources/parameter-value.resource";
+import {ServiceResource} from '../../services/resources/services.resource';
+import {ParametersValueResource} from '../../parameters/resources/parameter-value.resource';
 
 export class ExpertsResource {
   public id: number;
@@ -11,6 +10,7 @@ export class ExpertsResource {
   public slug: string;
   public email: string;
   public active: boolean;
+  public recommended: boolean;
   public available: boolean;
   public avatar: string;
   public video: string;
@@ -20,16 +20,22 @@ export class ExpertsResource {
   public category: object;
   public parameters: object;
   public services: Array<any>;
+  public createdAt: string;
+  public updatedAt: string;
 
   public constructor(expert) {
+    const date = new Date(expert.created_at);
+    const updateDate = new Date(expert.updated_at);
+
     this.id = expert.id;
     this.categoryId = expert.category_id;
     this.name = expert.name;
     this.slug = expert.slug;
     this.email = expert.email;
+    this.recommended = expert.recommended;
     this.active = expert.active;
     this.available = expert.available;
-    this.avatar = expert.avatar;
+    this.avatar = process.env.BASE_URL + expert.avatar;
     this.video = expert.video;
     this.profession = expert.profession;
     this.price = expert.price;
@@ -37,6 +43,8 @@ export class ExpertsResource {
     this.category = new CategoriesResource(expert.category);
     this.parameters = ParametersValueResource.collect(expert.parameters);
     this.services = ServiceResource.collect(expert.services);
+    this.createdAt = date.toDateString();
+    this.updatedAt = updateDate.toDateString();
   }
 
   public static collect(model: Model[], meta: Record<any, any>) {

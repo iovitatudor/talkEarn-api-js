@@ -7,6 +7,7 @@ import { Category } from '../categories/models/categories.model';
 import { Project } from '../projects/models/projects.model';
 import { AuthModule } from '../auth/auth.module';
 import { FilesModule } from '../../common/files/files.module';
+import { ProjectsModule } from '../projects/projects.module';
 
 @Module({
   controllers: [ExpertsController],
@@ -15,6 +16,7 @@ import { FilesModule } from '../../common/files/files.module';
     SequelizeModule.forFeature([Expert, Project, Category]),
     forwardRef(() => AuthModule),
     FilesModule,
+    forwardRef(() => ProjectsModule),
   ],
   exports: [ExpertsService],
 })

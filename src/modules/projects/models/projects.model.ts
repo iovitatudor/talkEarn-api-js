@@ -1,6 +1,8 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import {BelongsTo, Column, DataType, HasOne, HasMany, Model, Table} from 'sequelize-typescript';
 import { Expert } from '../../experts/models/experts.model';
 import { ModeTypes } from '../enums/mode-types.enum';
+// import {HasOne} from "sequelize-typescript/dist/browser";
+import {Category} from "../../categories/models/categories.model";
 
 interface ProjectCreationAttrs {
   name: string;
@@ -29,6 +31,9 @@ export class Project extends Model<Project, ProjectCreationAttrs> {
   @Column({ type: DataType.STRING, allowNull: false })
   public url: string;
 
+  @Column({ type: DataType.STRING, allowNull: false })
+  public token: string;
+
   @Column({
     type: DataType.ENUM(...Object.values(ModeTypes)),
     allowNull: false,
@@ -39,4 +44,7 @@ export class Project extends Model<Project, ProjectCreationAttrs> {
   // @ApiProperty({ isArray: true, type: Expert })
   @HasMany(() => Expert)
   public experts: Expert[];
+
+  @HasOne(() => Expert, 'project_id')
+  public administrator: Expert;
 }
