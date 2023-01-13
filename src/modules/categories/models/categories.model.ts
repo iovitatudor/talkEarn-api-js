@@ -45,7 +45,11 @@ export class Category extends Model<Category, CategoryCreateAttrs> {
   @Column({ type: DataType.TEXT, allowNull: true })
   description: string;
 
-  @Column({ type: DataType.STRING, allowNull: true })
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    defaultValue: 'f1d677a1-5e86-4fb3-acf8-4cec05e7534d.jpeg',
+  })
   icon: string;
 
   @HasMany(() => Expert)

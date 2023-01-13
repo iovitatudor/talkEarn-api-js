@@ -72,7 +72,11 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
   @Column({ type: DataType.BOOLEAN, defaultValue: 0 })
   public available: boolean;
 
-  @Column({ type: DataType.STRING, allowNull: true })
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    defaultValue: 'f1d677a1-5e86-4fb3-acf8-4cec05e7534d.jpeg',
+  })
   public avatar: string;
 
   @Column({ type: DataType.TEXT, allowNull: true })
