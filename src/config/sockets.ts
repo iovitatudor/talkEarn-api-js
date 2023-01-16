@@ -2,6 +2,7 @@ export const CORS = {
   credentials: true,
   methods: ['GET', 'POST'],
   origin: [
+    'http://localhost:5001',
     'http://localhost:8080',
     'http://localhost:8081',
     'http://localhost:8082',
