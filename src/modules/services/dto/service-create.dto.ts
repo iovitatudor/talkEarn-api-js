@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ServiceCreateDto {
@@ -21,8 +21,11 @@ export class ServiceCreateDto {
     required: false,
     example: 'File',
   })
-  public image: Express.Multer.File;
+  public video: Express.Multer.File;
 
   @ApiProperty({ example: 20, required: false})
   price: number;
+
+  @ApiProperty({ example: 'service-10', required: false })
+  hash: string;
 }

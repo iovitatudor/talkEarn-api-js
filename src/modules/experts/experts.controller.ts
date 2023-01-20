@@ -57,6 +57,20 @@ export class ExpertsController {
     return ExpertsResource.collect(experts.data, experts.meta);
   }
 
+  @ApiOperation({ summary: 'Add/Edit expert video' })
+  @UseGuards(AuthGuard, AdministratorGuard)
+  @ApiBearerAuth('Authorization')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('video'))
+  @Patch('expert/video/:id')
+  public async updateVideo(
+    @UploadedFile() video: Express.Multer.File,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ExpertsResource> {
+    const expert = await this.expertService.saveVideo(id, video);
+    return new ExpertsResource(expert);
+  }
+
   @ApiOperation({ summary: 'Get expert by Id' })
   @UseGuards(ClientGuard)
   @ApiBearerAuth('Authorization')

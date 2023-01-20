@@ -13,8 +13,11 @@ export class ServiceUpdateDto {
     required: false,
     example: 'File',
   })
-  public image: string;
+  public video: string;
 
   @ApiProperty({ example: '20', required: false })
   price: number;
+
+  @ApiProperty({ example: 'service-10', required: false })
+  hash: string;
 }

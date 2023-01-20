@@ -8,6 +8,9 @@ export class ExpertCreateDto {
   @ApiProperty({ example: 'John Doe', description: 'Expert name' })
   public name: string;
 
+  @ApiProperty({ example: 'Description' })
+  public description: string;
+
   @IsEmail()
   @IsNotEmpty()
   @ApiProperty({ example: 'john@email.com' })
@@ -39,11 +42,28 @@ export class ExpertCreateDto {
   })
   public avatar: string;
 
-  @ApiProperty({ example: 'Video Link', required: false })
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: false,
+    example: 'Video',
+  })
   public video: string;
 
   @ApiProperty({ example: 'Developer', required: false })
   public profession: string;
+
+  @ApiProperty({ example: 'London' })
+  public region: string;
+
+  @ApiProperty({ example: 'English', required: false })
+  public language: string;
+
+  @ApiProperty({ example: '10 years', required: false })
+  public experience: string;
+
+  @ApiProperty({ example: 5, required: false })
+  public rating: string;
 
   @ApiProperty({ example: 20, required: false })
   public price: number;

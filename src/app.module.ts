@@ -23,6 +23,10 @@ import { CallsSocketsModule } from './sockets/calls-socket/calls-sockets.module'
 import { CallsModule } from './modules/calls/calls.module';
 import * as path from 'path';
 import { PaginateModule } from 'nestjs-sequelize-paginate';
+import { User } from './modules/users/models/user.model';
+import { UsersModule } from './modules/users/users.module';
+import { Collection } from './modules/collections/models/collection.model';
+import {CollectionsModule} from "./modules/collections/collections.module";
 
 @Module({
   imports: [
@@ -54,6 +58,8 @@ import { PaginateModule } from 'nestjs-sequelize-paginate';
         ContactExpert,
         Parameter,
         ParameterExpert,
+        User,
+        Collection,
       ],
     }),
     ProjectsModule,
@@ -66,6 +72,8 @@ import { PaginateModule } from 'nestjs-sequelize-paginate';
     FilesModule,
     CallsModule,
     CallsSocketsModule,
+    UsersModule,
+    CollectionsModule,
   ],
   controllers: [],
   providers: [],

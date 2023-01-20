@@ -9,14 +9,17 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Project } from '../../projects/models/projects.model';
 import { Expert } from '../../experts/models/experts.model';
+import { Collection } from '../../collections/models/collection.model';
 
 interface ServiceCreationAttrs {
   project_id: number;
   expert_id: number;
+  collection_id: number;
   name: string;
   description: string;
-  image: string;
+  video: string;
   price: number;
+  hash: string;
 }
 
 @Table({
@@ -42,13 +45,17 @@ export class Service extends Model<Service, ServiceCreationAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: false })
   public expert_id: number;
 
+  @ForeignKey(() => Collection)
+  @Column({ type: DataType.INTEGER, allowNull: true })
+  public collection_id: number;
+
   @ApiProperty({ example: 'Trading' })
   @Column({ type: DataType.STRING, allowNull: false })
   public name: string;
 
   @ApiProperty({ example: 'File' })
   @Column({ type: DataType.STRING, allowNull: true })
-  public image: string;
+  public video: string;
 
   @ApiProperty({ example: 'Short description' })
   @Column({ type: DataType.TEXT, allowNull: true })
@@ -58,9 +65,16 @@ export class Service extends Model<Service, ServiceCreationAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: true })
   public price: number;
 
+  @ApiProperty({ example: '20' })
+  @Column({ type: DataType.STRING, allowNull: true })
+  public hash: string;
+
   @BelongsTo(() => Project, { onDelete: 'cascade' })
   public project: Project;
 
+  @BelongsTo(() => Collection, { onDelete: 'cascade' })
+  public collection: Collection;
+
   @BelongsTo(() => Expert, { onDelete: 'cascade' })
-  public experts: Expert;
+  public expert: Expert;
 }

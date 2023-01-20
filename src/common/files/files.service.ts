@@ -26,4 +26,28 @@ export class FilesService {
       );
     }
   }
+
+  // public async createVideoFile(videoFile): Promise<string> {
+  //   try {
+  //     const splitFileName = createVideoFile.originalname.split('.');
+  //     const extension = splitFileName[splitFileName.length - 1];
+  //     const fileName = uuid.v4() + '.' + extension;
+  //     const filePath = path.resolve(__dirname, '../..', 'static');
+  //
+  //     if (!fs.existsSync(fileName)) {
+  //       fs.mkdirSync(filePath, { recursive: true });
+  //     }
+  //
+  //     fs.writeFileSync(path.join(filePath, fileName), file.buffer);
+  //
+  //     return fileName;
+  //   } catch (e) {
+  //     throw new HttpException(
+  //       'An error occurred while writing the file.',
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //     );
+  //   }
+  // }
+
+
 }

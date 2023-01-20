@@ -113,6 +113,21 @@ export class ExpertsService {
     return await this.findById(id);
   }
 
+  public async saveVideo(id: number, video: any): Promise<Expert> {
+    await this.findById(id);
+    if (video) {
+      const fileName = await this.fileService.createFile(video);
+      await this.expertRepository.update(
+        { video: fileName },
+        {
+          returning: undefined,
+          where: { id, project_id: AuthGuard.projectId },
+        },
+      );
+    }
+    return await this.findById(id);
+  }
+
   public async destroy(id: number): Promise<number> {
     await this.findById(id);
 

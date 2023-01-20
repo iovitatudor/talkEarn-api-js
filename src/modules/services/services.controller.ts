@@ -9,7 +9,8 @@ import {
   Post,
   ParseIntPipe,
   HttpCode,
-  UseInterceptors, UploadedFile,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,8 +24,8 @@ import { ServiceCreateDto } from './dto/service-create.dto';
 import { ServiceResource } from './resources/services.resource';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {Express} from "express";
-import {ServiceUpdateDto} from "./dto/service-update.dto";
+import { Express } from 'express';
+import { ServiceUpdateDto } from './dto/service-update.dto';
 
 @ApiTags('Services')
 @Controller('api')
@@ -54,29 +55,29 @@ export class ServicesController {
   @ApiOperation({ summary: 'Create service' })
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor('video'))
   @UseGuards(AuthGuard, AdministratorGuard)
   @Post('service')
   public async create(
     @Body() serviceDto: ServiceCreateDto,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFile() video: Express.Multer.File,
   ): Promise<ServiceResource> {
-    const service = await this.servicesService.store(serviceDto, image);
+    const service = await this.servicesService.store(serviceDto, video);
     return new ServiceResource(service);
   }
 
   @ApiOperation({ summary: 'Update service' })
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor('video'))
   @UseGuards(AuthGuard, AdministratorGuard)
   @Patch('service/:id')
   public async edit(
     @Param('id', ParseIntPipe) id: number,
     @Body() serviceDto: ServiceUpdateDto,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFile() video: Express.Multer.File,
   ): Promise<ServiceResource> {
-    const service = await this.servicesService.update(id, serviceDto, image);
+    const service = await this.servicesService.update(id, serviceDto, video);
     return new ServiceResource(service);
   }
 

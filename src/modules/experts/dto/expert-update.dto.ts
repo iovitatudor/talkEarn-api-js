@@ -7,6 +7,9 @@ export class ExpertUpdateDto {
   @ApiProperty({ example: 'John Doe', required: false })
   public name: string;
 
+  @ApiProperty({ example: 'Description' })
+  public description: string;
+
   @IsEmail()
   @ApiProperty({ example: 'john@email.com', required: false })
   public email: string;
@@ -40,6 +43,18 @@ export class ExpertUpdateDto {
 
   @ApiProperty({ example: 'Trader', required: false })
   public profession: string;
+
+  @ApiProperty({ example: 'London' })
+  public region: string;
+
+  @ApiProperty({ example: 'English', required: false })
+  public language: string;
+
+  @ApiProperty({ example: '10 years', required: false })
+  public experience: string;
+
+  @ApiProperty({ example: 5, required: false })
+  public rating: number;
 
   @ApiProperty({ example: '20', required: false })
   public price: number;

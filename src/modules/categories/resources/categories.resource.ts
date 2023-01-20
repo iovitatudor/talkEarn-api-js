@@ -23,7 +23,7 @@ export class CategoriesResource {
       this.name = category.name;
       this.slug = category.slug;
       this.description = category.description;
-      this.icon = process.env.BASE_URL + category.icon;
+      this.icon = category.icon ? process.env.BASE_URL + category.icon : null;
     }
   }
 

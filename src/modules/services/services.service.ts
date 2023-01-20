@@ -43,16 +43,16 @@ export class ServicesService {
 
   public async store(
     serviceDto: ServiceCreateDto,
-    image: any,
+    video: any,
   ): Promise<Service> {
     let fileName = null;
-    if (image) {
-      fileName = await this.fileService.createFile(image);
+    if (video) {
+      fileName = await this.fileService.createFile(video);
     }
 
     const service = await this.serviceRepository.create({
       ...serviceDto,
-      image: fileName,
+      video: fileName,
       project_id: Number(AuthGuard.projectId),
     });
 
@@ -62,15 +62,13 @@ export class ServicesService {
   public async update(
     id: number,
     serviceDto: ServiceUpdateDto,
-    image: any,
+    video: any,
   ): Promise<Service> {
-    let servicesData = { ...serviceDto };
-    if (image) {
-      const fileName = await this.fileService.createFile(image);
-      servicesData = { ...serviceDto, image: fileName };
+    if (video) {
+      serviceDto.video = await this.fileService.createFile(video);
     }
 
-    await this.serviceRepository.update(servicesData, {
+    await this.serviceRepository.update(serviceDto, {
       returning: undefined,
       where: { id, project_id: AuthGuard.projectId },
     });
