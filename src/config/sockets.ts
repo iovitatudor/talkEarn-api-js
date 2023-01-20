@@ -10,6 +10,7 @@ export const CORS = {
     'http://localhost:63342',
     'https://dashboard.talkearn.app',
     'https://instaservice.io',
+    'https://instantexpert.online/',
   ],
 };
 
