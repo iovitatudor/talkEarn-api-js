@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import { WebSocketServer } from "@nestjs/websockets";
 
 async function bootstrap() {
   const PORT = process.env.PORT || 5000;
@@ -10,7 +9,7 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
     allowedHeaders:
-      'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe, Authorization',
+      'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe, Authorization, Access-Control-Allow-Origin',
     methods: 'GET,PUT,PATCH,POST,DELETE,UPDATE,OPTIONS',
     credentials: true,
   });

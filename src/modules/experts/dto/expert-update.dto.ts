@@ -54,7 +54,7 @@ export class ExpertUpdateDto {
   public experience: string;
 
   @ApiProperty({ example: 5, required: false })
-  public rating: number;
+  public rating: string;
 
   @ApiProperty({ example: '20', required: false })
   public price: number;

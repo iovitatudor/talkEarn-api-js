@@ -107,8 +107,8 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
   public experience: string;
 
   @ApiProperty({ example: '5' })
-  @Column({ type: DataType.FLOAT, allowNull: true, defaultValue: 5 })
-  public rating: number;
+  @Column({ type: DataType.STRING, allowNull: true, defaultValue: 5 })
+  public rating: string;
 
   @Column({ type: DataType.STRING, allowNull: true, defaultValue: 0 })
   public price: number;
