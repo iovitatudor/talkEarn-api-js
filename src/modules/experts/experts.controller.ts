@@ -59,7 +59,7 @@ export class ExpertsController {
   }
 
   @ApiOperation({ summary: 'Add/Edit expert video' })
-  @UseGuards(AuthGuard, AdministratorGuard)
+  @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('video'))
@@ -106,7 +106,7 @@ export class ExpertsController {
   }
 
   @ApiOperation({ summary: 'Update expert' })
-  @UseGuards(AuthGuard, AdministratorGuard)
+  @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('avatar'))
