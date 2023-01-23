@@ -55,7 +55,7 @@ export class ServicesController {
   @ApiOperation({ summary: 'Get service by hash' })
   @ApiBearerAuth('Authorization')
   @UseGuards(ClientGuard)
-  @Get('service/:hash')
+  @Get('service/hash/:hash')
   public async getByHash(
     @Param('hash') hash: string,
   ): Promise<ServiceResource> {
