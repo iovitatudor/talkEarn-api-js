@@ -7,7 +7,7 @@ async function bootstrap() {
   const PORT = process.env.PORT || 5000;
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: true,
+    origin: 'https://dashboard.talkearn.app',
     allowedHeaders:
       'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe, Authorization, Access-Control-Allow-Origin',
     methods: 'GET,PUT,PATCH,POST,DELETE,UPDATE,OPTIONS',
