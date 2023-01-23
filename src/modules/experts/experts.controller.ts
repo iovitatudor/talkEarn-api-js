@@ -63,7 +63,7 @@ export class ExpertsController {
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('video'))
-  @Post('expert/video/:id')
+  @Patch('expert/video/:id')
   public async updateVideo(
     @Body() expertDto: ExpertVideoAddDto,
     @UploadedFile() video: Express.Multer.File,
