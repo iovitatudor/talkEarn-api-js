@@ -86,7 +86,9 @@ export class ExpertsController {
   @UseGuards(ClientGuard)
   @ApiBearerAuth('Authorization')
   @Get('expert/slug/:slug')
-  public async getBySlug(@Param('slug') slug: string): Promise<ExpertsResource> {
+  public async getBySlug(
+    @Param('slug') slug: string,
+  ): Promise<ExpertsResource> {
     const expert = await this.expertService.findBySlug(slug);
     return new ExpertsResource(expert);
   }

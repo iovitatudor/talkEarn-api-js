@@ -52,6 +52,17 @@ export class ServicesController {
     return new ServiceResource(service);
   }
 
+  @ApiOperation({ summary: 'Get service by hash' })
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard)
+  @Get('service/:hash')
+  public async getByHash(
+    @Param('hash') hash: string,
+  ): Promise<ServiceResource> {
+    const service = await this.servicesService.findByHash(hash);
+    return new ServiceResource(service);
+  }
+
   @ApiOperation({ summary: 'Create service' })
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')

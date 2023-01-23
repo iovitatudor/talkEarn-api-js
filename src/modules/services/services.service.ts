@@ -34,6 +34,18 @@ export class ServicesService {
     return service;
   }
 
+  public async findByHash(hash: string): Promise<Service> {
+    const service = await this.serviceRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { hash, project_id: AuthGuard.projectId },
+      include: { all: true },
+    });
+    if (!service) {
+      throw new HttpException('Service was not found.', HttpStatus.BAD_REQUEST);
+    }
+    return service;
+  }
+
   public async destroy(id: number): Promise<number> {
     await this.findById(id);
     return await this.serviceRepository.destroy({
