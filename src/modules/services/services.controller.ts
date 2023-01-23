@@ -56,7 +56,7 @@ export class ServicesController {
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('video'))
-  @UseGuards(AuthGuard, AdministratorGuard)
+  @UseGuards(AuthGuard)
   @Post('service')
   public async create(
     @Body() serviceDto: ServiceCreateDto,
@@ -70,7 +70,7 @@ export class ServicesController {
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('video'))
-  @UseGuards(AuthGuard, AdministratorGuard)
+  @UseGuards(AuthGuard)
   @Patch('service/:id')
   public async edit(
     @Param('id', ParseIntPipe) id: number,
@@ -83,7 +83,7 @@ export class ServicesController {
 
   @ApiOperation({ summary: 'Delete service' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard, AdministratorGuard)
+  @UseGuards(AuthGuard)
   @HttpCode(204)
   @Delete('service/:id')
   public async delete(@Param('id', ParseIntPipe) id: number): Promise<number> {
