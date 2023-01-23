@@ -22,10 +22,10 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { ServicesService } from './services.service';
 import { ServiceCreateDto } from './dto/service-create.dto';
 import { ServiceResource } from './resources/services.resource';
-import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { ServiceUpdateDto } from './dto/service-update.dto';
+import { ClientGuard } from '../auth/guards/client.guard';
 
 @ApiTags('Services')
 @Controller('api')
@@ -34,7 +34,7 @@ export class ServicesController {
 
   @ApiOperation({ summary: 'Get all services per project' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(ClientGuard)
   @Get('services')
   public async getAll(): Promise<ServiceResource[]> {
     const services = await this.servicesService.getAll();
@@ -43,7 +43,7 @@ export class ServicesController {
 
   @ApiOperation({ summary: 'Get service by Id' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(ClientGuard)
   @Get('service/:id')
   public async getById(
     @Param('id', ParseIntPipe) id: number,
@@ -54,7 +54,7 @@ export class ServicesController {
 
   @ApiOperation({ summary: 'Get service by hash' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(ClientGuard)
   @Get('service/:hash')
   public async getByHash(
     @Param('hash') hash: string,
