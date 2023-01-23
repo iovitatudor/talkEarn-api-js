@@ -28,6 +28,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { Express } from 'express';
 import { ClientGuard } from '../auth/guards/client.guard';
+import {ExpertVideoAddDto} from "./dto/expert-video-add.dto";
 
 @ApiTags('Experts')
 @Controller('api')
@@ -62,8 +63,9 @@ export class ExpertsController {
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('video'))
-  @Patch('expert/video/:id')
+  @Post('expert/video/:id')
   public async updateVideo(
+    @Body() expertDto: ExpertVideoAddDto,
     @UploadedFile() video: Express.Multer.File,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ExpertsResource> {
