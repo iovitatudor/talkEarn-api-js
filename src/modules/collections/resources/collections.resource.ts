@@ -1,5 +1,6 @@
 import { Model } from 'sequelize';
 import { ApiProperty } from '@nestjs/swagger';
+import {ServiceResource} from "../../services/resources/services.resource";
 
 export class CollectionsResource {
   @ApiProperty({ example: 1 })
@@ -17,6 +18,9 @@ export class CollectionsResource {
   @ApiProperty({ example: 'File' })
   public image: string;
 
+  @ApiProperty({ example: 'Services' })
+  public services: Array<any>;
+
   public constructor(collection) {
     if (collection) {
       this.id = collection.id;
@@ -26,6 +30,7 @@ export class CollectionsResource {
       this.image = collection.image
         ? process.env.BASE_URL + collection.image
         : null;
+      this.services = ServiceResource.collect(collection.services);
     }
   }
 

@@ -17,7 +17,7 @@ export class CollectionsService {
     return await this.collectionRepository.findAll({
       order: [['id', 'DESC']],
       where: { project_id: AuthGuard.projectId },
-      include: { all: true },
+      include: { all: true, nested: true },
     });
   }
 
@@ -25,7 +25,7 @@ export class CollectionsService {
     const collection = await this.collectionRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
-      include: { all: true },
+      include: { all: true, nested: true },
     });
     if (!collection) {
       throw new HttpException(
@@ -40,7 +40,7 @@ export class CollectionsService {
     const collection = await this.collectionRepository.findOne({
       rejectOnEmpty: undefined,
       where: { slug, project_id: AuthGuard.projectId },
-      include: { all: true },
+      include: { all: true, nested: true },
     });
     if (!collection) {
       throw new HttpException(

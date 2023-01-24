@@ -1,5 +1,6 @@
 import { Model } from 'sequelize';
 import {CollectionsResource} from "../../collections/resources/collections.resource";
+import {ExpertsResource} from "../../experts/resources/experts.resource";
 
 export class ServiceResource {
   public id: number;
@@ -10,6 +11,7 @@ export class ServiceResource {
   public price: number;
   public hash: string;
   public collection: object;
+  public expert: object;
 
   public constructor(service) {
     if (service) {
@@ -21,6 +23,7 @@ export class ServiceResource {
       this.price = service.price;
       this.hash = service.hash;
       this.collection = new CollectionsResource(service.collection);
+      this.expert = new ExpertsResource(service.expert);
     }
   }
 
