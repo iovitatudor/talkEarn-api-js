@@ -39,13 +39,15 @@ export class ExpertsService {
     if (totalItems > page) {
       offset = Math.floor((totalItems / totalPages) * page - limit);
     }
+    // if (limit <= 0) limit = 1;
+    // if (offset <= 0) offset = 30;
 
     const data = await this.expertRepository.findAll({
       order: [['id', 'DESC']],
       where: { ...where },
       include: { all: true, nested: true },
-      limit,
-      offset,
+      limit: 50,
+      offset: 0,
     });
 
     return {
