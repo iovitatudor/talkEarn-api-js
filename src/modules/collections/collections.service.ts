@@ -5,6 +5,9 @@ import { CollectionUpdateDto } from './dto/collection-update.dto';
 import { CollectionCreateDto } from './dto/collection-create.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { FilesService } from '../../common/files/files.service';
+import { Service } from '../services/models/services.model';
+import { Expert } from '../experts/models/experts.model';
+import { Category } from '../categories/models/categories.model';
 
 @Injectable()
 export class CollectionsService {
@@ -17,7 +20,12 @@ export class CollectionsService {
     return await this.collectionRepository.findAll({
       order: [['id', 'DESC']],
       where: { project_id: AuthGuard.projectId },
-      include: { all: true, nested: true },
+      include: [
+        {
+          model: Service,
+          include: [{ model: Expert, include: [{ model: Category }] }],
+        },
+      ],
     });
   }
 

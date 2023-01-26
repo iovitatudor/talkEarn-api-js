@@ -35,8 +35,8 @@ export class UsersService {
       order: [['available', 'DESC']],
       where: { ...where },
       include: { all: true, nested: true },
-      limit,
-      offset,
+      limit: 30,
+      offset: 0,
     });
 
     return {

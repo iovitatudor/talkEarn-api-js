@@ -22,8 +22,12 @@ export class ServiceResource {
       this.video = service.video ? process.env.BASE_URL + service.video : null;
       this.price = service.price;
       this.hash = service.hash;
-      this.collection = new CollectionsResource(service.collection);
-      this.expert = new ExpertsResource(service.expert);
+      if (service.collection) {
+        this.collection = new CollectionsResource(service.collection);
+      }
+      if (service.expert) {
+        this.expert = new ExpertsResource(service.expert);
+      }
     }
   }
 

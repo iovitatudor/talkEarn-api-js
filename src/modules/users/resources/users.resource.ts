@@ -1,5 +1,4 @@
 import { Model } from 'sequelize';
-import { ExpertsResource } from '../../experts/resources/experts.resource';
 
 export class UsersResource {
   public id: number;
@@ -20,7 +19,6 @@ export class UsersResource {
   public constructor(user) {
     const createdDate = new Date(user.created_at);
     const updatedDate = new Date(user.updated_at);
-    const lastEntry = new Date(user.last_entry);
 
     this.id = user.id;
     this.expertId = user.expert_id;

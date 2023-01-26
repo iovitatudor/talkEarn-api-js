@@ -51,9 +51,15 @@ export class ExpertsResource {
       this.rating = expert.rating;
       this.price = expert.price;
       this.type = expert.type;
-      this.category = new CategoriesResource(expert.category);
-      this.parameters = ParametersValueResource.collect(expert.parameters);
-      this.services = ServiceResource.collect(expert.services);
+      if (expert.category) {
+        this.category = new CategoriesResource(expert.category);
+      }
+      if (expert.parameters) {
+        this.parameters = ParametersValueResource.collect(expert.parameters);
+      }
+      if (expert.services) {
+        this.services = ServiceResource.collect(expert.services);
+      }
       this.createdAt = date.toDateString();
       this.updatedAt = updateDate.toDateString();
     }
