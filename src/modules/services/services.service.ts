@@ -6,6 +6,11 @@ import { ServiceCreateDto } from './dto/service-create.dto';
 import { ServiceUpdateDto } from './dto/service-update.dto';
 import { ExpertsService } from '../experts/experts.service';
 import { FilesService } from '../../common/files/files.service';
+import {Category} from "../categories/models/categories.model";
+import {Expert} from "../experts/models/experts.model";
+import {ParameterExpert} from "../parameters/models/parameter-expert";
+import {Parameter} from "../parameters/models/parameters.model";
+import {Collection} from "../collections/models/collection.model";
 
 @Injectable()
 export class ServicesService {
@@ -18,7 +23,7 @@ export class ServicesService {
   public async getAll(): Promise<Service[]> {
     return await this.serviceRepository.findAll({
       where: { project_id: AuthGuard.projectId },
-      include: { all: true },
+      include: [{ model: Collection }],
     });
   }
 
@@ -26,7 +31,7 @@ export class ServicesService {
     const service = await this.serviceRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
-      include: { all: true },
+      include: [{ model: Collection }],
     });
     if (!service) {
       throw new HttpException('Service was not found.', HttpStatus.BAD_REQUEST);
@@ -38,7 +43,7 @@ export class ServicesService {
     const service = await this.serviceRepository.findOne({
       rejectOnEmpty: undefined,
       where: { hash, project_id: AuthGuard.projectId },
-      include: { all: true },
+      include: [{ model: Collection }],
     });
     if (!service) {
       throw new HttpException('Service was not found.', HttpStatus.BAD_REQUEST);
@@ -95,6 +100,7 @@ export class ServicesService {
     return await this.serviceRepository.findAll({
       order: [['id', 'DESC']],
       where: { expert_id: expertId, project_id: AuthGuard.projectId },
+      include: [{ model: Collection }],
     });
   }
 }
