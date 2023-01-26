@@ -8,6 +8,10 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import * as bcrypt from 'bcryptjs';
 import { FilesService } from '../../common/files/files.service';
 import { Op } from 'sequelize';
+import { Category } from '../categories/models/categories.model';
+import { Service } from '../services/models/services.model';
+import { Parameter } from '../parameters/models/parameters.model';
+import { ParameterExpert } from '../parameters/models/parameter-expert';
 
 @Injectable()
 export class ExpertsService {
@@ -39,13 +43,14 @@ export class ExpertsService {
     if (totalItems > page) {
       offset = Math.floor((totalItems / totalPages) * page - limit);
     }
-    // if (limit <= 0) limit = 1;
-    // if (offset <= 0) offset = 30;
 
     const data = await this.expertRepository.findAll({
       order: [['id', 'DESC']],
       where: { ...where },
-      include: { all: true, nested: true },
+      include: [
+        { model: Category },
+        { model: ParameterExpert, include: [{ model: Parameter }] },
+      ],
       limit: 50,
       offset: 0,
     });
@@ -65,7 +70,10 @@ export class ExpertsService {
     const expert = await this.expertRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
-      include: { all: true, nested: true },
+      include: [
+        { model: Category },
+        { model: ParameterExpert, include: [{ model: Parameter }] },
+      ],
     });
 
     if (!expert) {
@@ -78,9 +86,11 @@ export class ExpertsService {
     const expert = await this.expertRepository.findOne({
       rejectOnEmpty: undefined,
       where: { slug, project_id: AuthGuard.projectId },
-      include: { all: true, nested: true },
+      include: [
+        { model: Category },
+        { model: ParameterExpert, include: [{ model: Parameter }] },
+      ],
     });
-
     if (!expert) {
       throw new HttpException('Expert was not found.', HttpStatus.BAD_REQUEST);
     }
