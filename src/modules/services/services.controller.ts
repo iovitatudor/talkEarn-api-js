@@ -103,7 +103,7 @@ export class ServicesController {
 
   @ApiOperation({ summary: 'Get services by expert id' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(ClientGuard)
   @Get('services/expert/:expertId')
   public async getExpertServices(
     @Param('expertId', ParseIntPipe) expertId: number,

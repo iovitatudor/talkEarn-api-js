@@ -33,7 +33,12 @@ export class CollectionsService {
     const collection = await this.collectionRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
-      include: { all: true, nested: true },
+      include: [
+        {
+          model: Service,
+          include: [{ model: Expert, include: [{ model: Category }] }],
+        },
+      ],
     });
     if (!collection) {
       throw new HttpException(
@@ -48,7 +53,12 @@ export class CollectionsService {
     const collection = await this.collectionRepository.findOne({
       rejectOnEmpty: undefined,
       where: { slug, project_id: AuthGuard.projectId },
-      include: { all: true, nested: true },
+      include: [
+        {
+          model: Service,
+          include: [{ model: Expert, include: [{ model: Category }] }],
+        },
+      ],
     });
     if (!collection) {
       throw new HttpException(
