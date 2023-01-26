@@ -27,8 +27,6 @@ import { User } from './modules/users/models/user.model';
 import { UsersModule } from './modules/users/users.module';
 import { Collection } from './modules/collections/models/collection.model';
 import { CollectionsModule } from './modules/collections/collections.module';
-import { Language } from './modules/languages/models/languages.model';
-import { LanguagesModule } from './modules/languages/languages.module';
 
 @Module({
   imports: [
@@ -62,7 +60,6 @@ import { LanguagesModule } from './modules/languages/languages.module';
         ParameterExpert,
         User,
         Collection,
-        Language,
       ],
     }),
     ProjectsModule,
@@ -77,7 +74,6 @@ import { LanguagesModule } from './modules/languages/languages.module';
     CallsSocketsModule,
     UsersModule,
     CollectionsModule,
-    LanguagesModule,
   ],
   controllers: [],
   providers: [],
