@@ -5,25 +5,25 @@ export class LanguagesResource {
   @ApiProperty({ example: 1 })
   public id: number;
 
-  @ApiProperty({ example: 'Trading' })
+  @ApiProperty({ example: 'English' })
   public name: string;
 
-  @ApiProperty({ example: 'Category Slug' })
-  public slug: string;
+  @ApiProperty({ example: 'en' })
+  public abbr: string;
 
-  @ApiProperty({ example: 'Short Description of Trading' })
-  public description: string;
+  @ApiProperty({ example: false })
+  public default: string;
 
   @ApiProperty({ example: 'File' })
   public icon: string;
 
-  public constructor(category) {
-    if (category) {
-      this.id = category.id;
-      this.name = category.name;
-      this.slug = category.slug;
-      this.description = category.description;
-      this.icon = category.icon ? process.env.BASE_URL + category.icon : null;
+  public constructor(language) {
+    if (language) {
+      this.id = language.id;
+      this.name = language.name;
+      this.abbr = language.abbr;
+      this.default = language.default;
+      this.icon = language.icon ? process.env.BASE_URL + language.icon : null;
     }
   }
 

@@ -40,7 +40,7 @@ export class Language extends Model<Language, LanguageCreateabbrs> {
   @Column({ type: DataType.STRING, allowNull: false })
   abbr: string;
 
-  @Column({ type: DataType.BIGINT, defaultValue: 0 })
+  @Column({ type: DataType.BOOLEAN, defaultValue: 0 })
   default: boolean;
 
   @Column({

@@ -44,6 +44,16 @@ export class LanguagesController {
     return LanguagesResource.collect(languages);
   }
 
+  @ApiOperation({ summary: 'Get default language' })
+  @ApiResponse({ status: 200, type: LanguagesResource })
+  @ApiBearerAuth('Authorization')
+  @UseGuards(ClientGuard)
+  @Get('language/default')
+  public async getDefault(): Promise<LanguagesResource> {
+    const language = await this.languagesService.getDefaultLanguage();
+    return new LanguagesResource(language);
+  }
+
   @ApiOperation({ summary: 'Get language by Id' })
   @ApiResponse({ status: 200, type: LanguagesResource })
   @ApiBearerAuth('Authorization')

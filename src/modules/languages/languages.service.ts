@@ -15,40 +15,51 @@ export class LanguagesService {
 
   public async getAll(): Promise<Language[]> {
     return await this.LanguageRepository.findAll({
-      order: [['id', 'DESC']],
+      order: [
+        ['default', 'DESC'],
+        ['id', 'ASC'],
+      ],
       where: { project_id: AuthGuard.projectId },
       include: { all: true },
     });
   }
 
+  public async getDefaultLanguage() {
+    return await this.LanguageRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { default: true, project_id: AuthGuard.projectId },
+      include: { all: true },
+    });
+  }
+
   public async findById(id: number): Promise<Language> {
-    const Language = await this.LanguageRepository.findOne({
+    const language = await this.LanguageRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
       include: { all: true },
     });
-    if (!Language) {
+    if (!language) {
       throw new HttpException(
         'Language was not found.',
         HttpStatus.BAD_REQUEST,
       );
     }
-    return Language;
+    return language;
   }
 
   public async findByAbbr(abbr: string): Promise<Language> {
-    const Language = await this.LanguageRepository.findOne({
+    const language = await this.LanguageRepository.findOne({
       rejectOnEmpty: undefined,
       where: { abbr, project_id: AuthGuard.projectId },
       include: { all: true },
     });
-    if (!Language) {
+    if (!language) {
       throw new HttpException(
         'Language was not found.',
         HttpStatus.BAD_REQUEST,
       );
     }
-    return Language;
+    return language;
   }
 
   public async destroy(id: number): Promise<number> {
@@ -63,6 +74,11 @@ export class LanguagesService {
   ): Promise<Language> {
     if (icon) {
       languageDto.icon = await this.fileService.createFile(icon);
+    }
+
+    const defaultLanguage = await this.getDefaultLanguage();
+    if (!defaultLanguage) {
+      languageDto.default = true;
     }
 
     const Language = await this.LanguageRepository.create({
@@ -80,6 +96,18 @@ export class LanguagesService {
     if (icon) {
       languageDto.icon = await this.fileService.createFile(icon);
     }
+    if (languageDto.default) {
+      console.log(languageDto.default);
+
+      await this.LanguageRepository.update(
+        { default: false },
+        {
+          returning: undefined,
+          where: { default: true, project_id: AuthGuard.projectId },
+        },
+      );
+    }
+
     await this.LanguageRepository.update(languageDto, {
       returning: undefined,
       where: { id, project_id: AuthGuard.projectId },

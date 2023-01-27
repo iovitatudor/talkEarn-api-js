@@ -12,7 +12,6 @@ export class LanguageCreateDto {
   @ApiProperty({ example: 'en' })
   public abbr: string;
 
-  @IsString()
   @ApiProperty({ example: true, required: false })
   public default: boolean;
 
