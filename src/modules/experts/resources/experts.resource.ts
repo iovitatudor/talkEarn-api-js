@@ -22,6 +22,7 @@ export class ExpertsResource {
   public rating: string;
   public price: string;
   public type: string;
+  public deviceToken: string;
   public category: object;
   public parameters: object;
   public services: Array<any>;
@@ -51,6 +52,7 @@ export class ExpertsResource {
       this.rating = expert.rating;
       this.price = expert.price;
       this.type = expert.type;
+      this.deviceToken = expert.device_token;
       if (expert.category) {
         this.category = new CategoriesResource(expert.category);
       }

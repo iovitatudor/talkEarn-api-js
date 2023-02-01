@@ -196,6 +196,22 @@ export class ExpertsService {
     return await this.findById(expertId);
   }
 
+  public async updateDeviceToken(
+    expertId: number,
+    deviceToken: string,
+  ): Promise<Expert> {
+    await this.findById(expertId);
+
+    await this.expertRepository.update(
+      { device_token: deviceToken },
+      {
+        returning: undefined,
+        where: { id: expertId, project_id: AuthGuard.projectId },
+      },
+    );
+    return await this.findById(expertId);
+  }
+
   public async search(page = 1, search: '') {
     const where = { project_id: AuthGuard.projectId, type: 'Employee' };
     where[Op.or] = [

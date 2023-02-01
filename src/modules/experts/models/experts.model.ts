@@ -27,8 +27,6 @@ interface ExpertCreateAttrs {
   language: string;
   experience: string;
   rating: string;
-  // recommended: boolean;
-  // active: string;
   available: string;
   avatar: string;
   video: string;
@@ -122,6 +120,9 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
     defaultValue: Types.Employee,
   })
   public type: Types;
+
+  @Column({ type: DataType.TEXT, allowNull: true })
+  public device_token: string;
 
   @BelongsTo(() => Project, 'project_id')
   public project: Project;

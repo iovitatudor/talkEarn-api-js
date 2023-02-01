@@ -1,18 +1,17 @@
-import {ArrayMinSize, IsArray, IsNotEmpty, IsString} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CategoryCreateDto {
-  // @IsString()
-  // @IsNotEmpty()
-  // @ApiProperty({ example: 'Trading' })
-  // public name: string;
+  @IsNotEmpty()
+  @ApiProperty({ example: '1' })
+  public langId: number;
 
-  @IsArray()
-  // "each" tells class-validator to run the validation on each item of the array
-  @IsString({ each: true })
-  @ArrayMinSize(1)
+  @IsString()
+  @IsNotEmpty()
   @ApiProperty({ example: 'Trading' })
-  name: string[];
+  public name: string;
+
+  public slug: string;
 
   @IsString()
   @ApiProperty({ example: 'Category Description', required: false })
@@ -24,5 +23,5 @@ export class CategoryCreateDto {
     required: false,
     example: 'File',
   })
-  public icon: Express.Multer.File;
+  public icon: string;
 }

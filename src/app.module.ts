@@ -27,8 +27,9 @@ import { User } from './modules/users/models/user.model';
 import { UsersModule } from './modules/users/users.module';
 import { Collection } from './modules/collections/models/collection.model';
 import { CollectionsModule } from './modules/collections/collections.module';
-import {Language} from "./modules/languages/models/languages.model";
-import {LanguagesModule} from "./modules/languages/languages.module";
+import { Language } from './modules/languages/models/languages.model';
+import { LanguagesModule } from './modules/languages/languages.module';
+import { CategoryTranslation } from './modules/categories/models/categories_translations.model';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import {LanguagesModule} from "./modules/languages/languages.module";
       models: [
         Project,
         Category,
+        CategoryTranslation,
         Expert,
         Service,
         Contact,

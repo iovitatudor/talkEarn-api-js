@@ -29,6 +29,7 @@ import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { Express } from 'express';
 import { ClientGuard } from '../auth/guards/client.guard';
 import {ExpertVideoAddDto} from "./dto/expert-video-add.dto";
+import {ExpertDeviceTokenAddDto} from "./dto/expert-device-token-add.dto";
 
 @ApiTags('Experts')
 @Controller('api')
@@ -138,6 +139,22 @@ export class ExpertsController {
   @Patch('expert/status/:id')
   public async toggleStatus(@Param('id', ParseIntPipe) id: number): Promise<ExpertsResource> {
     const expert = await this.expertService.toggleStatus(id);
+    return new ExpertsResource(expert);
+  }
+
+  @ApiOperation({ summary: 'Add device token' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('Authorization')
+  @HttpCode(201)
+  @Patch('expert/device-token/:id')
+  public async editDeviceToken(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() expertDto: ExpertDeviceTokenAddDto,
+  ): Promise<ExpertsResource> {
+    const expert = await this.expertService.updateDeviceToken(
+      id,
+      expertDto.deviceToken,
+    );
     return new ExpertsResource(expert);
   }
 

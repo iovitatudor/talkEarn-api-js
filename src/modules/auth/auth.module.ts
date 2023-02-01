@@ -7,13 +7,22 @@ import { ProjectsModule } from '../projects/projects.module';
 import { AuthGuard } from './guards/auth.guard';
 import { AdministratorGuard } from './guards/administrator.guard';
 import { ClientGuard } from './guards/client.guard';
+import { SetupGuard } from './guards/setup.guard';
+import {LanguagesModule} from "../languages/languages.module";
 
 @Module({
-  providers: [AuthService, AuthGuard, AdministratorGuard, ClientGuard],
+  providers: [
+    AuthService,
+    AuthGuard,
+    AdministratorGuard,
+    ClientGuard,
+    SetupGuard,
+  ],
   controllers: [AuthController],
   imports: [
     forwardRef(() => ProjectsModule),
     forwardRef(() => ExpertsModule),
+    forwardRef(() => LanguagesModule),
     JwtModule.register({
       secret: process.env.PRIVATE_KEY || 'talkEarn-secret',
       signOptions: {

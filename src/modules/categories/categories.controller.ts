@@ -27,6 +27,7 @@ import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { ClientGuard } from '../auth/guards/client.guard';
+import {SetupGuard} from "../auth/guards/setup.guard";
 
 @ApiTags('Categories')
 @Controller('api')
@@ -36,7 +37,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Get all categories per project' })
   @ApiResponse({ status: 200, type: [CategoriesResource] })
   @ApiBearerAuth('Authorization')
-  @UseGuards(ClientGuard)
+  @UseGuards(ClientGuard, SetupGuard)
   @Get('categories')
   public async getAll(): Promise<CategoriesResource[]> {
     const categories = await this.categoriesService.getAll();
@@ -46,7 +47,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Get category by Id' })
   @ApiResponse({ status: 200, type: CategoriesResource })
   @ApiBearerAuth('Authorization')
-  @UseGuards(ClientGuard)
+  @UseGuards(ClientGuard, SetupGuard)
   @Get('category/:id')
   public async getById(
     @Param('id', ParseIntPipe) id: number,
@@ -58,7 +59,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Get category by slug' })
   @ApiResponse({ status: 200, type: CategoriesResource })
   @ApiBearerAuth('Authorization')
-  @UseGuards(ClientGuard)
+  @UseGuards(ClientGuard, SetupGuard)
   @Get('category/slug/:slug')
   public async getBySlug(
     @Param('slug') slug: string,
@@ -72,7 +73,7 @@ export class CategoriesController {
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('icon'))
-  @UseGuards(AuthGuard, AdministratorGuard)
+  @UseGuards(AuthGuard, AdministratorGuard, SetupGuard)
   @Post('category')
   public async create(
     @Body() categoryDto: CategoryCreateDto,

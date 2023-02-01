@@ -1,7 +1,11 @@
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CategoryUpdateDto {
+  @IsNotEmpty()
+  @ApiProperty({ example: '1' })
+  public langId: number;
+
   @IsString()
   @ApiProperty({ example: 'Trading', required: false })
   name: string;

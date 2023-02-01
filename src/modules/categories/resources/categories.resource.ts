@@ -20,9 +20,13 @@ export class CategoriesResource {
   public constructor(category) {
     if (category) {
       this.id = category.id;
-      this.name = category.name;
+      this.name = category.translation
+        ? category.translation.name
+        : category.name;
       this.slug = category.slug;
-      this.description = category.description;
+      this.description = category.translation
+        ? category.translation.description
+        : category.description;
       this.icon = category.icon ? process.env.BASE_URL + category.icon : null;
     }
   }

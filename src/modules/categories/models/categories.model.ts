@@ -6,15 +6,15 @@ import {
   Table,
   DataType,
   Model,
+  HasOne,
 } from 'sequelize-typescript';
 import { Expert } from '../../experts/models/experts.model';
 import { Project } from '../../projects/models/projects.model';
+import { CategoryTranslation } from './categories_translations.model';
 
 interface CategoryCreateAttrs {
   project_id: number;
-  name: string;
   slug: string;
-  description: string;
   icon: string;
 }
 
@@ -37,13 +37,7 @@ export class Category extends Model<Category, CategoryCreateAttrs> {
   public project_id: number;
 
   @Column({ type: DataType.STRING, allowNull: false })
-  name: string;
-
-  @Column({ type: DataType.STRING, allowNull: false })
   slug: string;
-
-  @Column({ type: DataType.TEXT, allowNull: true })
-  description: string;
 
   @Column({
     type: DataType.STRING,
@@ -54,6 +48,9 @@ export class Category extends Model<Category, CategoryCreateAttrs> {
 
   @HasMany(() => Expert)
   experts: Expert[];
+
+  @HasOne(() => CategoryTranslation)
+  translation: CategoryTranslation;
 
   @BelongsTo(() => Project, 'project_id')
   public project: Project;

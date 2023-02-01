@@ -34,8 +34,8 @@ export class UsersService {
     const data = await this.userRepository.findAll({
       order: [['available', 'DESC']],
       where: { ...where },
-      include: { all: true, nested: true },
-      limit: 30,
+      include: { all: true },
+      limit: 20,
       offset: 0,
     });
 
@@ -54,7 +54,7 @@ export class UsersService {
     const User = await this.userRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
-      include: { all: true, nested: true },
+      include: { all: true },
     });
 
     if (!User) {

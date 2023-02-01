@@ -12,9 +12,10 @@ import { ProjectsModule } from '../projects/projects.module';
   providers: [LanguagesService],
   imports: [
     SequelizeModule.forFeature([Language]),
-    AuthModule,
+    forwardRef(() => AuthModule),
     FilesModule,
     forwardRef(() => ProjectsModule),
   ],
+  exports: [LanguagesService],
 })
 export class LanguagesModule {}

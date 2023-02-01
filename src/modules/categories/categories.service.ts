@@ -5,11 +5,16 @@ import { CategoryUpdateDto } from './dto/category-update.dto';
 import { CategoryCreateDto } from './dto/category-create.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { FilesService } from '../../common/files/files.service';
+import { CategoryTranslation } from './models/categories_translations.model';
+import { GlobalData } from '../auth/guards/global-data';
+import slug = require('slug');
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectModel(Category) private categoryRepository: typeof Category,
+    @InjectModel(CategoryTranslation)
+    private categoryTranslationRepository: typeof CategoryTranslation,
     private fileService: FilesService,
   ) {}
 
@@ -17,7 +22,12 @@ export class CategoriesService {
     return await this.categoryRepository.findAll({
       order: [['id', 'DESC']],
       where: { project_id: AuthGuard.projectId },
-      include: { all: true },
+      include: [
+        {
+          model: CategoryTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
+      ],
     });
   }
 
@@ -25,7 +35,12 @@ export class CategoriesService {
     const category = await this.categoryRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
-      include: { all: true },
+      include: [
+        {
+          model: CategoryTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
+      ],
     });
     if (!category) {
       throw new HttpException(
@@ -40,7 +55,12 @@ export class CategoriesService {
     const category = await this.categoryRepository.findOne({
       rejectOnEmpty: undefined,
       where: { slug, project_id: AuthGuard.projectId },
-      include: { all: true },
+      include: [
+        {
+          model: CategoryTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
+      ],
     });
     if (!category) {
       throw new HttpException(
@@ -61,18 +81,24 @@ export class CategoriesService {
     categoryDto: CategoryCreateDto,
     icon: any,
   ): Promise<Category> {
-    let fileName = null;
     if (icon) {
-      fileName = await this.fileService.createFile(icon);
+      categoryDto.icon = await this.fileService.createFile(icon);
     }
-    const slug = this.createSlug(categoryDto.name);
+    categoryDto.slug = slug(categoryDto.name, { locale: 'en' });
 
     const category = await this.categoryRepository.create({
       ...categoryDto,
-      slug,
-      icon: fileName,
       project_id: Number(AuthGuard.projectId),
     });
+
+    for (const language of GlobalData.languages) {
+      await this.categoryTranslationRepository.create({
+        category_id: category.id,
+        lang_id: language.id,
+        ...categoryDto,
+      });
+    }
+
     return await this.findById(category.id);
   }
 
@@ -81,33 +107,23 @@ export class CategoriesService {
     categoryDto: CategoryUpdateDto,
     icon: any,
   ): Promise<Category> {
-    let data = { ...categoryDto };
     if (icon) {
-      const fileName = await this.fileService.createFile(icon);
-      data = { ...categoryDto, icon: fileName };
+      categoryDto.icon = await this.fileService.createFile(icon);
     }
 
-    const slug = this.createSlug(categoryDto.name);
+    await this.categoryRepository.update(categoryDto, {
+      returning: undefined,
+      where: { id, project_id: AuthGuard.projectId },
+    });
 
-    await this.categoryRepository.update(
-      { ...data, slug },
-      {
-        returning: undefined,
-        where: { id, project_id: AuthGuard.projectId },
+    await this.categoryTranslationRepository.update(categoryDto, {
+      returning: undefined,
+      where: {
+        category_id: id,
+        lang_id: categoryDto.langId,
       },
-    );
-    return await this.findById(id);
-  }
+    });
 
-  private createSlug(text: string) {
-    return text
-      .toString()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]+/g, '')
-      .replace(/--+/g, '-');
+    return await this.findById(id);
   }
 }

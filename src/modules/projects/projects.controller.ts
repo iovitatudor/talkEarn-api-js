@@ -37,7 +37,7 @@ export class ProjectsController {
     return ProjectsResource.collect(projects);
   }
 
-  @ApiOperation({ summary: 'Get project by Id' })
+  @ApiOperation({ summary: 'Get project by id' })
   @ApiResponse({ status: 200, type: ProjectsResource })
   @Get('project/:id')
   public async getById(
