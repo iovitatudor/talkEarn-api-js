@@ -17,7 +17,7 @@ export class ClientGuard implements CanActivate {
 
   public async canActivate(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest();
-    try {
+    // try {
       const authHeader = req.headers.authorization;
       const bearer = authHeader.split(' ')[0];
       const token = authHeader.split(' ')[1];
@@ -44,8 +44,8 @@ export class ClientGuard implements CanActivate {
       }
 
       return true;
-    } catch (e) {
-      throw new UnauthorizedException({ message: 'You are not authorized.' });
-    }
+    // } catch (e) {
+    //   throw new UnauthorizedException({ message: 'You are not authorized.' });
+    // }
   }
 }
