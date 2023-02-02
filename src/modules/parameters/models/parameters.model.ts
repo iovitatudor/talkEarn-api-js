@@ -6,7 +6,6 @@ import {
   Table,
   DataType,
 } from 'sequelize-typescript';
-import { ApiProperty } from '@nestjs/swagger';
 import { Project } from '../../projects/models/projects.model';
 
 interface ParameterCreationAttrs {
@@ -20,7 +19,6 @@ interface ParameterCreationAttrs {
   updatedAt: 'updated_at',
 })
 export class Parameter extends Model<Parameter, ParameterCreationAttrs> {
-  @ApiProperty({ example: 1 })
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -33,7 +31,6 @@ export class Parameter extends Model<Parameter, ParameterCreationAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: false })
   public project_id: number;
 
-  @ApiProperty({ example: 'Region' })
   @Column({ type: DataType.STRING, allowNull: false })
   public name: string;
 

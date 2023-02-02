@@ -17,7 +17,8 @@ import { Contact } from './modules/contacts/models/contacts.model';
 import { ParametersModule } from './modules/parameters/parameters.module';
 import { Parameter } from './modules/parameters/models/parameters.model';
 import { ContactExpert } from './modules/contacts/models/contact-expert.model';
-import { ParameterExpert } from './modules/parameters/models/parameter-expert';
+import { ParameterExpert } from './modules/parameters/models/parameter-expert.model';
+import { ParameterExpertTranslation } from './modules/parameters/models/parameter-expert-translations.model';
 import { FilesModule } from './common/files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CallsSocketsModule } from './sockets/calls-socket/calls-sockets.module';
@@ -63,6 +64,7 @@ import { CategoryTranslation } from './modules/categories/models/categories_tran
         ContactExpert,
         Parameter,
         ParameterExpert,
+        ParameterExpertTranslation,
         User,
         Collection,
         CollectionTranslation,

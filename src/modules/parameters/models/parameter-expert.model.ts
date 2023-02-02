@@ -4,16 +4,15 @@ import {
   Column,
   ForeignKey,
   Table,
-  DataType,
+  DataType, HasOne,
 } from 'sequelize-typescript';
-import { ApiProperty } from '@nestjs/swagger';
 import { Expert } from '../../experts/models/experts.model';
 import { Parameter } from './parameters.model';
+import { ParameterExpertTranslation } from './parameter-expert-translations.model';
 
 interface ParameterExpertCreationAttrs {
   parameter_id: number;
   expert_id: number;
-  value: string;
 }
 
 @Table({
@@ -25,7 +24,6 @@ export class ParameterExpert extends Model<
   ParameterExpert,
   ParameterExpertCreationAttrs
 > {
-  @ApiProperty({ example: 1 })
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -42,13 +40,12 @@ export class ParameterExpert extends Model<
   @Column({ type: DataType.INTEGER, allowNull: false })
   public expert_id: number;
 
-  @ApiProperty({ example: 'New York' })
-  @Column({ type: DataType.STRING, allowNull: false })
-  public value: string;
-
   @BelongsTo(() => Parameter)
   public parameter: Parameter;
 
   @BelongsTo(() => Expert)
   public expert: Expert;
+
+  @HasOne(() => ParameterExpertTranslation)
+  translation: ParameterExpertTranslation;
 }

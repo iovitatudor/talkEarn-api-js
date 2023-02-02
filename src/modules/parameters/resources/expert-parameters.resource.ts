@@ -9,9 +9,11 @@ export class ExpertParametersResource {
   public constructor(parameterValue) {
     if (parameterValue) {
       this.id = parameterValue.id;
-      this.parameterId = parameterValue?.parameter?.id;
+      this.parameterId = parameterValue.parameter_id;
       this.name = parameterValue?.parameter?.name;
-      this.value = parameterValue.value;
+      this.value = parameterValue.translation
+        ? parameterValue.translation.value
+        : '';
     }
   }
 

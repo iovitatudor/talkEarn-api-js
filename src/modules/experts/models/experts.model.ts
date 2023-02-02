@@ -13,7 +13,7 @@ import { Category } from '../../categories/models/categories.model';
 import { Types } from '../enums/types.enum';
 import { Service } from '../../services/models/services.model';
 import { ContactExpert } from '../../contacts/models/contact-expert.model';
-import { ParameterExpert } from '../../parameters/models/parameter-expert';
+import { ParameterExpert } from '../../parameters/models/parameter-expert.model';
 
 interface ExpertCreateAttrs {
   project_id: number;

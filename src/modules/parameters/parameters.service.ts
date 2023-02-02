@@ -6,8 +6,9 @@ import { ParameterCreateDto } from './dto/parameter-create.dto';
 import { ParameterUpdateDto } from './dto/parameter-update.dto';
 import { ParameterExpertCreateDto } from './dto/parameter-expert-create.dto';
 import { ExpertsService } from '../experts/experts.service';
-import { ParameterExpert } from './models/parameter-expert';
-import { ParameterCreateBulkDto } from './dto/parameter-create-bulk.dto';
+import { ParameterExpert } from './models/parameter-expert.model';
+import { ParameterExpertTranslation } from './models/parameter-expert-translations.model';
+import { GlobalData } from '../auth/guards/global-data';
 
 @Injectable()
 export class ParametersService {
@@ -15,6 +16,8 @@ export class ParametersService {
     @InjectModel(Parameter) private parameterRepository: typeof Parameter,
     @InjectModel(ParameterExpert)
     private parameterExpertRepository: typeof ParameterExpert,
+    @InjectModel(ParameterExpertTranslation)
+    private parameterExpertTranslationRepository: typeof ParameterExpertTranslation,
     private expertService: ExpertsService,
   ) {}
 
@@ -40,13 +43,6 @@ export class ParametersService {
     return parameter;
   }
 
-  public async destroy(id: number): Promise<number> {
-    await this.findById(id);
-    return await this.parameterRepository.destroy({
-      where: { id, project_id: AuthGuard.projectId },
-    });
-  }
-
   public async store(parameterDto: ParameterCreateDto): Promise<Parameter> {
     const parameter = await this.parameterRepository.create({
       ...parameterDto,
@@ -68,6 +64,13 @@ export class ParametersService {
     return await this.findById(parameterId);
   }
 
+  public async destroy(id: number): Promise<number> {
+    await this.findById(id);
+    return await this.parameterRepository.destroy({
+      where: { id, project_id: AuthGuard.projectId },
+    });
+  }
+
   private async findParameterValueByExpertId(
     parameterId: number,
     expertId: number,
@@ -75,7 +78,12 @@ export class ParametersService {
     return await this.parameterExpertRepository.findOne({
       rejectOnEmpty: undefined,
       where: { parameter_id: parameterId, expert_id: expertId },
-      include: { all: true },
+      include: [
+        {
+          model: ParameterExpertTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
+      ],
     });
   }
 
@@ -92,16 +100,29 @@ export class ParametersService {
     );
 
     if (!parameterExpert) {
-      await this.parameterExpertRepository.create({
-        ...parameterExpertDto,
+      const paramExpert = await this.parameterExpertRepository.create({
         parameter_id: parameter.id,
         expert_id: expert.id,
       });
+
+      for (const language of GlobalData.languages) {
+        await this.parameterExpertTranslationRepository.create({
+          parameter_expert_id: paramExpert.id,
+          lang_id: language.id,
+          ...parameterExpertDto,
+        });
+      }
     } else {
-      await this.parameterExpertRepository.update(parameterExpertDto, {
-        returning: undefined,
-        where: { id: parameterExpert.id },
-      });
+      await this.parameterExpertTranslationRepository.update(
+        parameterExpertDto,
+        {
+          returning: undefined,
+          where: {
+            parameter_expert_id: parameterExpert.id,
+            lang_id: parameterExpertDto.langId,
+          },
+        },
+      );
     }
 
     return await this.findParameterValueByExpertId(parameter.id, expert.id);
@@ -114,11 +135,20 @@ export class ParametersService {
 
     return await this.parameterExpertRepository.findAll({
       where: { expert_id: expertId },
-      include: { all: true },
+      include: [
+        {
+          model: ParameterExpertTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
+      ],
     });
   }
 
-  public async addBulkParameters(expertId: number, parameters: Array<any>) {
+  public async addBulkParameters(
+    expertId: number,
+    parameters: Array<any>,
+    langId: number,
+  ) {
     await this.expertService.findById(expertId);
 
     parameters.map(async (parameter) => {
@@ -128,28 +158,32 @@ export class ParametersService {
       );
 
       if (!parameterExpert) {
-        await this.parameterExpertRepository.create({
-          value: parameter.value,
+        const paramExpert = await this.parameterExpertRepository.create({
           parameter_id: parameter.id,
           expert_id: expertId,
         });
-      } else {
-        await this.parameterExpertRepository.update(
-          {
+
+        for (const language of GlobalData.languages) {
+          await this.parameterExpertTranslationRepository.create({
+            parameter_expert_id: paramExpert.id,
+            lang_id: language.id,
             value: parameter.value,
-          },
+          });
+        }
+      } else {
+        await this.parameterExpertTranslationRepository.update(
+          { value: parameter.value },
           {
             returning: undefined,
-            where: { id: parameterExpert.id },
+            where: {
+              parameter_expert_id: parameterExpert.id,
+              lang_id: langId,
+            },
           },
         );
       }
     });
 
     return true;
-    // return await this.parameterExpertRepository.findAll({
-    //   where: { expert_id: expertId },
-    //   include: { all: true },
-    // });
   }
 }

@@ -6,11 +6,7 @@ import { ServiceCreateDto } from './dto/service-create.dto';
 import { ServiceUpdateDto } from './dto/service-update.dto';
 import { ExpertsService } from '../experts/experts.service';
 import { FilesService } from '../../common/files/files.service';
-import {Category} from "../categories/models/categories.model";
-import {Expert} from "../experts/models/experts.model";
-import {ParameterExpert} from "../parameters/models/parameter-expert";
-import {Parameter} from "../parameters/models/parameters.model";
-import {Collection} from "../collections/models/collection.model";
+import { Collection } from '../collections/models/collection.model';
 
 @Injectable()
 export class ServicesService {

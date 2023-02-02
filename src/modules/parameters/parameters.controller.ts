@@ -9,7 +9,7 @@ import {
   Patch,
   Post,
   ParseIntPipe,
-  HttpStatus, ParseArrayPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -20,6 +20,7 @@ import { ParameterCreateDto } from './dto/parameter-create.dto';
 import { ParameterUpdateDto } from './dto/parameter-update.dto';
 import { ParameterExpertCreateDto } from './dto/parameter-expert-create.dto';
 import { ParametersResource } from './resources/parameters.resource';
+import { SetupGuard } from '../auth/guards/setup.guard';
 import {ParameterCreateBulkDto} from "./dto/parameter-create-bulk.dto";
 
 @ApiTags('Parameters')
@@ -36,7 +37,7 @@ export class ParametersController {
     return ParametersResource.collect(parameters);
   }
 
-  @ApiOperation({ summary: 'Get parameter by Id' })
+  @ApiOperation({ summary: 'Get parameter by id' })
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   @Get('parameter/:id')
@@ -79,7 +80,7 @@ export class ParametersController {
 
   @ApiOperation({ summary: 'Set parameter value and assign to an expert' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard, AdministratorGuard)
+  @UseGuards(AuthGuard, SetupGuard)
   @Post('parameter/:parameterId/expert/:expertId')
   public async setParameterValue(
     @Param('parameterId', ParseIntPipe) parameterId: number,
@@ -98,25 +99,22 @@ export class ParametersController {
     summary: 'Set bulk parameter values and assign to an expert',
   })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard, AdministratorGuard)
+  @UseGuards(AuthGuard, SetupGuard)
   @Post('parameter/expert/:expertId')
   public async setBulkParameterValue(
     @Param('expertId', ParseIntPipe) expertId: number,
-    @Body() parameterCreateBulkDto: Array<any>,
-    // @Body(new ParseArrayPipe({ items: ParameterCreateBulkDto }))
-    // parameterCreateBulkDto: ParameterCreateBulkDto[],
+    @Body() parameterCreateBulkDto: ParameterCreateBulkDto,
   ) {
-    const parameters = await this.parametersService.addBulkParameters(
+    return await this.parametersService.addBulkParameters(
       expertId,
-      parameterCreateBulkDto,
+      parameterCreateBulkDto.parameters,
+      parameterCreateBulkDto.langId,
     );
-    return parameters;
-    // return new ExpertParametersResource(parameter);
   }
 
   @ApiOperation({ summary: 'Get parameters by expert id' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, SetupGuard)
   @Get('parameters/expert/:expertId')
   public async getExpertsParameters(
     @Param('expertId', ParseIntPipe) expertId: number,

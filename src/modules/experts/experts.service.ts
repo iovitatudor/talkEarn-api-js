@@ -9,9 +9,8 @@ import * as bcrypt from 'bcryptjs';
 import { FilesService } from '../../common/files/files.service';
 import { Op } from 'sequelize';
 import { Category } from '../categories/models/categories.model';
-import { Service } from '../services/models/services.model';
 import { Parameter } from '../parameters/models/parameters.model';
-import { ParameterExpert } from '../parameters/models/parameter-expert';
+import { ParameterExpert } from '../parameters/models/parameter-expert.model';
 
 @Injectable()
 export class ExpertsService {
