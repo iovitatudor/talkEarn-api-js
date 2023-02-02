@@ -2,10 +2,16 @@ import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CollectionCreateDto {
+  @IsNotEmpty()
+  @ApiProperty({ example: '1' })
+  public langId: number;
+
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'Trading' })
+  @ApiProperty({ example: 'Psychology' })
   public name: string;
+
+  public slug: string;
 
   @IsString()
   @ApiProperty({ example: 'Collection description', required: false })
@@ -17,5 +23,5 @@ export class CollectionCreateDto {
     required: false,
     example: 'File',
   })
-  public image: Express.Multer.File;
+  public image: string;
 }

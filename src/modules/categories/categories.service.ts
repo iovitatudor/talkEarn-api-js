@@ -71,12 +71,6 @@ export class CategoriesService {
     return category;
   }
 
-  public async destroy(id: number): Promise<number> {
-    return await this.categoryRepository.destroy({
-      where: { id, project_id: AuthGuard.projectId },
-    });
-  }
-
   public async store(
     categoryDto: CategoryCreateDto,
     icon: any,
@@ -125,5 +119,11 @@ export class CategoriesService {
     });
 
     return await this.findById(id);
+  }
+
+  public async destroy(id: number): Promise<number> {
+    return await this.categoryRepository.destroy({
+      where: { id, project_id: AuthGuard.projectId },
+    });
   }
 }

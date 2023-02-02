@@ -8,11 +8,16 @@ import { FilesService } from '../../common/files/files.service';
 import { Service } from '../services/models/services.model';
 import { Expert } from '../experts/models/experts.model';
 import { Category } from '../categories/models/categories.model';
+import { CollectionTranslation } from './models/collection_translations.model';
+import { GlobalData } from '../auth/guards/global-data';
+import slug = require('slug');
 
 @Injectable()
 export class CollectionsService {
   constructor(
     @InjectModel(Collection) private collectionRepository: typeof Collection,
+    @InjectModel(CollectionTranslation)
+    private collectionTranslationRepository: typeof CollectionTranslation,
     private fileService: FilesService,
   ) {}
 
@@ -21,6 +26,10 @@ export class CollectionsService {
       order: [['id', 'DESC']],
       where: { project_id: AuthGuard.projectId },
       include: [
+        {
+          model: CollectionTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
         {
           model: Service,
           include: [{ model: Expert, include: [{ model: Category }] }],
@@ -34,6 +43,10 @@ export class CollectionsService {
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
       include: [
+        {
+          model: CollectionTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
         {
           model: Service,
           include: [{ model: Expert, include: [{ model: Category }] }],
@@ -55,6 +68,10 @@ export class CollectionsService {
       where: { slug, project_id: AuthGuard.projectId },
       include: [
         {
+          model: CollectionTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
+        {
           model: Service,
           include: [{ model: Expert, include: [{ model: Category }] }],
         },
@@ -69,28 +86,28 @@ export class CollectionsService {
     return collection;
   }
 
-  public async destroy(id: number): Promise<number> {
-    return await this.collectionRepository.destroy({
-      where: { id, project_id: AuthGuard.projectId },
-    });
-  }
-
   public async store(
     collectionDto: CollectionCreateDto,
     image: any,
   ): Promise<Collection> {
-    let fileName = null;
     if (image) {
-      fileName = await this.fileService.createFile(image);
+      collectionDto.image = await this.fileService.createFile(image);
     }
-    const slug = this.createSlug(collectionDto.name);
+    collectionDto.slug = slug(collectionDto.name, { locale: 'en' });
 
     const collection = await this.collectionRepository.create({
       ...collectionDto,
-      slug,
-      image: fileName,
       project_id: Number(AuthGuard.projectId),
     });
+
+    for (const language of GlobalData.languages) {
+      await this.collectionTranslationRepository.create({
+        collection_id: collection.id,
+        lang_id: language.id,
+        ...collectionDto,
+      });
+    }
+
     return await this.findById(collection.id);
   }
 
@@ -99,33 +116,29 @@ export class CollectionsService {
     collectionDto: CollectionUpdateDto,
     icon: any,
   ): Promise<Collection> {
-    let data = { ...collectionDto };
     if (icon) {
-      const fileName = await this.fileService.createFile(icon);
-      data = { ...collectionDto, image: fileName };
+      collectionDto.image = await this.fileService.createFile(icon);
     }
 
-    const slug = this.createSlug(collectionDto.name);
+    await this.collectionRepository.update(collectionDto, {
+      returning: undefined,
+      where: { id, project_id: AuthGuard.projectId },
+    });
 
-    await this.collectionRepository.update(
-      { ...data, slug },
-      {
-        returning: undefined,
-        where: { id, project_id: AuthGuard.projectId },
+    await this.collectionTranslationRepository.update(collectionDto, {
+      returning: undefined,
+      where: {
+        collection_id: id,
+        lang_id: collectionDto.langId,
       },
-    );
+    });
+
     return await this.findById(id);
   }
 
-  private createSlug(text: string) {
-    return text
-      .toString()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]+/g, '')
-      .replace(/--+/g, '-');
+  public async destroy(id: number): Promise<number> {
+    return await this.collectionRepository.destroy({
+      where: { id, project_id: AuthGuard.projectId },
+    });
   }
 }

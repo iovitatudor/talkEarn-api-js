@@ -9,7 +9,8 @@ import {
   Patch,
   Post,
   ParseIntPipe,
-  UseInterceptors, UploadedFile,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -18,15 +19,16 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CollectionsService } from './collections.service';
 import { CollectionsResource } from './resources/collections.resource';
 import { CollectionCreateDto } from './dto/collection-create.dto';
 import { CollectionUpdateDto } from './dto/collection-update.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { ClientGuard } from '../auth/guards/client.guard';
+import { SetupGuard } from '../auth/guards/setup.guard';
 
 @ApiTags('Collections')
 @Controller('api')
@@ -36,17 +38,17 @@ export class CollectionsController {
   @ApiOperation({ summary: 'Get all collections per project' })
   @ApiResponse({ status: 200, type: [CollectionsResource] })
   @ApiBearerAuth('Authorization')
-  @UseGuards(ClientGuard)
+  @UseGuards(ClientGuard, SetupGuard)
   @Get('collections')
   public async getAll(): Promise<CollectionsResource[]> {
     const collections = await this.collectionsService.getAll();
     return CollectionsResource.collect(collections);
   }
 
-  @ApiOperation({ summary: 'Get collection by Id' })
+  @ApiOperation({ summary: 'Get collection by id' })
   @ApiResponse({ status: 200, type: CollectionsResource })
   @ApiBearerAuth('Authorization')
-  @UseGuards(ClientGuard)
+  @UseGuards(ClientGuard, SetupGuard)
   @Get('collection/:id')
   public async getById(
     @Param('id', ParseIntPipe) id: number,
@@ -58,7 +60,7 @@ export class CollectionsController {
   @ApiOperation({ summary: 'Get collection by slug' })
   @ApiResponse({ status: 200, type: CollectionsResource })
   @ApiBearerAuth('Authorization')
-  @UseGuards(ClientGuard)
+  @UseGuards(ClientGuard, SetupGuard)
   @Get('collection/slug/:slug')
   public async getBySlug(
     @Param('slug') slug: string,
@@ -72,7 +74,7 @@ export class CollectionsController {
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image'))
-  @UseGuards(AuthGuard, AdministratorGuard)
+  @UseGuards(AuthGuard, AdministratorGuard, SetupGuard)
   @Post('collection')
   public async create(
     @Body() collectionDto: CollectionCreateDto,

@@ -7,14 +7,17 @@ import { Expert } from '../experts/models/experts.model';
 import { AuthModule } from '../auth/auth.module';
 import { FilesModule } from '../../common/files/files.module';
 import { ProjectsModule } from '../projects/projects.module';
+import { CollectionTranslation } from './models/collection_translations.model';
+import { LanguagesModule } from '../languages/languages.module';
 
 @Module({
   controllers: [CollectionsController],
   providers: [CollectionsService],
   imports: [
-    SequelizeModule.forFeature([Collection, Expert]),
+    SequelizeModule.forFeature([Collection, CollectionTranslation, Expert]),
     AuthModule,
     FilesModule,
+    LanguagesModule,
     forwardRef(() => ProjectsModule),
   ],
 })

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
+import * as path from 'path';
 
 import { ProjectsModule } from './modules/projects/projects.module';
 import { Project } from './modules/projects/models/projects.model';
@@ -21,11 +22,11 @@ import { FilesModule } from './common/files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CallsSocketsModule } from './sockets/calls-socket/calls-sockets.module';
 import { CallsModule } from './modules/calls/calls.module';
-import * as path from 'path';
 import { PaginateModule } from 'nestjs-sequelize-paginate';
 import { User } from './modules/users/models/user.model';
 import { UsersModule } from './modules/users/users.module';
 import { Collection } from './modules/collections/models/collection.model';
+import { CollectionTranslation } from './modules/collections/models/collection_translations.model';
 import { CollectionsModule } from './modules/collections/collections.module';
 import { Language } from './modules/languages/models/languages.model';
 import { LanguagesModule } from './modules/languages/languages.module';
@@ -64,6 +65,7 @@ import { CategoryTranslation } from './modules/categories/models/categories_tran
         ParameterExpert,
         User,
         Collection,
+        CollectionTranslation,
         Language,
       ],
     }),

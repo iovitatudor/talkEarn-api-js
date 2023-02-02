@@ -3,18 +3,18 @@ import {
   Column,
   ForeignKey,
   HasMany,
+  HasOne,
   Table,
   DataType,
   Model,
 } from 'sequelize-typescript';
 import { Project } from '../../projects/models/projects.model';
 import { Service } from '../../services/models/services.model';
+import { CollectionTranslation } from './collection_translations.model';
 
 interface CollectionCreateAttrs {
   project_id: number;
-  name: string;
   slug: string;
-  description: string;
   image: string;
 }
 
@@ -37,13 +37,7 @@ export class Collection extends Model<Collection, CollectionCreateAttrs> {
   public project_id: number;
 
   @Column({ type: DataType.STRING, allowNull: false })
-  name: string;
-
-  @Column({ type: DataType.STRING, allowNull: false })
   slug: string;
-
-  @Column({ type: DataType.TEXT, allowNull: true })
-  description: string;
 
   @Column({
     type: DataType.STRING,
@@ -54,6 +48,9 @@ export class Collection extends Model<Collection, CollectionCreateAttrs> {
 
   @HasMany(() => Service)
   services: Service[];
+
+  @HasOne(() => CollectionTranslation)
+  translation: CollectionTranslation;
 
   @BelongsTo(() => Project, 'project_id')
   public project: Project;
