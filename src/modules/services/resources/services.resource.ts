@@ -17,9 +17,15 @@ export class ServiceResource {
     if (service) {
       this.id = service.id;
       this.collectionId = service.collection_id;
-      this.name = service.name;
-      this.description = service.description;
-      this.video = service.video ? process.env.BASE_URL + service.video : null;
+      this.name = service.translation ? service.translation.name : '';
+      this.description = service.translation
+        ? service.translation.description
+        : '';
+      this.video = service.translation
+        ? service.translation.video
+          ? process.env.BASE_URL + service.video
+          : null
+        : '';
       this.price = service.price;
       this.hash = service.hash;
       if (service.collection) {

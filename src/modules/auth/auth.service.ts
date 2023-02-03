@@ -12,12 +12,16 @@ import { ProjectsService } from '../projects/projects.service';
 import { ProjectWithAdminDto } from './dto/project-with-admin.dto';
 import { LoginDto } from './dto/login.dto';
 import { Types } from '../experts/enums/types.enum';
+import { LanguagesService } from '../languages/languages.service';
+import { AuthGuard } from './guards/auth.guard';
+import {GlobalData} from "./guards/global-data";
 
 @Injectable()
 export class AuthService {
   constructor(
     private projectService: ProjectsService,
     private expertService: ExpertsService,
+    private languageService: LanguagesService,
     private jwtService: JwtService,
   ) {}
 
@@ -38,11 +42,20 @@ export class AuthService {
     await this.validateProject(projectWithAdminDto.name);
 
     const project = await this.projectService.create(projectWithAdminDto);
+    AuthGuard.projectId = project.id;
+    const language = await this.languageService.store(
+      projectWithAdminDto.language,
+      '',
+    );
+
+    GlobalData.langId = language.id;
+    GlobalData.languages = [language];
 
     const hashPassword = await bcrypt.hash(password, 5);
 
     const expert = await this.expertService.partialStore({
       ...administrator,
+      slug: '',
       password: hashPassword,
       project_id: project.id,
       type: Types.Administrator,
@@ -58,7 +71,7 @@ export class AuthService {
       email: expert.email,
       id: expert.id,
       projectId: expert.project_id,
-      name: expert.name,
+      // name: expert.translation.name,
       type: expert.type,
     };
     return {

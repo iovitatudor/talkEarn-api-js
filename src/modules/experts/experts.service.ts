@@ -11,11 +11,18 @@ import { Op } from 'sequelize';
 import { Category } from '../categories/models/categories.model';
 import { Parameter } from '../parameters/models/parameters.model';
 import { ParameterExpert } from '../parameters/models/parameter-expert.model';
+import { CategoryTranslation } from '../categories/models/categories_translations.model';
+import { GlobalData } from '../auth/guards/global-data';
+import { ParameterExpertTranslation } from '../parameters/models/parameter-expert-translations.model';
+import { ExpertTranslation } from './models/experts-translations.model';
+import slug = require('slug');
 
 @Injectable()
 export class ExpertsService {
   constructor(
     @InjectModel(Expert) private expertRepository: typeof Expert,
+    @InjectModel(ExpertTranslation)
+    private expertTranslationRepository: typeof ExpertTranslation,
     private fileService: FilesService,
   ) {}
 
@@ -47,8 +54,31 @@ export class ExpertsService {
       order: [['id', 'DESC']],
       where: { ...where },
       include: [
-        { model: Category },
-        { model: ParameterExpert, include: [{ model: Parameter }] },
+        {
+          model: ExpertTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
+        {
+          model: Category,
+          include: [
+            {
+              model: CategoryTranslation,
+              where: { lang_id: GlobalData.langId },
+              required: false,
+            },
+          ],
+        },
+        {
+          model: ParameterExpert,
+          include: [
+            { model: Parameter },
+            {
+              model: ParameterExpertTranslation,
+              where: { lang_id: GlobalData.langId },
+              required: false,
+            },
+          ],
+        },
       ],
       limit: 50,
       offset: 0,
@@ -70,8 +100,31 @@ export class ExpertsService {
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
       include: [
-        { model: Category },
-        { model: ParameterExpert, include: [{ model: Parameter }] },
+        {
+          model: ExpertTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
+        {
+          model: Category,
+          include: [
+            {
+              model: CategoryTranslation,
+              where: { lang_id: GlobalData.langId },
+              required: false,
+            },
+          ],
+        },
+        {
+          model: ParameterExpert,
+          include: [
+            { model: Parameter },
+            {
+              model: ParameterExpertTranslation,
+              where: { lang_id: GlobalData.langId },
+              required: false,
+            },
+          ],
+        },
       ],
     });
 
@@ -86,8 +139,31 @@ export class ExpertsService {
       rejectOnEmpty: undefined,
       where: { slug, project_id: AuthGuard.projectId },
       include: [
-        { model: Category },
-        { model: ParameterExpert, include: [{ model: Parameter }] },
+        {
+          model: ExpertTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
+        {
+          model: Category,
+          include: [
+            {
+              model: CategoryTranslation,
+              where: { lang_id: GlobalData.langId },
+              required: false,
+            },
+          ],
+        },
+        {
+          model: ParameterExpert,
+          include: [
+            { model: Parameter },
+            {
+              model: ParameterExpertTranslation,
+              where: { lang_id: GlobalData.langId },
+              required: false,
+            },
+          ],
+        },
       ],
     });
     if (!expert) {
@@ -96,43 +172,76 @@ export class ExpertsService {
     return expert;
   }
 
+  async store(expertDto: ExpertCreateDto, avatar: any): Promise<Expert> {
+    await this.validateExpert(expertDto.email, 0);
+
+    if (avatar) {
+      expertDto.avatar = await this.fileService.createFile(avatar);
+    }
+
+    expertDto.password = await bcrypt.hash(expertDto.password, 5);
+    expertDto.slug = slug(expertDto.name, { locale: 'en' });
+
+    const expert = await this.expertRepository.create({
+      ...expertDto,
+      project_id: AuthGuard.projectId,
+    });
+
+    for (const language of GlobalData.languages) {
+      await this.expertTranslationRepository.create({
+        expert_id: expert.id,
+        lang_id: language.id,
+        ...expertDto,
+      });
+    }
+
+    return await this.findById(expert.id);
+  }
+
   public async update(
     id: number,
     expertDto: ExpertUpdateDto,
     avatar: any,
   ): Promise<Expert> {
     await this.validateExpert(expertDto.email, id);
-    let data = { ...expertDto };
+
     if (avatar) {
-      const fileName = await this.fileService.createFile(avatar);
-      data = { ...expertDto, avatar: fileName };
+      expertDto.avatar = await this.fileService.createFile(avatar);
     }
 
-    if (data.password) {
-      data.password = await bcrypt.hash(data.password, 5);
+    if (expertDto.password) {
+      expertDto.password = await bcrypt.hash(expertDto.password, 5);
     }
 
-    const slug = this.createSlug(expertDto.name);
+    await this.expertRepository.update(expertDto, {
+      returning: undefined,
+      where: { id, project_id: AuthGuard.projectId },
+    });
 
-    await this.expertRepository.update(
-      { ...data, slug },
-      {
-        returning: undefined,
-        where: { id, project_id: AuthGuard.projectId },
+    await this.expertTranslationRepository.update(expertDto, {
+      returning: undefined,
+      where: {
+        expert_id: id,
+        lang_id: expertDto.langId,
       },
-    );
+    });
+
     return await this.findById(id);
   }
 
-  public async saveVideo(id: number, video: any): Promise<Expert> {
+  public async saveVideo(
+    id: number,
+    video: any,
+    langId: number,
+  ): Promise<Expert> {
     await this.findById(id);
     if (video) {
       const fileName = await this.fileService.createFile(video);
-      await this.expertRepository.update(
+      await this.expertTranslationRepository.update(
         { video: fileName },
         {
           returning: undefined,
-          where: { id, project_id: AuthGuard.projectId },
+          where: { expert_id: id, lang_id: langId },
         },
       );
     }
@@ -153,28 +262,19 @@ export class ExpertsService {
 
   async partialStore(expertDto: ExpertCreateExpressDto): Promise<Expert> {
     await this.validateExpert(expertDto.email, 0);
-    const slug = this.createSlug(expertDto.name);
 
-    return await this.expertRepository.create({ ...expertDto, slug });
-  }
+    expertDto.slug = slug(expertDto.name, { locale: 'en' });
 
-  async store(expertDto: ExpertCreateDto, avatar: any): Promise<Expert> {
-    await this.validateExpert(expertDto.email, 0);
-    let data = { ...expertDto };
-    if (avatar) {
-      const fileName = await this.fileService.createFile(avatar);
-      data = { ...expertDto, avatar: fileName };
+    const expert = await this.expertRepository.create({ ...expertDto });
+
+    for (const language of GlobalData.languages) {
+      await this.expertTranslationRepository.create({
+        expert_id: expert.id,
+        lang_id: language.id,
+        ...expertDto,
+      });
     }
 
-    const hashPassword = await bcrypt.hash(expertDto.password, 5);
-    const slug = this.createSlug(expertDto.name);
-
-    const expert = await this.expertRepository.create({
-      ...data,
-      slug,
-      password: hashPassword,
-      project_id: AuthGuard.projectId,
-    });
     return await this.findById(expert.id);
   }
 
@@ -228,7 +328,33 @@ export class ExpertsService {
     const data = await this.expertRepository.findAll({
       order: [['id', 'DESC']],
       where: { ...where },
-      include: { all: true, nested: true },
+      include: [
+        {
+          model: ExpertTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
+        {
+          model: Category,
+          include: [
+            {
+              model: CategoryTranslation,
+              where: { lang_id: GlobalData.langId },
+              required: false,
+            },
+          ],
+        },
+        {
+          model: ParameterExpert,
+          include: [
+            { model: Parameter },
+            {
+              model: ParameterExpertTranslation,
+              where: { lang_id: GlobalData.langId },
+              required: false,
+            },
+          ],
+        },
+      ],
       limit: 40,
       offset,
     });

@@ -26,6 +26,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { ServiceUpdateDto } from './dto/service-update.dto';
 import { ClientGuard } from '../auth/guards/client.guard';
+import { SetupGuard } from '../auth/guards/setup.guard';
 
 @ApiTags('Services')
 @Controller('api')
@@ -34,7 +35,7 @@ export class ServicesController {
 
   @ApiOperation({ summary: 'Get all services per project' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(ClientGuard)
+  @UseGuards(ClientGuard, SetupGuard)
   @Get('services')
   public async getAll(): Promise<ServiceResource[]> {
     const services = await this.servicesService.getAll();
@@ -43,7 +44,7 @@ export class ServicesController {
 
   @ApiOperation({ summary: 'Get service by Id' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(ClientGuard)
+  @UseGuards(ClientGuard, SetupGuard)
   @Get('service/:id')
   public async getById(
     @Param('id', ParseIntPipe) id: number,
@@ -54,7 +55,7 @@ export class ServicesController {
 
   @ApiOperation({ summary: 'Get service by hash' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(ClientGuard)
+  @UseGuards(ClientGuard, SetupGuard)
   @Get('service/hash/:hash')
   public async getByHash(
     @Param('hash') hash: string,
@@ -67,7 +68,7 @@ export class ServicesController {
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('video'))
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, SetupGuard)
   @Post('service')
   public async create(
     @Body() serviceDto: ServiceCreateDto,
@@ -81,7 +82,7 @@ export class ServicesController {
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('video'))
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, SetupGuard)
   @Patch('service/:id')
   public async edit(
     @Param('id', ParseIntPipe) id: number,
@@ -103,7 +104,7 @@ export class ServicesController {
 
   @ApiOperation({ summary: 'Get services by expert id' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(ClientGuard)
+  @UseGuards(ClientGuard, SetupGuard)
   @Get('services/expert/:expertId')
   public async getExpertServices(
     @Param('expertId', ParseIntPipe) expertId: number,

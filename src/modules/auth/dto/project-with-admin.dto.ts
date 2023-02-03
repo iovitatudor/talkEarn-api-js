@@ -7,9 +7,10 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { ModeTypes } from '../../projects/enums/mode-types.enum';
 import { ProjectAdministratorDto } from './project-administrator.dto';
-import { Type } from 'class-transformer';
+import { ProjectLanguageDto } from './project-language.dto';
 
 export class ProjectWithAdminDto {
   @IsString()
@@ -33,4 +34,12 @@ export class ProjectWithAdminDto {
   @Type(() => ProjectAdministratorDto)
   @ApiProperty({ isArray: false, type: ProjectAdministratorDto })
   public administrator: ProjectAdministratorDto;
+
+  @IsDefined()
+  @IsNotEmptyObject()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ProjectLanguageDto)
+  @ApiProperty({ isArray: false, type: ProjectLanguageDto })
+  public language: ProjectLanguageDto;
 }

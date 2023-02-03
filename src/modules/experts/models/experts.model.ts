@@ -5,7 +5,7 @@ import {
   ForeignKey,
   DataType,
   Model,
-  HasMany,
+  HasMany, HasOne,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 import { Project } from '../../projects/models/projects.model';
@@ -14,22 +14,16 @@ import { Types } from '../enums/types.enum';
 import { Service } from '../../services/models/services.model';
 import { ContactExpert } from '../../contacts/models/contact-expert.model';
 import { ParameterExpert } from '../../parameters/models/parameter-expert.model';
+import {ExpertTranslation} from "./experts-translations.model";
 
 interface ExpertCreateAttrs {
   project_id: number;
   category_id: number;
-  name: string;
-  description: string;
   slug: string;
   email: string;
-  profession: string;
-  region: string;
-  language: string;
-  experience: string;
-  rating: string;
   available: string;
   avatar: string;
-  video: string;
+  rating: string;
   price: number;
   password: string;
   token: string;
@@ -61,12 +55,6 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
   public slug: string;
 
   @Column({ type: DataType.STRING, allowNull: false })
-  public name: string;
-
-  @Column({ type: DataType.TEXT, allowNull: true })
-  public description: string;
-
-  @Column({ type: DataType.STRING, allowNull: false })
   public email: string;
 
   @Column({ type: DataType.BOOLEAN, defaultValue: 1 })
@@ -84,25 +72,6 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
     defaultValue: 'f1d677a1-5e86-4fb3-acf8-4cec05e7534d.jpeg',
   })
   public avatar: string;
-
-  @Column({ type: DataType.TEXT, allowNull: true })
-  public video: string;
-
-  @ApiProperty({ example: 'Trader' })
-  @Column({ type: DataType.STRING, allowNull: true })
-  public profession: string;
-
-  @ApiProperty({ example: 'London' })
-  @Column({ type: DataType.STRING, allowNull: true })
-  public region: string;
-
-  @ApiProperty({ example: 'English' })
-  @Column({ type: DataType.STRING, allowNull: true })
-  public language: string;
-
-  @ApiProperty({ example: '5 years' })
-  @Column({ type: DataType.STRING, allowNull: true })
-  public experience: string;
 
   @ApiProperty({ example: '5' })
   @Column({ type: DataType.STRING, allowNull: true, defaultValue: 5 })
@@ -138,4 +107,7 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
 
   @HasMany(() => ParameterExpert, { onDelete: 'cascade' })
   public parameters: ParameterExpert[];
+
+  @HasOne(() => ExpertTranslation, { onDelete: 'cascade' })
+  public translation: ExpertTranslation;
 }

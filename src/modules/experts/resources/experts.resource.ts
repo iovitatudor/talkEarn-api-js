@@ -36,8 +36,8 @@ export class ExpertsResource {
 
       this.id = expert.id;
       this.categoryId = expert.category_id;
-      this.name = expert.name;
-      this.description = expert.description;
+      this.name = expert.translation ? expert.translation.name : '';
+      this.description = expert.translation ? expert.translation.description : '';
       this.slug = expert.slug;
       this.email = expert.email;
       this.recommended = expert.recommended;
@@ -45,10 +45,10 @@ export class ExpertsResource {
       this.available = expert.available;
       this.avatar = expert.avatar ? process.env.BASE_URL + expert.avatar : null;
       this.video = expert.video ? process.env.BASE_URL + expert.video : null;
-      this.profession = expert.profession;
-      this.region = expert.region;
-      this.language = expert.language;
-      this.experience = expert.experience;
+      this.profession = expert.translation ? expert.translation.profession: '';
+      this.region = expert.translation ? expert.translation.region : '';
+      this.language = expert.translation ? expert.translation.language : '';
+      this.experience = expert.translation ? expert.translation.experience : '';
       this.rating = expert.rating;
       this.price = expert.price;
       this.type = expert.type;

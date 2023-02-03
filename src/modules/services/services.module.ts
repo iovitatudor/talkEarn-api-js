@@ -7,15 +7,18 @@ import { AuthModule } from '../auth/auth.module';
 import { ExpertsModule } from '../experts/experts.module';
 import { FilesModule } from '../../common/files/files.module';
 import { ProjectsModule } from '../projects/projects.module';
+import { ServiceTranslation } from './models/services-translations.model';
+import { LanguagesModule } from '../languages/languages.module';
 
 @Module({
   providers: [ServicesService],
   controllers: [ServicesController],
   imports: [
-    SequelizeModule.forFeature([Service]),
+    SequelizeModule.forFeature([Service, ServiceTranslation]),
     AuthModule,
     ExpertsModule,
     FilesModule,
+    LanguagesModule,
     forwardRef(() => ProjectsModule),
   ],
 })

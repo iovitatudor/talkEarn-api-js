@@ -32,6 +32,8 @@ import { CollectionsModule } from './modules/collections/collections.module';
 import { Language } from './modules/languages/models/languages.model';
 import { LanguagesModule } from './modules/languages/languages.module';
 import { CategoryTranslation } from './modules/categories/models/categories_translations.model';
+import { ServiceTranslation } from './modules/services/models/services-translations.model';
+import { ExpertTranslation } from './modules/experts/models/experts-translations.model';
 
 @Module({
   imports: [
@@ -59,7 +61,9 @@ import { CategoryTranslation } from './modules/categories/models/categories_tran
         Category,
         CategoryTranslation,
         Expert,
+        ExpertTranslation,
         Service,
+        ServiceTranslation,
         Contact,
         ContactExpert,
         Parameter,

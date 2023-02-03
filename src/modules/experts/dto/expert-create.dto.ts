@@ -5,8 +5,15 @@ import { Types } from '../enums/types.enum';
 export class ExpertCreateDto {
   @IsString()
   @IsNotEmpty()
+  @ApiProperty({ example: '1' })
+  public langId: number;
+
+  @IsString()
+  @IsNotEmpty()
   @ApiProperty({ example: 'John Doe', description: 'Expert name' })
   public name: string;
+
+  public slug: string;
 
   @ApiProperty({ example: 'Description' })
   public description: string;

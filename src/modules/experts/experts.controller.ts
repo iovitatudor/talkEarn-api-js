@@ -28,8 +28,9 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { AdministratorGuard } from '../auth/guards/administrator.guard';
 import { Express } from 'express';
 import { ClientGuard } from '../auth/guards/client.guard';
-import {ExpertVideoAddDto} from "./dto/expert-video-add.dto";
-import {ExpertDeviceTokenAddDto} from "./dto/expert-device-token-add.dto";
+import { ExpertVideoAddDto } from './dto/expert-video-add.dto';
+import { ExpertDeviceTokenAddDto } from './dto/expert-device-token-add.dto';
+import { SetupGuard } from '../auth/guards/setup.guard';
 
 @ApiTags('Experts')
 @Controller('api')
@@ -37,7 +38,7 @@ export class ExpertsController {
   public constructor(private expertService: ExpertsService) {}
 
   @ApiOperation({ summary: 'Get all experts per project' })
-  @UseGuards(ClientGuard)
+  @UseGuards(ClientGuard, SetupGuard)
   @ApiBearerAuth('Authorization')
   @Get('experts')
   public async getAll(@Query() query) {
@@ -60,7 +61,7 @@ export class ExpertsController {
   }
 
   @ApiOperation({ summary: 'Add/Edit expert video' })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, SetupGuard)
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('video'))
@@ -70,21 +71,27 @@ export class ExpertsController {
     @UploadedFile() video: Express.Multer.File,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ExpertsResource> {
-    const expert = await this.expertService.saveVideo(id, video);
+    const expert = await this.expertService.saveVideo(
+      id,
+      video,
+      expertDto.langId,
+    );
     return new ExpertsResource(expert);
   }
 
-  @ApiOperation({ summary: 'Get expert by Id' })
-  @UseGuards(ClientGuard)
+  @ApiOperation({ summary: 'Get expert by id' })
+  @UseGuards(ClientGuard, SetupGuard)
   @ApiBearerAuth('Authorization')
   @Get('expert/:id')
-  public async getById(@Param('id', ParseIntPipe) id: number): Promise<ExpertsResource> {
+  public async getById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ExpertsResource> {
     const expert = await this.expertService.findById(id);
     return new ExpertsResource(expert);
   }
 
   @ApiOperation({ summary: 'Get expert by Slug' })
-  @UseGuards(ClientGuard)
+  @UseGuards(ClientGuard, SetupGuard)
   @ApiBearerAuth('Authorization')
   @Get('expert/slug/:slug')
   public async getBySlug(
@@ -95,7 +102,7 @@ export class ExpertsController {
   }
 
   @ApiOperation({ summary: 'Create expert' })
-  @UseGuards(AuthGuard, AdministratorGuard)
+  @UseGuards(AuthGuard, AdministratorGuard, SetupGuard)
   @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('avatar'))
@@ -137,7 +144,9 @@ export class ExpertsController {
   @ApiBearerAuth('Authorization')
   @HttpCode(201)
   @Patch('expert/status/:id')
-  public async toggleStatus(@Param('id', ParseIntPipe) id: number): Promise<ExpertsResource> {
+  public async toggleStatus(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ExpertsResource> {
     const expert = await this.expertService.toggleStatus(id);
     return new ExpertsResource(expert);
   }
@@ -159,7 +168,7 @@ export class ExpertsController {
   }
 
   @ApiOperation({ summary: 'Search experts per project' })
-  @UseGuards(ClientGuard)
+  @UseGuards(ClientGuard, SetupGuard)
   @ApiBearerAuth('Authorization')
   @Get('experts/search')
   public async search(@Query() query) {

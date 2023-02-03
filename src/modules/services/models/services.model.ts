@@ -1,23 +1,21 @@
 import {
   Model,
   BelongsTo,
+  HasOne,
   Column,
   ForeignKey,
   Table,
   DataType,
 } from 'sequelize-typescript';
-import { ApiProperty } from '@nestjs/swagger';
 import { Project } from '../../projects/models/projects.model';
 import { Expert } from '../../experts/models/experts.model';
 import { Collection } from '../../collections/models/collection.model';
+import { ServiceTranslation } from './services-translations.model';
 
 interface ServiceCreationAttrs {
   project_id: number;
   expert_id: number;
   collection_id: number;
-  name: string;
-  description: string;
-  video: string;
   price: number;
   hash: string;
 }
@@ -28,7 +26,6 @@ interface ServiceCreationAttrs {
   updatedAt: 'updated_at',
 })
 export class Service extends Model<Service, ServiceCreationAttrs> {
-  @ApiProperty({ example: 1 })
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -49,25 +46,14 @@ export class Service extends Model<Service, ServiceCreationAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: true })
   public collection_id: number;
 
-  @ApiProperty({ example: 'Trading' })
-  @Column({ type: DataType.STRING, allowNull: false })
-  public name: string;
-
-  @ApiProperty({ example: 'File' })
-  @Column({ type: DataType.STRING, allowNull: true })
-  public video: string;
-
-  @ApiProperty({ example: 'Short description' })
-  @Column({ type: DataType.TEXT, allowNull: true })
-  public description: string;
-
-  @ApiProperty({ example: '20' })
   @Column({ type: DataType.INTEGER, allowNull: true })
   public price: number;
 
-  @ApiProperty({ example: '20' })
   @Column({ type: DataType.STRING, allowNull: true })
   public hash: string;
+
+  @HasOne(() => ServiceTranslation)
+  public translation: ServiceTranslation;
 
   @BelongsTo(() => Project, { onDelete: 'cascade' })
   public project: Project;

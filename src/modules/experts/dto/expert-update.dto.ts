@@ -4,8 +4,14 @@ import { Types } from '../enums/types.enum';
 
 export class ExpertUpdateDto {
   @IsString()
+  @ApiProperty({ example: '1' })
+  public langId: number;
+
+  @IsString()
   @ApiProperty({ example: 'John Doe', required: false })
   public name: string;
+
+  public slug: string;
 
   @ApiProperty({ example: 'Description' })
   public description: string;

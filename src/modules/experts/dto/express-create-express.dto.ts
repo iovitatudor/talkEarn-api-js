@@ -8,6 +8,8 @@ export class ExpertCreateExpressDto {
   @ApiProperty({ example: 'John Doe', description: 'Expert name' })
   public name: string;
 
+  public slug: string;
+
   @IsEmail()
   @IsNotEmpty()
   @ApiProperty({ example: 'john@email.com', description: 'Expert email' })

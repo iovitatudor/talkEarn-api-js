@@ -8,7 +8,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { AdministratorGuard } from './guards/administrator.guard';
 import { ClientGuard } from './guards/client.guard';
 import { SetupGuard } from './guards/setup.guard';
-import {LanguagesModule} from "../languages/languages.module";
+import { LanguagesModule } from '../languages/languages.module';
 
 @Module({
   providers: [
