@@ -14,11 +14,12 @@ import { LanguagesModule } from '../languages/languages.module';
   controllers: [CategoriesController],
   providers: [CategoriesService],
   imports: [
-    SequelizeModule.forFeature([Category, CategoryTranslation, Expert]),
-    AuthModule,
     FilesModule,
-    LanguagesModule,
+    SequelizeModule.forFeature([Category, CategoryTranslation, Expert]),
+    forwardRef(() => AuthModule),
     forwardRef(() => ProjectsModule),
+    forwardRef(() => LanguagesModule),
   ],
+  exports: [CategoriesService],
 })
 export class CategoriesModule {}

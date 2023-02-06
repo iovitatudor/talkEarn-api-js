@@ -8,6 +8,7 @@ import { FilesService } from '../../common/files/files.service';
 import { CategoryTranslation } from './models/categories_translations.model';
 import { GlobalData } from '../auth/guards/global-data';
 import slug = require('slug');
+import {Language} from "../languages/models/languages.model";
 
 @Injectable()
 export class CategoriesService {
@@ -124,6 +125,29 @@ export class CategoriesService {
   public async destroy(id: number): Promise<number> {
     return await this.categoryRepository.destroy({
       where: { id, project_id: AuthGuard.projectId },
+    });
+  }
+
+  public async addNewTranslations(language: Language) {
+    const categoryTranslations =
+      await this.categoryTranslationRepository.findAll({
+        where: { lang_id: GlobalData.langId },
+      });
+
+    for (const categoryTranslation of categoryTranslations) {
+      await this.categoryTranslationRepository.create({
+        category_id: categoryTranslation.category_id,
+        lang_id: language.id,
+        name: categoryTranslation.name,
+        description: categoryTranslation.description,
+      });
+    }
+    return categoryTranslations;
+  }
+
+  async deleteTranslations(language: Promise<Language>) {
+    return await this.categoryTranslationRepository.destroy({
+      where: { lang_id: (await language).id },
     });
   }
 }

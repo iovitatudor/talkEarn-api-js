@@ -10,6 +10,7 @@ import { ServiceCreateDto } from './dto/service-create.dto';
 import { ServiceUpdateDto } from './dto/service-update.dto';
 import { ExpertsService } from '../experts/experts.service';
 import { FilesService } from '../../common/files/files.service';
+import {Language} from "../languages/models/languages.model";
 
 @Injectable()
 export class ServicesService {
@@ -176,6 +177,30 @@ export class ServicesService {
           ],
         },
       ],
+    });
+  }
+
+  public async addNewTranslations(language: Language) {
+    const serviceTranslations = await this.serviceTranslationRepository.findAll(
+      {
+        where: { lang_id: GlobalData.langId },
+      },
+    );
+
+    for (const serviceTranslation of serviceTranslations) {
+      await this.serviceTranslationRepository.create({
+        service_id: serviceTranslation.service_id,
+        lang_id: language.id,
+        name: serviceTranslation.name,
+        description: serviceTranslation.description,
+        video: serviceTranslation.video,
+      });
+    }
+  }
+
+  public async deleteTranslations(language: Promise<Language>) {
+    return await this.serviceTranslationRepository.destroy({
+      where: { lang_id: (await language).id },
     });
   }
 }

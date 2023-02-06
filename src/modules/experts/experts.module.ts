@@ -16,9 +16,9 @@ import { LanguagesModule } from '../languages/languages.module';
   providers: [ExpertsService],
   imports: [
     SequelizeModule.forFeature([Expert, ExpertTranslation, Project, Category]),
-    forwardRef(() => AuthModule),
     FilesModule,
     LanguagesModule,
+    forwardRef(() => AuthModule),
     forwardRef(() => ProjectsModule),
   ],
   exports: [ExpertsService],

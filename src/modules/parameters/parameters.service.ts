@@ -9,6 +9,7 @@ import { ExpertsService } from '../experts/experts.service';
 import { ParameterExpert } from './models/parameter-expert.model';
 import { ParameterExpertTranslation } from './models/parameter-expert-translations.model';
 import { GlobalData } from '../auth/guards/global-data';
+import {Language} from "../languages/models/languages.model";
 
 @Injectable()
 export class ParametersService {
@@ -185,5 +186,26 @@ export class ParametersService {
     });
 
     return true;
+  }
+
+  public async addNewTranslations(language: Language) {
+    const serviceTranslations =
+      await this.parameterExpertTranslationRepository.findAll({
+        where: { lang_id: GlobalData.langId },
+      });
+
+    for (const serviceTranslation of serviceTranslations) {
+      await this.parameterExpertTranslationRepository.create({
+        parameter_expert_id: serviceTranslation.parameter_expert_id,
+        lang_id: language.id,
+        value: serviceTranslation.value,
+      });
+    }
+  }
+
+  public async deleteTranslations(language: Promise<Language>) {
+    return await this.parameterExpertTranslationRepository.destroy({
+      where: { lang_id: (await language).id },
+    });
   }
 }

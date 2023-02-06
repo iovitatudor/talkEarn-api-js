@@ -5,16 +5,26 @@ import { LanguageUpdateDto } from './dto/language-update.dto';
 import { LanguageCreateDto } from './dto/language-create.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { FilesService } from '../../common/files/files.service';
+import { CategoriesService } from '../categories/categories.service';
+import { CollectionsService } from '../collections/collections.service';
+import { ServicesService } from '../services/services.service';
+import { ParametersService } from '../parameters/parameters.service';
+import { ExpertsService } from '../experts/experts.service';
 
 @Injectable()
 export class LanguagesService {
   constructor(
-    @InjectModel(Language) private LanguageRepository: typeof Language,
+    @InjectModel(Language) private languageRepository: typeof Language,
     private fileService: FilesService,
+    private categoryService: CategoriesService,
+    private collectionService: CollectionsService,
+    private serviceService: ServicesService,
+    private parameterService: ParametersService,
+    private expertService: ExpertsService,
   ) {}
 
   public async getAll(): Promise<Language[]> {
-    return await this.LanguageRepository.findAll({
+    return await this.languageRepository.findAll({
       order: [
         ['default', 'DESC'],
         ['id', 'ASC'],
@@ -25,7 +35,7 @@ export class LanguagesService {
   }
 
   public async getDefaultLanguage() {
-    return await this.LanguageRepository.findOne({
+    return await this.languageRepository.findOne({
       rejectOnEmpty: undefined,
       where: { default: true, project_id: AuthGuard.projectId },
       include: { all: true },
@@ -33,7 +43,7 @@ export class LanguagesService {
   }
 
   public async findById(id: number): Promise<Language> {
-    const language = await this.LanguageRepository.findOne({
+    const language = await this.languageRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
       include: { all: true },
@@ -48,7 +58,7 @@ export class LanguagesService {
   }
 
   public async findByAbbr(abbr: string): Promise<Language> {
-    const language = await this.LanguageRepository.findOne({
+    const language = await this.languageRepository.findOne({
       rejectOnEmpty: undefined,
       where: { abbr, project_id: AuthGuard.projectId },
       include: { all: true },
@@ -63,7 +73,15 @@ export class LanguagesService {
   }
 
   public async destroy(id: number): Promise<number> {
-    return await this.LanguageRepository.destroy({
+    const language = this.findById(id);
+
+    await this.serviceService.deleteTranslations(language);
+    await this.parameterService.deleteTranslations(language);
+    await this.expertService.deleteTranslations(language);
+    await this.categoryService.deleteTranslations(language);
+    await this.collectionService.deleteTranslations(language);
+
+    return await this.languageRepository.destroy({
       where: { id, project_id: AuthGuard.projectId },
     });
   }
@@ -81,11 +99,18 @@ export class LanguagesService {
       languageDto.default = true;
     }
 
-    const Language = await this.LanguageRepository.create({
+    const language = await this.languageRepository.create({
       ...languageDto,
       project_id: Number(AuthGuard.projectId),
     });
-    return await this.findById(Language.id);
+
+    await this.categoryService.addNewTranslations(language);
+    await this.collectionService.addNewTranslations(language);
+    await this.parameterService.addNewTranslations(language);
+    await this.serviceService.addNewTranslations(language);
+    await this.expertService.addNewTranslations(language);
+
+    return await this.findById(language.id);
   }
 
   public async update(
@@ -99,7 +124,7 @@ export class LanguagesService {
     if (languageDto.default) {
       console.log(languageDto.default);
 
-      await this.LanguageRepository.update(
+      await this.languageRepository.update(
         { default: false },
         {
           returning: undefined,
@@ -108,7 +133,7 @@ export class LanguagesService {
       );
     }
 
-    await this.LanguageRepository.update(languageDto, {
+    await this.languageRepository.update(languageDto, {
       returning: undefined,
       where: { id, project_id: AuthGuard.projectId },
     });

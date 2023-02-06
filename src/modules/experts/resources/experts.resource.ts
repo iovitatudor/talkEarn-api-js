@@ -44,7 +44,11 @@ export class ExpertsResource {
       this.active = expert.active;
       this.available = expert.available;
       this.avatar = expert.avatar ? process.env.BASE_URL + expert.avatar : null;
-      this.video = expert.video ? process.env.BASE_URL + expert.video : null;
+      this.video = expert.translation
+        ? expert.translation.video
+          ? process.env.BASE_URL + expert.translation.video
+          : null
+        : null;
       this.profession = expert.translation ? expert.translation.profession: '';
       this.region = expert.translation ? expert.translation.region : '';
       this.language = expert.translation ? expert.translation.language : '';

@@ -16,6 +16,7 @@ import { GlobalData } from '../auth/guards/global-data';
 import { ParameterExpertTranslation } from '../parameters/models/parameter-expert-translations.model';
 import { ExpertTranslation } from './models/experts-translations.model';
 import slug = require('slug');
+import { Language } from '../languages/models/languages.model';
 
 @Injectable()
 export class ExpertsService {
@@ -380,15 +381,29 @@ export class ExpertsService {
     }
   }
 
-  private createSlug(text: string) {
-    return text
-      .toString()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]+/g, '')
-      .replace(/--+/g, '-');
+  public async addNewTranslations(language: Language) {
+    const expertTranslations = await this.expertTranslationRepository.findAll({
+      where: { lang_id: GlobalData.langId },
+    });
+
+    for (const expertTranslation of expertTranslations) {
+      await this.expertTranslationRepository.create({
+        expert_id: expertTranslation.expert_id,
+        lang_id: language.id,
+        name: expertTranslation.name,
+        description: expertTranslation.description,
+        profession: expertTranslation.profession,
+        region: expertTranslation.region,
+        language: expertTranslation.language,
+        experience: expertTranslation.experience,
+        video: expertTranslation.video,
+      });
+    }
+  }
+
+  async deleteTranslations(language: Promise<Language>) {
+    return await this.expertTranslationRepository.destroy({
+      where: { lang_id: (await language).id },
+    });
   }
 }

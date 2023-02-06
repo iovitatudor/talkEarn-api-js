@@ -15,11 +15,12 @@ import { LanguagesModule } from '../languages/languages.module';
   controllers: [ServicesController],
   imports: [
     SequelizeModule.forFeature([Service, ServiceTranslation]),
-    AuthModule,
-    ExpertsModule,
     FilesModule,
-    LanguagesModule,
+    forwardRef(() => ExpertsModule),
+    forwardRef(() => AuthModule),
+    forwardRef(() => LanguagesModule),
     forwardRef(() => ProjectsModule),
   ],
+  exports: [ServicesService],
 })
 export class ServicesModule {}

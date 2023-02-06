@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ParametersService } from './parameters.service';
 import { ParametersController } from './parameters.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -18,9 +18,10 @@ import { LanguagesModule } from '../languages/languages.module';
       ParameterExpert,
       ParameterExpertTranslation,
     ]),
-    AuthModule,
-    ExpertsModule,
-    LanguagesModule,
+    forwardRef(() => ExpertsModule),
+    forwardRef(() => AuthModule),
+    forwardRef(() => LanguagesModule),
   ],
+  exports: [ParametersService],
 })
 export class ParametersModule {}
