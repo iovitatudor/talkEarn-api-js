@@ -31,15 +31,16 @@ export class ExpertsService {
     limit = 30,
     page = 1,
     active = null,
-    online = null,
+    available = null,
     recommended = null,
     category_id = null,
   ) {
     const where = { project_id: AuthGuard.projectId, type: 'Employee' };
     if (active) where['active'] = active;
-    if (online) where['available'] = online;
+    if (available) where['available'] = !!available;
     if (recommended) where['recommended'] = recommended;
     if (category_id) where['category_id'] = category_id;
+    console.log(where, 'lorem ispum');
 
     const totalItems = await this.expertRepository.count({
       where: { ...where },
@@ -313,22 +314,39 @@ export class ExpertsService {
   }
 
   public async search(page = 1, search: '') {
-    const where = { project_id: AuthGuard.projectId, type: 'Employee' };
+    const where = {};
     where[Op.or] = [
       { name: { [Op.like]: `%${search}%` } },
+      { description: { [Op.like]: `%${search}%` } },
       { profession: { [Op.like]: `%${search}%` } },
     ];
-    const totalItems = await this.expertRepository.count({
+
+    const findExperts = await this.expertTranslationRepository.findAll({
+      attributes: ['expert_id'],
       where: { ...where },
+      raw: true,
+      include: [
+        {
+          model: Expert,
+          where: { project_id: AuthGuard.projectId, type: 'Employee' },
+        },
+      ],
+      limit: 20,
+      offset: 0,
     });
-    const totalPages = totalItems / 40;
-    let offset = 0;
-    if (totalItems > page)
-      offset = Math.floor((totalItems / totalPages) * page - 40);
+
+    const expertIds = findExperts.map((expert) => {
+      return expert.expert_id;
+    });
+
 
     const data = await this.expertRepository.findAll({
       order: [['id', 'DESC']],
-      where: { ...where },
+      where: {
+        id: expertIds,
+        project_id: AuthGuard.projectId,
+        type: 'Employee',
+      },
       include: [
         {
           model: ExpertTranslation,
@@ -356,18 +374,11 @@ export class ExpertsService {
           ],
         },
       ],
-      limit: 40,
-      offset,
     });
 
     return {
       data,
-      meta: {
-        itemsPerPage: 40,
-        totalItems,
-        currentPage: page,
-        totalPages: Math.ceil(totalPages),
-      },
+      meta: null,
     };
   }
 

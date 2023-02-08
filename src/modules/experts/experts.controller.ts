@@ -45,15 +45,14 @@ export class ExpertsController {
     const page = query.page;
     const limit = query.limit;
     const active = query.active;
-    const online = query.online;
+    const available = query.available;
     const recommended = query.recommended;
     const category_id = query.category_id;
-
     const experts = await this.expertService.getAll(
       limit,
       page,
       active,
-      online,
+      available,
       recommended,
       category_id,
     );

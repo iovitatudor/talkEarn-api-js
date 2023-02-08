@@ -37,7 +37,9 @@ export class ExpertsResource {
       this.id = expert.id;
       this.categoryId = expert.category_id;
       this.name = expert.translation ? expert.translation.name : '';
-      this.description = expert.translation ? expert.translation.description : '';
+      this.description = expert.translation
+        ? expert.translation.description
+        : '';
       this.slug = expert.slug;
       this.email = expert.email;
       this.recommended = expert.recommended;
