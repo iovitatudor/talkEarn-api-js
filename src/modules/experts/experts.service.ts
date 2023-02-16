@@ -40,7 +40,6 @@ export class ExpertsService {
     if (available) where['available'] = !!available;
     if (recommended) where['recommended'] = recommended;
     if (category_id) where['category_id'] = category_id;
-    console.log(where, 'lorem ispum');
 
     const totalItems = await this.expertRepository.count({
       where: { ...where },
@@ -338,7 +337,6 @@ export class ExpertsService {
     const expertIds = findExperts.map((expert) => {
       return expert.expert_id;
     });
-
 
     const data = await this.expertRepository.findAll({
       order: [['id', 'DESC']],

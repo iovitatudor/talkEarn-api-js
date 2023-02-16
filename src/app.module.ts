@@ -34,6 +34,10 @@ import { LanguagesModule } from './modules/languages/languages.module';
 import { CategoryTranslation } from './modules/categories/models/categories_translations.model';
 import { ServiceTranslation } from './modules/services/models/services-translations.model';
 import { ExpertTranslation } from './modules/experts/models/experts-translations.model';
+import { ScheduleModule } from './modules/schedule/schedule.module';
+import { Schedule } from './modules/schedule/models/schedules.model';
+import { Appointment } from './modules/schedule/models/appointments.model';
+import { ScheduleTemplate } from './modules/schedule/models/schedule-templates.model';
 
 @Module({
   imports: [
@@ -73,6 +77,9 @@ import { ExpertTranslation } from './modules/experts/models/experts-translations
         Collection,
         CollectionTranslation,
         Language,
+        Schedule,
+        ScheduleTemplate,
+        Appointment,
       ],
     }),
     ProjectsModule,
@@ -88,6 +95,7 @@ import { ExpertTranslation } from './modules/experts/models/experts-translations
     UsersModule,
     CollectionsModule,
     LanguagesModule,
+    ScheduleModule,
   ],
   controllers: [],
   providers: [],

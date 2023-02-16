@@ -10,7 +10,7 @@ import { ServiceCreateDto } from './dto/service-create.dto';
 import { ServiceUpdateDto } from './dto/service-update.dto';
 import { ExpertsService } from '../experts/experts.service';
 import { FilesService } from '../../common/files/files.service';
-import {Language} from "../languages/models/languages.model";
+import { Language } from '../languages/models/languages.model';
 
 @Injectable()
 export class ServicesService {
@@ -141,8 +141,6 @@ export class ServicesService {
         lang_id: serviceDto.langId,
       },
     });
-
-    console.log(GlobalData.langId);
     return await this.findById(id);
   }
 

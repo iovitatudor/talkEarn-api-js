@@ -1,8 +1,13 @@
-import {BelongsTo, Column, DataType, HasOne, HasMany, Model, Table} from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  HasOne,
+  HasMany,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { Expert } from '../../experts/models/experts.model';
 import { ModeTypes } from '../enums/mode-types.enum';
-// import {HasOne} from "sequelize-typescript/dist/browser";
-import {Category} from "../../categories/models/categories.model";
 
 interface ProjectCreationAttrs {
   name: string;
@@ -41,7 +46,6 @@ export class Project extends Model<Project, ProjectCreationAttrs> {
   })
   public mode: ModeTypes;
 
-  // @ApiProperty({ isArray: true, type: Expert })
   @HasMany(() => Expert)
   public experts: Expert[];
 

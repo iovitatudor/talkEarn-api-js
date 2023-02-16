@@ -122,8 +122,6 @@ export class LanguagesService {
       languageDto.icon = await this.fileService.createFile(icon);
     }
     if (languageDto.default) {
-      console.log(languageDto.default);
-
       await this.languageRepository.update(
         { default: false },
         {
