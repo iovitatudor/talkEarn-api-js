@@ -7,6 +7,8 @@ import { AuthModule } from '../auth/auth.module';
 import { Schedule } from './models/schedules.model';
 import { Appointment } from './models/appointments.model';
 import { ScheduleTemplate } from './models/schedule-templates.model';
+import { AppointmentReservation } from './models/appointment-reservations.model';
+import { ProjectsModule } from '../projects/projects.module';
 
 @Module({
   controllers: [ScheduleController],
@@ -16,9 +18,11 @@ import { ScheduleTemplate } from './models/schedule-templates.model';
       ScheduleTemplate,
       Schedule,
       Appointment,
+      AppointmentReservation,
       Expert,
     ]),
     forwardRef(() => AuthModule),
+    forwardRef(() => ProjectsModule),
   ],
 })
 export class ScheduleModule {}

@@ -8,6 +8,7 @@ import {
   Param,
   ParseIntPipe,
   Get,
+  Patch, HttpException, HttpStatus,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -16,6 +17,9 @@ import { ScheduleCreateDto } from './dto/schedule-create.dto';
 import { ScheduleResource } from './resources/schedule.resource';
 import { AppointmentResource } from './resources/appointment.resource';
 import { ScheduleTemplateResource } from './resources/schedule-template.resource';
+import { ClientGuard } from '../auth/guards/client.guard';
+import { AppointmentReservationCreateDto } from './dto/appointment-reservation-create.dto';
+import { AppointmentReservationResource } from './resources/appointment-reservation.resource';
 
 @ApiTags('Schedule')
 @Controller('api')
@@ -26,13 +30,15 @@ export class ScheduleController {
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
   @Post('schedule')
-  public async createSchedule(@Body() scheduleDto: ScheduleCreateDto): Promise<ScheduleResource[]> {
+  public async createSchedule(
+    @Body() scheduleDto: ScheduleCreateDto,
+  ): Promise<ScheduleResource[]> {
     const schedule = await this.scheduleService.storeSchedule(scheduleDto);
     return ScheduleResource.collect(schedule);
   }
 
   @ApiOperation({ summary: 'Get schedule per expert' })
-  @UseGuards(AuthGuard)
+  @UseGuards(ClientGuard)
   @ApiBearerAuth('Authorization')
   @Get('schedule/:expertId')
   public async getSchedules(
@@ -50,7 +56,10 @@ export class ScheduleController {
     @Param('day', ParseIntPipe) day: number,
     @Param('expertId', ParseIntPipe) expertId: number,
   ): Promise<ScheduleTemplateResource> {
-    const scheduleTemplate = await this.scheduleService.fetchScheduleTemplate(day, expertId);
+    const scheduleTemplate = await this.scheduleService.fetchScheduleTemplate(
+      day,
+      expertId,
+    );
     return new ScheduleTemplateResource(scheduleTemplate);
   }
 
@@ -61,12 +70,25 @@ export class ScheduleController {
   public async getScheduleTemplates(
     @Param('expertId', ParseIntPipe) expertId: number,
   ): Promise<ScheduleTemplateResource[]> {
-    const scheduleTemplates = await this.scheduleService.fetchScheduleTemplates(expertId);
+    const scheduleTemplates = await this.scheduleService.fetchScheduleTemplates(
+      expertId,
+    );
     return ScheduleTemplateResource.collect(scheduleTemplates);
   }
 
-  @ApiOperation({ summary: 'Get appointments by expert id and date' })
+  @ApiOperation({ summary: 'Delete schedule' })
   @UseGuards(AuthGuard)
+  @ApiBearerAuth('Authorization')
+  @HttpCode(204)
+  @Delete('schedule/:expertId')
+  public async deleteSchedule(
+    @Param('expertId', ParseIntPipe) expertId: number,
+  ): Promise<number> {
+    return this.scheduleService.destroySchedule(expertId);
+  }
+
+  @ApiOperation({ summary: 'Get appointments by expert id and date' })
+  @UseGuards(ClientGuard)
   @ApiBearerAuth('Authorization')
   @Get('appointments/:expertId/:date')
   public async getAppointments(
@@ -82,14 +104,67 @@ export class ScheduleController {
     );
   }
 
-  @ApiOperation({ summary: 'Delete schedule' })
+  @ApiOperation({ summary: 'Change appointment status' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')
-  @HttpCode(204)
-  @Delete('schedule/:expertId')
-  public async deleteSchedule(
-    @Param('expertId', ParseIntPipe) expertId: number,
-  ): Promise<number> {
-    return this.scheduleService.destroySchedule(expertId);
+  @Patch('appointment/status/:appointmentId/:status')
+  public async changeAppointmentStatus(
+    @Param('appointmentId', ParseIntPipe) appointmentId: number,
+    @Param('status') status: string,
+  ): Promise<AppointmentResource> {
+    const appointment = await this.scheduleService.changeAppointmentStatus(
+      appointmentId,
+      status,
+    );
+
+    return new AppointmentResource(appointment);
+  }
+
+  @ApiOperation({ summary: 'Create Reserved Appointment' })
+  @UseGuards(AuthGuard, ClientGuard)
+  @ApiBearerAuth('Authorization')
+  @Post('appointment/book')
+  public async saveReservedAppointment(
+    @Body() appointmentReservationDto: AppointmentReservationCreateDto,
+  ) {
+    const appointment = await this.scheduleService.bookAppointment(
+      appointmentReservationDto,
+    );
+
+    return new AppointmentResource(appointment);
+  }
+
+  @ApiOperation({ summary: 'Edit Reserved Appointment' })
+  @UseGuards(AuthGuard, ClientGuard)
+  @ApiBearerAuth('Authorization')
+  @Patch('appointment/book/:reservedAppointmentId')
+  public async editReservedAppointment(
+    @Body() appointmentReservationDto: AppointmentReservationCreateDto,
+    @Param('reservedAppointmentId', ParseIntPipe) reservedAppointmentId: number,
+  ) {
+    const appointment = await this.scheduleService.updateReservedAppointment(
+      appointmentReservationDto,
+      reservedAppointmentId,
+    );
+
+    return new AppointmentResource(appointment);
+  }
+
+  @ApiOperation({ summary: 'Get Reserved Appointment' })
+  @UseGuards(AuthGuard, ClientGuard)
+  @ApiBearerAuth('Authorization')
+  @Get('appointment/book/:appointmentId')
+  public async getReservedAppointment(
+    @Param('appointmentId', ParseIntPipe) appointmentId: number,
+  ) {
+    const reservedAppointment =
+      await this.scheduleService.findReservedAppointment(appointmentId);
+    if (!reservedAppointment) {
+      throw new HttpException(
+        'Reserved appointment was not found.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return new AppointmentReservationResource(reservedAppointment);
   }
 }

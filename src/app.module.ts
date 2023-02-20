@@ -38,6 +38,7 @@ import { ScheduleModule } from './modules/schedule/schedule.module';
 import { Schedule } from './modules/schedule/models/schedules.model';
 import { Appointment } from './modules/schedule/models/appointments.model';
 import { ScheduleTemplate } from './modules/schedule/models/schedule-templates.model';
+import { AppointmentReservation } from './modules/schedule/models/appointment-reservations.model';
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import { ScheduleTemplate } from './modules/schedule/models/schedule-templates.m
         Schedule,
         ScheduleTemplate,
         Appointment,
+        AppointmentReservation,
       ],
     }),
     ProjectsModule,

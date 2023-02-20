@@ -3,16 +3,20 @@ import { InjectModel } from '@nestjs/sequelize';
 import { ScheduleCreateDto } from './dto/schedule-create.dto';
 import { Schedule } from './models/schedules.model';
 import { Appointment } from './models/appointments.model';
-import moment = require('moment');
 import { ScheduleTemplate } from './models/schedule-templates.model';
+import { AppointmentReservation } from './models/appointment-reservations.model';
+import { AppointmentStatusesEnum } from './enums/appointment-statuses.enum';
+import moment = require('moment');
 
 @Injectable()
 export class ScheduleService {
   constructor(
     @InjectModel(Schedule) private scheduleRepository: typeof Schedule,
+    @InjectModel(Appointment) private appointmentRepository: typeof Appointment,
     @InjectModel(ScheduleTemplate)
     private scheduleTemplateRepository: typeof ScheduleTemplate,
-    @InjectModel(Appointment) private appointmentRepository: typeof Appointment,
+    @InjectModel(AppointmentReservation)
+    private appointmentReservationRepository: typeof AppointmentReservation,
   ) {}
 
   public async fetchSchedule(expertId: number) {
@@ -55,6 +59,88 @@ export class ScheduleService {
       ],
     });
     return { schedule, appointments };
+  }
+
+  public async changeAppointmentStatus(appointmentId, status) {
+    await this.appointmentReservationRepository.destroy({
+      where: { appointment_id: appointmentId },
+    });
+
+    await this.appointmentRepository.update(
+      { status: AppointmentStatusesEnum[status] },
+      {
+        returning: undefined,
+        where: { id: appointmentId },
+      },
+    );
+
+    return this.findAppointment(appointmentId);
+  }
+
+  public async findAppointment(appointmentId: number) {
+    return await this.appointmentRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { id: appointmentId },
+    });
+  }
+
+  public async findReservedAppointment(appointmentId: number) {
+    return await this.appointmentReservationRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { appointment_id: appointmentId },
+    });
+  }
+
+  public async updateReservedAppointment(
+    appointmentReservationDto,
+    reservedAppointmentId,
+  ) {
+    await this.appointmentReservationRepository.update(
+      {
+        appointment_id: appointmentReservationDto.appointmentId,
+        ...appointmentReservationDto,
+      },
+      {
+        where: { id: reservedAppointmentId },
+      },
+    );
+
+    return await this.findAppointment(appointmentReservationDto.appointmentId);
+  }
+
+  public async bookAppointment(appointmentReservationDto) {
+    const appointment = await this.appointmentRepository.update(
+      { status: AppointmentStatusesEnum.reserved },
+      {
+        returning: undefined,
+        where: { id: appointmentReservationDto.appointmentId },
+      },
+    );
+
+    if (!appointment) {
+      throw new HttpException(
+        'Appointment was not found.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const reservedAppointment = await this.findReservedAppointment(
+      appointmentReservationDto.appointmentId,
+    );
+
+    if (reservedAppointment) {
+      throw new HttpException(
+        'The reservation is already created',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    await this.appointmentReservationRepository.create({
+      appointment_id: appointmentReservationDto.appointmentId,
+      ...appointmentReservationDto,
+    });
+
+    return await this.findAppointment(appointmentReservationDto.appointmentId);
   }
 
   public async storeSchedule(scheduleDto: ScheduleCreateDto) {
@@ -114,6 +200,20 @@ export class ScheduleService {
       return schedule.id;
     });
 
+    const findAppointments = await this.appointmentRepository.findAll({
+      where: { schedule_id: scheduleIds },
+      attributes: ['id'],
+      raw: true,
+    });
+
+    const appointmentIds = findAppointments.map((appointment) => {
+      return appointment.id;
+    });
+
+    await this.appointmentReservationRepository.destroy({
+      where: { appointment_id: appointmentIds },
+    });
+
     await this.appointmentRepository.destroy({
       where: { schedule_id: scheduleIds },
     });
@@ -144,19 +244,38 @@ export class ScheduleService {
     const expiredAt = moment().add(30, 'days');
 
     if (findScheduleTemplates) {
-      await findScheduleTemplates.destroy();
+      await this.scheduleTemplateRepository.update(
+        {
+          day: day,
+          consultation_duration: scheduleDto.duration,
+          consultation_break: scheduleDto.breakConsultation,
+          time_start: scheduleDto.from,
+          time_end: scheduleDto.to,
+          auto_generate: scheduleDto.autoGenerate,
+          regenerate_date: new Date(regenerateDate.format('YYYY-MM-DD')),
+          expired_at: new Date(expiredAt.format('YYYY-MM-DD')),
+        },
+        {
+          where: { expert_id: scheduleDto.expertId, day },
+        },
+      );
+    } else {
+      await this.scheduleTemplateRepository.create({
+        expert_id: scheduleDto.expertId,
+        day: day,
+        consultation_duration: scheduleDto.duration,
+        consultation_break: scheduleDto.breakConsultation,
+        time_start: scheduleDto.from,
+        time_end: scheduleDto.to,
+        auto_generate: scheduleDto.autoGenerate,
+        regenerate_date: new Date(regenerateDate.format('YYYY-MM-DD')),
+        expired_at: new Date(expiredAt.format('YYYY-MM-DD')),
+      });
     }
 
-    return await this.scheduleTemplateRepository.create({
-      expert_id: scheduleDto.expertId,
-      day: day,
-      consultation_duration: scheduleDto.duration,
-      consultation_break: scheduleDto.breakConsultation,
-      time_start: scheduleDto.from,
-      time_end: scheduleDto.to,
-      auto_generate: scheduleDto.autoGenerate,
-      regenerate_date: new Date(regenerateDate.format('YYYY-MM-DD')),
-      expired_at: new Date(expiredAt.format('YYYY-MM-DD')),
+    return await this.scheduleTemplateRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { expert_id: scheduleDto.expertId, day },
     });
   }
 

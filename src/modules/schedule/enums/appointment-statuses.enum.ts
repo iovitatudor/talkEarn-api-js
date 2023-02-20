@@ -1,6 +1,6 @@
 export enum AppointmentStatusesEnum {
   opened = 'opened',
-  closed = 'close',
+  closed = 'closed',
   held = 'held',
   reserved = 'reserved',
 }
