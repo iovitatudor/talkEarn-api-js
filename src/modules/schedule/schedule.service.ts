@@ -6,6 +6,11 @@ import { Appointment } from './models/appointments.model';
 import { ScheduleTemplate } from './models/schedule-templates.model';
 import { AppointmentReservation } from './models/appointment-reservations.model';
 import { AppointmentStatusesEnum } from './enums/appointment-statuses.enum';
+import { MailerService } from '@nestjs-modules/mailer';
+import { AppointmentReservationCreateDto } from './dto/appointment-reservation-create.dto';
+import { Expert } from '../experts/models/experts.model';
+import { ExpertTranslation } from '../experts/models/experts-translations.model';
+import { CallsService } from '../calls/calls.service';
 import moment = require('moment');
 
 @Injectable()
@@ -17,6 +22,8 @@ export class ScheduleService {
     private scheduleTemplateRepository: typeof ScheduleTemplate,
     @InjectModel(AppointmentReservation)
     private appointmentReservationRepository: typeof AppointmentReservation,
+    private mailerService: MailerService,
+    private callService: CallsService,
   ) {}
 
   public async fetchSchedule(expertId: number) {
@@ -39,7 +46,11 @@ export class ScheduleService {
     });
   }
 
-  public async fetchAppointments(expertId: number, date: string) {
+  public async fetchAppointments(
+    expertId: number,
+    date: string,
+    status: string,
+  ) {
     const schedule = await this.scheduleRepository.findOne({
       rejectOnEmpty: undefined,
       where: { expert_id: expertId, date },
@@ -50,8 +61,15 @@ export class ScheduleService {
         HttpStatus.BAD_REQUEST,
       );
     }
+
+    const where = { schedule_id: schedule.id };
+
+    if (status) {
+      where['status'] = AppointmentStatusesEnum[status];
+    }
+
     const appointments = await this.appointmentRepository.findAll({
-      where: { schedule_id: schedule.id },
+      where: { ...where },
       include: [
         {
           model: Schedule,
@@ -91,6 +109,33 @@ export class ScheduleService {
     });
   }
 
+  public async findReservedAppointmentById(id: number) {
+    return await this.appointmentReservationRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { id },
+      include: [
+        {
+          model: Appointment,
+          include: [
+            {
+              model: Schedule,
+              include: [
+                {
+                  model: Expert,
+                  include: [
+                    {
+                      model: ExpertTranslation,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  }
+
   public async updateReservedAppointment(
     appointmentReservationDto,
     reservedAppointmentId,
@@ -108,7 +153,9 @@ export class ScheduleService {
     return await this.findAppointment(appointmentReservationDto.appointmentId);
   }
 
-  public async bookAppointment(appointmentReservationDto) {
+  public async bookAppointment(
+    appointmentReservationDto: AppointmentReservationCreateDto,
+  ) {
     const appointment = await this.appointmentRepository.update(
       { status: AppointmentStatusesEnum.reserved },
       {
@@ -135,10 +182,44 @@ export class ScheduleService {
       );
     }
 
-    await this.appointmentReservationRepository.create({
-      appointment_id: appointmentReservationDto.appointmentId,
-      ...appointmentReservationDto,
-    });
+    const createdReservation =
+      await this.appointmentReservationRepository.create({
+        appointment_id: appointmentReservationDto.appointmentId,
+        ...appointmentReservationDto,
+      });
+
+    const reservation = await this.findReservedAppointmentById(
+      createdReservation.id,
+    );
+
+    const reservationDate = reservation.appointment.schedule.date;
+    const reservationStartTime = moment(reservation.appointment.time, 'HH:mm');
+    const reservationEndTime = reservationStartTime
+      .add(reservation.appointment.duration, 'minutes')
+      .format('HH:mm');
+
+    const room = await this.callService.creatRoom(
+      reservation.id,
+      new Date(reservationDate),
+      reservation.appointment.time,
+      reservationEndTime,
+    );
+
+    const reservationLink = `https://instantexpert.online/${appointmentReservationDto.language}/conference/${room.token}`;
+    const emailData = {
+      date: `${reservationDate}, ${reservation.appointment.time}-${reservationEndTime}`,
+      name: reservation.name,
+      email: reservation.email,
+      phone: reservation.phone,
+      expert: reservation.appointment.schedule.expert.translation.name,
+      link: reservationLink,
+    };
+
+    await this.sendMail(reservation.email, emailData);
+    await this.sendMail(
+      reservation.appointment.schedule.expert.email,
+      emailData,
+    );
 
     return await this.findAppointment(appointmentReservationDto.appointmentId);
   }
@@ -301,8 +382,8 @@ export class ScheduleService {
     consultationDuration: number,
     breakConsultation: number,
   ): Array<any> {
-    const startTime = moment(from, 'HH.mm');
-    const endTime = moment(to, 'HH.mm');
+    const startTime = moment(from, 'HH:mm');
+    const endTime = moment(to, 'HH:mm');
     const totalDuration =
       parseInt(String(consultationDuration)) +
       parseInt(String(breakConsultation));
@@ -310,9 +391,19 @@ export class ScheduleService {
     let consultationTime = startTime;
 
     while (consultationTime.isBefore(endTime)) {
-      result.push(consultationTime.format('HH.mm'));
+      result.push(consultationTime.format('HH:mm'));
       consultationTime = startTime.add(totalDuration, 'minutes');
     }
     return result;
+  }
+
+  private async sendMail(to: string, data: object) {
+    await this.mailerService.sendMail({
+      to: to,
+      from: 'iovitatudor@gmail.com',
+      subject: 'Appointment instantexpert.online',
+      template: 'conference-client',
+      context: { data },
+    });
   }
 }

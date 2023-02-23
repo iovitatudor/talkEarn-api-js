@@ -39,7 +39,10 @@ import { Schedule } from './modules/schedule/models/schedules.model';
 import { Appointment } from './modules/schedule/models/appointments.model';
 import { ScheduleTemplate } from './modules/schedule/models/schedule-templates.model';
 import { AppointmentReservation } from './modules/schedule/models/appointment-reservations.model';
-
+import { MailerModule } from '@nestjs-modules/mailer';
+import { Room } from './modules/calls/models/rooms.model';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { join } from 'path';
 @Module({
   imports: [
     PaginateModule.forRoot({
@@ -51,6 +54,19 @@ import { AppointmentReservation } from './modules/schedule/models/appointment-re
     ConfigModule.forRoot({
       envFilePath: './.env',
       isGlobal: true,
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.SENDGRID_HOST,
+        auth: {
+          user: process.env.SENDGRID_USER,
+          pass: process.env.SENDGRID_PASS,
+        },
+      },
+      template: {
+        dir: join(__dirname, 'common/mail/templates'),
+        adapter: new HandlebarsAdapter(),
+      },
     }),
     SequelizeModule.forRoot({
       dialect: 'mysql',
@@ -82,6 +98,7 @@ import { AppointmentReservation } from './modules/schedule/models/appointment-re
         ScheduleTemplate,
         Appointment,
         AppointmentReservation,
+        Room,
       ],
     }),
     ProjectsModule,

@@ -8,7 +8,7 @@ import {
   Param,
   ParseIntPipe,
   Get,
-  Patch, HttpException, HttpStatus,
+  Patch, HttpException, HttpStatus, Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -92,11 +92,13 @@ export class ScheduleController {
   @ApiBearerAuth('Authorization')
   @Get('appointments/:expertId/:date')
   public async getAppointments(
+    @Query() query,
     @Param('expertId', ParseIntPipe) expertId: number,
     @Param('date') date: string,
   ): Promise<{}> {
+    const status = query.status;
     const { schedule, appointments } =
-      await this.scheduleService.fetchAppointments(expertId, date);
+      await this.scheduleService.fetchAppointments(expertId, date, status);
 
     return AppointmentResource.collect(
       appointments,
@@ -121,7 +123,7 @@ export class ScheduleController {
   }
 
   @ApiOperation({ summary: 'Create Reserved Appointment' })
-  @UseGuards(AuthGuard, ClientGuard)
+  @UseGuards(ClientGuard)
   @ApiBearerAuth('Authorization')
   @Post('appointment/book')
   public async saveReservedAppointment(

@@ -7,10 +7,14 @@ import {
 } from '@nestjs/common';
 import * as twilio from 'twilio';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CallsService } from './calls.service';
+import { RoomResource } from './resources/room.resource';
 
 @ApiTags('Calls')
 @Controller('api')
 export class CallsController {
+  constructor(private callService: CallsService) {}
+
   @Get('/calls/token')
   @ApiOperation({ summary: 'Get Twilio token' })
   @ApiResponse({ status: 200 })
@@ -36,5 +40,18 @@ export class CallsController {
       identity: identity,
       token: token.toJwt(),
     };
+  }
+
+  @Get('/conference/token')
+  @ApiOperation({ summary: 'Check conference token' })
+  @ApiResponse({ status: 200 })
+  public async checkConferenceToken(@Query('token') token: string) {
+    if (!token) {
+      throw new HttpException('Token is required.', HttpStatus.BAD_REQUEST);
+    }
+
+    const room = await this.callService.checkToken(token);
+
+    return new RoomResource(room);
   }
 }
