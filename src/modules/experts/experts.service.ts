@@ -258,7 +258,10 @@ export class ExpertsService {
   }
 
   async findByEmail(email: string): Promise<Expert> {
-    return await this.expertRepository.findOne({ where: { email } });
+    return await this.expertRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { email },
+    });
   }
 
   async partialStore(expertDto: ExpertCreateExpressDto): Promise<Expert> {

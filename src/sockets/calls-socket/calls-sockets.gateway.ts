@@ -76,6 +76,15 @@ export class CallsSocketsGateway
     );
   }
 
+  @SubscribeMessage('remoteLogin')
+  async remoteLogin(@MessageBody() data: string) {
+    const dataObject = JSON.parse(data);
+    this.server.emit(
+      `login-${dataObject.client.cookie}`,
+      JSON.stringify(dataObject.client),
+    );
+  }
+
   handleConnection(client: any, ...args: any[]): any {
     console.log('Connection');
   }

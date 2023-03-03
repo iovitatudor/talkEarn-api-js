@@ -4,9 +4,11 @@ import {
   Column,
   Table,
   BelongsTo,
+  HasOne,
 } from 'sequelize-typescript';
 import { AppointmentStatusesEnum } from '../enums/appointment-statuses.enum';
 import { Schedule } from './schedules.model';
+import { AppointmentReservation } from './appointment-reservations.model';
 
 interface AppointmentCreationAttrs {
   schedule_id: number;
@@ -47,4 +49,7 @@ export class Appointment extends Model<Appointment, AppointmentCreationAttrs> {
 
   @BelongsTo(() => Schedule, 'schedule_id')
   public schedule: Schedule;
+
+  @HasOne(() => AppointmentReservation, 'appointment_id')
+  public appointmentReservation: AppointmentReservation;
 }

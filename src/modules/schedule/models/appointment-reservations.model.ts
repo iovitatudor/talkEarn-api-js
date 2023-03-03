@@ -3,9 +3,10 @@ import {
   Model,
   Column,
   Table,
-  BelongsTo,
+  BelongsTo, HasOne,
 } from 'sequelize-typescript';
 import { Appointment } from './appointments.model';
+import {Room} from "../../calls/models/rooms.model";
 
 interface AppointmentReservationCreationAttrs {
   appointment_id: number;
@@ -49,4 +50,7 @@ export class AppointmentReservation extends Model<
 
   @BelongsTo(() => Appointment, 'appointment_id')
   public appointment: Appointment;
+
+  @HasOne(() => Room, 'appointment_reservation_id')
+  public room: Room;
 }

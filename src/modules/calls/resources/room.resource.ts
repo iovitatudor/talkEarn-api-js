@@ -10,7 +10,13 @@ export class RoomResource {
   public token: string;
 
   @ApiProperty({ example: '10.2.2023' })
-  public expiredAt: string;
+  public date: string;
+
+  @ApiProperty({ example: '10:00' })
+  public startTime: string;
+
+  @ApiProperty({ example: '10:50' })
+  public endTime: string;
 
   public appointmentReservation: object;
 
@@ -18,7 +24,9 @@ export class RoomResource {
     if (room) {
       this.id = room.id;
       this.token = room.token;
-      this.expiredAt = room.expired_at;
+      this.date = room.date;
+      this.startTime = room.start_time;
+      this.endTime = room.end_time;
       this.appointmentReservation = new AppointmentReservationResource(
         room.appointmentReservation,
       );

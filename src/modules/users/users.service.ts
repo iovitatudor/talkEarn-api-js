@@ -5,9 +5,9 @@ import { UserCreateDto } from './dto/user-create.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { FilesService } from '../../common/files/files.service';
+import { UserAssigmentDto } from './dto/user-assigment.dto';
 import * as bcrypt from 'bcryptjs';
 import { Op } from 'sequelize';
-import {UserAssigmentDto} from "./dto/user-assigment.dto";
 
 @Injectable()
 export class UsersService {
@@ -51,16 +51,32 @@ export class UsersService {
   }
 
   public async findById(id: number): Promise<User> {
-    const User = await this.userRepository.findOne({
+    const user = await this.userRepository.findOne({
       rejectOnEmpty: undefined,
       where: { id, project_id: AuthGuard.projectId },
       include: { all: true },
     });
 
-    if (!User) {
+    if (!user) {
       throw new HttpException('User was not found.', HttpStatus.BAD_REQUEST);
     }
-    return User;
+    return user;
+  }
+
+  public async findByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { email, project_id: AuthGuard.projectId },
+      include: { all: true },
+    });
+
+    if (!user) {
+      throw new HttpException(
+        'User with this email was not found.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return user;
   }
 
   public async update(
@@ -92,10 +108,6 @@ export class UsersService {
     return await this.userRepository.destroy({
       where: { id, project_id: AuthGuard.projectId },
     });
-  }
-
-  async findByEmail(email: string): Promise<User> {
-    return await this.userRepository.findOne({ where: { email } });
   }
 
   async store(userDto: UserCreateDto, avatar: any): Promise<User> {
@@ -201,9 +213,12 @@ export class UsersService {
     };
   }
 
-  private async validateUser(UserEmail: string, id: number): Promise<void> {
-    const User = await this.findByEmail(UserEmail);
-    if (User && User.id !== id) {
+  private async validateUser(userEmail: string, id: number): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { email: userEmail },
+    });
+
+    if (user && user.id !== id) {
       throw new HttpException(
         'This email already exists',
         HttpStatus.BAD_REQUEST,

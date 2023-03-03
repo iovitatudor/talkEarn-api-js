@@ -8,10 +8,11 @@ import { Project } from '../projects/models/projects.model';
 import { AuthModule } from '../auth/auth.module';
 import { FilesModule } from '../../common/files/files.module';
 import { ProjectsModule } from '../projects/projects.module';
+import { UsersAuhService } from './users-auh.service';
 
 @Module({
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, UsersAuhService],
   imports: [
     SequelizeModule.forFeature([User, Project, Category]),
     forwardRef(() => AuthModule),

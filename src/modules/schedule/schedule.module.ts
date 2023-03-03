@@ -10,6 +10,7 @@ import { ScheduleTemplate } from './models/schedule-templates.model';
 import { AppointmentReservation } from './models/appointment-reservations.model';
 import { ProjectsModule } from '../projects/projects.module';
 import { CallsModule } from '../calls/calls.module';
+import { Room } from '../calls/models/rooms.model';
 
 @Module({
   controllers: [ScheduleController],
@@ -21,6 +22,7 @@ import { CallsModule } from '../calls/calls.module';
       Appointment,
       AppointmentReservation,
       Expert,
+      Room,
     ]),
     forwardRef(() => AuthModule),
     forwardRef(() => ProjectsModule),

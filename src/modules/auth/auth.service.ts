@@ -14,7 +14,7 @@ import { LoginDto } from './dto/login.dto';
 import { Types } from '../experts/enums/types.enum';
 import { LanguagesService } from '../languages/languages.service';
 import { AuthGuard } from './guards/auth.guard';
-import {GlobalData} from "./guards/global-data";
+import { GlobalData } from './guards/global-data';
 
 @Injectable()
 export class AuthService {
@@ -95,6 +95,7 @@ export class AuthService {
 
     if (expert && passwordsEquals) {
       return expert;
+      // return await this.expertService.findById(expert.id);
     }
 
     throw new UnauthorizedException({

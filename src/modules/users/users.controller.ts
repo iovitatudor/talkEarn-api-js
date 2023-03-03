@@ -27,11 +27,35 @@ import { UserCreateDto } from './dto/user-create.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { ClientGuard } from '../auth/guards/client.guard';
 import { UserAssigmentDto } from './dto/user-assigment.dto';
+import { UserLoginDto } from './dto/user-login.dto';
+import { UserRegisterDto } from './dto/user-register.dto';
+import { UsersAuhService } from './users-auh.service';
 
 @ApiTags('Users')
 @Controller('api')
 export class UsersController {
-  public constructor(private userService: UsersService) {}
+  public constructor(
+    private userService: UsersService,
+    private userAuthService: UsersAuhService,
+  ) {}
+
+  @ApiOperation({ summary: 'User log in' })
+  @UseGuards(ClientGuard)
+  @ApiBearerAuth('ClientGuard')
+  @Post('user/login')
+  public async loginUser(@Body() userDto: UserLoginDto) {
+    const data = await this.userAuthService.login(userDto);
+    return { user: new UsersResource(data.user), token: data.token };
+  }
+
+  @ApiOperation({ summary: 'User register' })
+  @UseGuards(ClientGuard)
+  @ApiBearerAuth('ClientGuard')
+  @Post('user/register')
+  public async registerUser(@Body() userDto: UserRegisterDto) {
+    const data = await this.userAuthService.register(userDto);
+    return { user: new UsersResource(data.user), token: data.token };
+  }
 
   @ApiOperation({ summary: 'Get all users per project' })
   @UseGuards(ClientGuard)
@@ -51,7 +75,9 @@ export class UsersController {
   @UseGuards(ClientGuard)
   @ApiBearerAuth('Authorization')
   @Get('user/:id')
-  public async getById(@Param('id', ParseIntPipe) id: number): Promise<UsersResource> {
+  public async getById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<UsersResource> {
     const expert = await this.userService.findById(id);
     return new UsersResource(expert);
   }
@@ -111,7 +137,9 @@ export class UsersController {
   @ApiBearerAuth('Authorization')
   @HttpCode(201)
   @Patch('user/status/:id')
-  public async toggleStatus(@Param('id', ParseIntPipe) id: number): Promise<UsersResource> {
+  public async toggleStatus(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<UsersResource> {
     const user = await this.userService.toggleStatus(id);
     return new UsersResource(user);
   }

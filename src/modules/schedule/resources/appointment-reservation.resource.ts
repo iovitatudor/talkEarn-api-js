@@ -1,6 +1,7 @@
 import { Model } from 'sequelize';
 import { ApiProperty } from '@nestjs/swagger';
 import { AppointmentResource } from './appointment.resource';
+import {RoomResource} from "../../calls/resources/room.resource";
 
 export class AppointmentReservationResource {
   @ApiProperty({ example: 1 })
@@ -19,6 +20,8 @@ export class AppointmentReservationResource {
 
   public appointment: object;
 
+  public room: object;
+
   public constructor(appointmentReservation) {
     if (appointmentReservation) {
       this.id = appointmentReservation.id;
@@ -29,6 +32,7 @@ export class AppointmentReservationResource {
       this.appointment = new AppointmentResource(
         appointmentReservation.appointment,
       );
+      this.room = new RoomResource(appointmentReservation.room);
     }
   }
 

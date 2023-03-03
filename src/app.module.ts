@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 import * as path from 'path';
+import { join } from 'path';
 
 import { ProjectsModule } from './modules/projects/projects.module';
 import { Project } from './modules/projects/models/projects.model';
@@ -42,7 +43,9 @@ import { AppointmentReservation } from './modules/schedule/models/appointment-re
 import { MailerModule } from '@nestjs-modules/mailer';
 import { Room } from './modules/calls/models/rooms.model';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { join } from 'path';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { SupervisorNotifications } from './modules/notifications/models/supervisor-notifications.model';
+
 @Module({
   imports: [
     PaginateModule.forRoot({
@@ -99,6 +102,7 @@ import { join } from 'path';
         Appointment,
         AppointmentReservation,
         Room,
+        SupervisorNotifications,
       ],
     }),
     ProjectsModule,
@@ -115,6 +119,7 @@ import { join } from 'path';
     CollectionsModule,
     LanguagesModule,
     ScheduleModule,
+    NotificationsModule,
   ],
   controllers: [],
   providers: [],

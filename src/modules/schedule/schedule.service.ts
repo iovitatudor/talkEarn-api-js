@@ -12,6 +12,7 @@ import { Expert } from '../experts/models/experts.model';
 import { ExpertTranslation } from '../experts/models/experts-translations.model';
 import { CallsService } from '../calls/calls.service';
 import moment = require('moment');
+import {Room} from "../calls/models/rooms.model";
 
 @Injectable()
 export class ScheduleService {
@@ -73,6 +74,14 @@ export class ScheduleService {
       include: [
         {
           model: Schedule,
+        },
+        {
+          model: AppointmentReservation,
+          include: [
+            {
+              model: Room,
+            },
+          ],
         },
       ],
     });

@@ -2,6 +2,7 @@ import { Model } from 'sequelize';
 import { ApiProperty } from '@nestjs/swagger';
 import { AppointmentStatusesEnum } from '../enums/appointment-statuses.enum';
 import { ScheduleResource } from './schedule.resource';
+import { AppointmentReservationResource } from './appointment-reservation.resource';
 
 export class AppointmentResource {
   @ApiProperty({ example: 1 })
@@ -18,6 +19,8 @@ export class AppointmentResource {
 
   public schedule: object;
 
+  public appointmentReservation: object;
+
   public constructor(appointment) {
     if (appointment) {
       this.id = appointment.id;
@@ -25,6 +28,11 @@ export class AppointmentResource {
       this.duration = appointment.duration;
       this.status = appointment.status;
       this.schedule = new ScheduleResource(appointment.schedule);
+      if (appointment.appointmentReservation) {
+        this.appointmentReservation = new AppointmentReservationResource(
+          appointment.appointmentReservation,
+        );
+      }
     }
   }
 
