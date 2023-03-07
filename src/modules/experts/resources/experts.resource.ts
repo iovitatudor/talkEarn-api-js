@@ -6,6 +6,7 @@ import { ParametersValueResource } from '../../parameters/resources/parameter-va
 export class ExpertsResource {
   public id: number;
   public categoryId: number;
+  public supervisorId: number;
   public name: string;
   public description: string;
   public slug: string;
@@ -36,6 +37,7 @@ export class ExpertsResource {
 
       this.id = expert.id;
       this.categoryId = expert.category_id;
+      this.supervisorId = expert.supervisor_id;
       this.name = expert.translation ? expert.translation.name : '';
       this.description = expert.translation
         ? expert.translation.description
@@ -73,7 +75,7 @@ export class ExpertsResource {
     }
   }
 
-  public static collect(model: Model[], meta: Record<any, any>) {
+  public static collect(model: Model[], meta?: Record<any, any>) {
     if (model) {
       const data = {};
       data['data'] = model.map((item) => {

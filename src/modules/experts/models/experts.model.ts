@@ -19,6 +19,7 @@ import {ExpertTranslation} from "./experts-translations.model";
 interface ExpertCreateAttrs {
   project_id: number;
   category_id: number;
+  supervisor_id: number;
   slug: string;
   email: string;
   available: string;
@@ -50,6 +51,9 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
   @ForeignKey(() => Category)
   @Column({ type: DataType.INTEGER })
   public category_id: number;
+
+  @Column({ type: DataType.INTEGER, defaultValue: 0 })
+  public supervisor_id: number;
 
   @Column({ type: DataType.STRING, allowNull: false })
   public slug: string;

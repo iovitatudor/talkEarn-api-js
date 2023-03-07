@@ -106,6 +106,28 @@ export class ScheduleController {
     );
   }
 
+  @ApiOperation({ summary: 'Get matched appointments by expert id and date' })
+  @UseGuards(ClientGuard)
+  @ApiBearerAuth('Authorization')
+  @Get('appointments/matched/:authExpertId/:expertId/:date')
+  public async getMatchedAppointments(
+    @Param('authExpertId', ParseIntPipe) authExpertId: number,
+    @Param('expertId', ParseIntPipe) expertId: number,
+    @Param('date') date: string,
+  ): Promise<{}> {
+    const { schedule, appointments } =
+      await this.scheduleService.fetchMatchedAppointments(
+        authExpertId,
+        expertId,
+        date,
+      );
+
+    return AppointmentResource.collect(
+      appointments,
+      new ScheduleResource(schedule),
+    );
+  }
+
   @ApiOperation({ summary: 'Change appointment status' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('Authorization')

@@ -5,12 +5,13 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { SupervisorNotifications } from './models/supervisor-notifications.model';
 import { AuthModule } from '../auth/auth.module';
 import { LanguagesModule } from '../languages/languages.module';
+import { Expert } from '../experts/models/experts.model';
 
 @Module({
   providers: [SupervisorsService],
   controllers: [SupervisorsController],
   imports: [
-    SequelizeModule.forFeature([SupervisorNotifications]),
+    SequelizeModule.forFeature([SupervisorNotifications, Expert]),
     forwardRef(() => AuthModule),
     forwardRef(() => LanguagesModule),
   ],

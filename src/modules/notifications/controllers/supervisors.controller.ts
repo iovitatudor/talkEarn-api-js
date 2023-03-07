@@ -8,7 +8,8 @@ import {
   Get,
   Patch,
   Post,
-  ParseIntPipe, Query,
+  ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -18,7 +19,6 @@ import {
 } from '@nestjs/swagger';
 import { SetupGuard } from 'src/modules/auth/guards/setup.guard';
 import { AuthGuard } from '../../auth/guards/auth.guard';
-import { AdministratorGuard } from '../../auth/guards/administrator.guard';
 import { SupervisorsService } from '../services/supervisors.service';
 import { SupervisorResource } from '../resources/supervisor.resource';
 import { SupervisorNotificationCreateDto } from '../dto/supervisor-notification-create.dto';
@@ -89,10 +89,24 @@ export class SupervisorsController {
   @ApiOperation({ summary: 'Delete supervisor notification' })
   @ApiResponse({ status: 204, description: 'No content' })
   @ApiBearerAuth('Authorization')
-  @UseGuards(AuthGuard, AdministratorGuard)
+  @UseGuards(AuthGuard)
   @HttpCode(204)
   @Delete('supervisor/:id')
   public delete(@Param('id', ParseIntPipe) id: number): Promise<number> {
     return this.supervisorsService.destroy(id);
+  }
+
+  @ApiOperation({ summary: 'Allow supervisor request' })
+  @ApiResponse({ status: 200, type: SupervisorResource })
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard, SetupGuard)
+  @Patch('supervisor/allow/:notificationId')
+  public async allowSupervisorRequest(
+    @Param('notificationId', ParseIntPipe) notificationId: number,
+  ): Promise<SupervisorResource> {
+    const notification = await this.supervisorsService.allowSupervisorRequest(
+      notificationId,
+    );
+    return new SupervisorResource(notification);
   }
 }

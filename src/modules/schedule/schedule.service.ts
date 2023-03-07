@@ -12,7 +12,7 @@ import { Expert } from '../experts/models/experts.model';
 import { ExpertTranslation } from '../experts/models/experts-translations.model';
 import { CallsService } from '../calls/calls.service';
 import moment = require('moment');
-import {Room} from "../calls/models/rooms.model";
+import { Room } from '../calls/models/rooms.model';
 
 @Injectable()
 export class ScheduleService {
@@ -23,6 +23,7 @@ export class ScheduleService {
     private scheduleTemplateRepository: typeof ScheduleTemplate,
     @InjectModel(AppointmentReservation)
     private appointmentReservationRepository: typeof AppointmentReservation,
+    @InjectModel(Room) private roomRepository: typeof Room,
     private mailerService: MailerService,
     private callService: CallsService,
   ) {}
@@ -71,6 +72,62 @@ export class ScheduleService {
 
     const appointments = await this.appointmentRepository.findAll({
       where: { ...where },
+      include: [
+        {
+          model: Schedule,
+        },
+        {
+          model: AppointmentReservation,
+          include: [
+            {
+              model: Room,
+            },
+          ],
+        },
+      ],
+    });
+    return { schedule, appointments };
+  }
+
+  public async fetchMatchedAppointments(
+    authExpertId: number,
+    expertId: number,
+    date: string,
+  ) {
+    const authExpertSchedule = await this.scheduleRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { expert_id: authExpertId, date },
+    });
+    const schedule = await this.scheduleRepository.findOne({
+      rejectOnEmpty: undefined,
+      where: { expert_id: expertId, date },
+    });
+    if (!schedule || !authExpertSchedule) {
+      throw new HttpException(
+        'Schedule was not found.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const authExpertAppointments = await this.appointmentRepository.findAll({
+      raw: true,
+      where: {
+        schedule_id: authExpertSchedule.id,
+        status: AppointmentStatusesEnum.opened,
+      },
+    });
+
+    const authExpertAppointmentsIds = authExpertAppointments.map(
+      (appointment) => {
+        return appointment.time;
+      },
+    );
+
+    const appointments = await this.appointmentRepository.findAll({
+      where: {
+        time: authExpertAppointmentsIds,
+        schedule_id: schedule.id,
+        status: AppointmentStatusesEnum.opened,
+      },
       include: [
         {
           model: Schedule,
@@ -298,6 +355,23 @@ export class ScheduleService {
 
     const appointmentIds = findAppointments.map((appointment) => {
       return appointment.id;
+    });
+
+    const findReservationAppointments =
+      await this.appointmentReservationRepository.findAll({
+        where: { appointment_id: appointmentIds },
+        attributes: ['id'],
+        raw: true,
+      });
+
+    const reservedAppointmentIds = findReservationAppointments.map(
+      (appointmentReservation) => {
+        return appointmentReservation.id;
+      },
+    );
+
+    await this.roomRepository.destroy({
+      where: { appointment_reservation_id: reservedAppointmentIds },
     });
 
     await this.appointmentReservationRepository.destroy({

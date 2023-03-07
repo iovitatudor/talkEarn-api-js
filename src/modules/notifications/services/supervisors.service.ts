@@ -5,14 +5,15 @@ import { SupervisorNotificationCreateDto } from '../dto/supervisor-notification-
 import { SupervisorNotificationUpdateDto } from '../dto/supervisor-notification-update.dto';
 import { NotificationStatusesEnum } from '../enums/notification-statuses.enum';
 import { Expert } from '../../experts/models/experts.model';
-import {ExpertTranslation} from "../../experts/models/experts-translations.model";
-import {GlobalData} from "../../auth/guards/global-data";
+import { ExpertTranslation } from '../../experts/models/experts-translations.model';
+import { GlobalData } from '../../auth/guards/global-data';
 
 @Injectable()
 export class SupervisorsService {
   constructor(
     @InjectModel(SupervisorNotifications)
     private supervisorNotificationRepository: typeof SupervisorNotifications,
+    @InjectModel(Expert) private expertRepository: typeof Expert,
   ) {}
 
   public async getAllByExpertId(
@@ -97,5 +98,19 @@ export class SupervisorsService {
     return await this.supervisorNotificationRepository.destroy({
       where: { id },
     });
+  }
+
+  public async allowSupervisorRequest(notificationId: number) {
+    const notification = await this.findById(notificationId);
+
+    await this.expertRepository.update(
+      { supervisor_id: notification.supervisor_id },
+      {
+        returning: undefined,
+        where: { id: notification.supervisee_id },
+      },
+    );
+
+    return await this.destroy(notificationId);
   }
 }

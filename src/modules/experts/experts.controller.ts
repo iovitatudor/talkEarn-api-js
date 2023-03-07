@@ -177,4 +177,30 @@ export class ExpertsController {
     const experts = await this.expertService.search(page, search);
     return ExpertsResource.collect(experts.data, experts.meta);
   }
+
+  @ApiOperation({ summary: "Get expert's supervisee" })
+  @UseGuards(ClientGuard, SetupGuard)
+  @ApiBearerAuth('Authorization')
+  @Get('experts/supervisee/:expertId')
+  public async getSuperviseeByExpert(
+    @Param('expertId', ParseIntPipe) expertId: number,
+  ) {
+    const supervisee = await this.expertService.getSuperviseeByExpertId(
+      expertId,
+    );
+    return ExpertsResource.collect(supervisee);
+  }
+
+  @ApiOperation({ summary: "Get expert's supervisors" })
+  @UseGuards(ClientGuard, SetupGuard)
+  @ApiBearerAuth('Authorization')
+  @Get('experts/supervisors/:expertId')
+  public async getSupervisorsByExpert(
+    @Param('expertId', ParseIntPipe) expertId: number,
+  ) {
+    const supervisors = await this.expertService.getSupervisorsByExpertId(
+      expertId,
+    );
+    return ExpertsResource.collect(supervisors);
+  }
 }

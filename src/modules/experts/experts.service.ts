@@ -418,4 +418,64 @@ export class ExpertsService {
       where: { lang_id: (await language).id },
     });
   }
+
+  public async getSuperviseeByExpertId(expertId: number) {
+    const where = {
+      project_id: AuthGuard.projectId,
+      type: 'Employee',
+      supervisor_id: expertId,
+    };
+
+    return await this.expertRepository.findAll({
+      order: [['id', 'DESC']],
+      where: { ...where },
+      include: [
+        {
+          model: ExpertTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
+        {
+          model: Category,
+          include: [
+            {
+              model: CategoryTranslation,
+              where: { lang_id: GlobalData.langId },
+              required: false,
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  public async getSupervisorsByExpertId(expertId: number) {
+    const expert = await this.findById(expertId);
+
+    const where = {
+      project_id: AuthGuard.projectId,
+      type: 'Employee',
+      id: expert.supervisor_id,
+    };
+
+    return await this.expertRepository.findAll({
+      order: [['id', 'DESC']],
+      where: { ...where },
+      include: [
+        {
+          model: ExpertTranslation,
+          where: { lang_id: GlobalData.langId },
+        },
+        {
+          model: Category,
+          include: [
+            {
+              model: CategoryTranslation,
+              where: { lang_id: GlobalData.langId },
+              required: false,
+            },
+          ],
+        },
+      ],
+    });
+  }
 }
