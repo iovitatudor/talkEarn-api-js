@@ -33,11 +33,17 @@ export class ExpertCreateDto {
   @ApiProperty({ example: '1' })
   public category_id: number;
 
+  @ApiProperty({ example: '[1,2]', required: false })
+  public categoryIds: string;
+
   @ApiProperty({ example: true, required: false })
   public active: boolean;
 
   @ApiProperty({ example: true, required: false })
   public recommended: boolean;
+
+  @ApiProperty({ example: true, required: false })
+  public show: boolean;
 
   public available: string;
 

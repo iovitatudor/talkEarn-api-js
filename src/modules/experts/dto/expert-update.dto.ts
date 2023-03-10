@@ -28,11 +28,17 @@ export class ExpertUpdateDto {
   @ApiProperty({ example: '1', required: false })
   public category_id: number;
 
+  @ApiProperty({ example: '[1,2]', required: false })
+  public categoryIds: string;
+
   @ApiProperty({ example: '1', required: false })
   public active: boolean;
 
   @ApiProperty({ example: '1', required: false })
   public recommended: boolean;
+
+  @ApiProperty({ example: '1', required: false })
+  public show: boolean;
 
   public available: boolean;
 

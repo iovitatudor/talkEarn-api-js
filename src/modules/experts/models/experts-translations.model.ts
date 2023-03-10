@@ -19,6 +19,7 @@ interface ExpertTranslationCreateAttrs {
   language: string;
   experience: string;
   video: string;
+  show: boolean;
 }
 
 @Table({
@@ -54,6 +55,9 @@ export class ExpertTranslation extends Model<
 
   @Column({ type: DataType.TEXT, allowNull: true })
   public video: string;
+
+  @Column({ type: DataType.BOOLEAN, defaultValue: 1 })
+  public show: boolean;
 
   @Column({ type: DataType.STRING, allowNull: true })
   public profession: string;

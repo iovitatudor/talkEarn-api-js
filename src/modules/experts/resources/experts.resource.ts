@@ -2,10 +2,12 @@ import { Model } from 'sequelize';
 import { CategoriesResource } from '../../categories/resources/categories.resource';
 import { ServiceResource } from '../../services/resources/services.resource';
 import { ParametersValueResource } from '../../parameters/resources/parameter-value.resource';
+import {ExpertCategoriesResource} from "../../categories/resources/expert-categories.resource";
 
 export class ExpertsResource {
   public id: number;
   public categoryId: number;
+  public categories: Array<any>;
   public supervisorId: number;
   public name: string;
   public description: string;
@@ -13,6 +15,7 @@ export class ExpertsResource {
   public email: string;
   public active: boolean;
   public recommended: boolean;
+  public show: boolean;
   public available: boolean;
   public avatar: string;
   public video: string;
@@ -37,6 +40,7 @@ export class ExpertsResource {
 
       this.id = expert.id;
       this.categoryId = expert.category_id;
+      this.categories = ExpertCategoriesResource.collect(expert.categories);
       this.supervisorId = expert.supervisor_id;
       this.name = expert.translation ? expert.translation.name : '';
       this.description = expert.translation
@@ -46,6 +50,7 @@ export class ExpertsResource {
       this.email = expert.email;
       this.recommended = expert.recommended;
       this.active = expert.active;
+      this.show = expert.translation ? expert.translation.show : false;
       this.available = expert.available;
       this.avatar = expert.avatar ? process.env.BASE_URL + expert.avatar : null;
       this.video = expert.translation

@@ -10,16 +10,19 @@ import { FilesModule } from '../../common/files/files.module';
 import { ProjectsModule } from '../projects/projects.module';
 import { ExpertTranslation } from './models/experts-translations.model';
 import { LanguagesModule } from '../languages/languages.module';
+import { CategoriesModule } from '../categories/categories.module';
+import {ExpertCategory} from "../categories/models/expert-categories.model";
 
 @Module({
   controllers: [ExpertsController],
   providers: [ExpertsService],
   imports: [
-    SequelizeModule.forFeature([Expert, ExpertTranslation, Project, Category]),
+    SequelizeModule.forFeature([Expert, ExpertTranslation, Project, Category, ExpertCategory]),
     FilesModule,
     LanguagesModule,
     forwardRef(() => AuthModule),
     forwardRef(() => ProjectsModule),
+    forwardRef(() => CategoriesModule),
   ],
   exports: [ExpertsService],
 })

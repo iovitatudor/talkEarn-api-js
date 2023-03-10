@@ -45,6 +45,7 @@ import { Room } from './modules/calls/models/rooms.model';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SupervisorNotifications } from './modules/notifications/models/supervisor-notifications.model';
+import { ExpertCategory } from './modules/categories/models/expert-categories.model';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { SupervisorNotifications } from './modules/notifications/models/supervis
         CategoryTranslation,
         Expert,
         ExpertTranslation,
+        ExpertCategory,
         Service,
         ServiceTranslation,
         Contact,

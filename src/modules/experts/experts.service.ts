@@ -15,8 +15,9 @@ import { CategoryTranslation } from '../categories/models/categories_translation
 import { GlobalData } from '../auth/guards/global-data';
 import { ParameterExpertTranslation } from '../parameters/models/parameter-expert-translations.model';
 import { ExpertTranslation } from './models/experts-translations.model';
-import slug = require('slug');
 import { Language } from '../languages/models/languages.model';
+import { ExpertCategory } from '../categories/models/expert-categories.model';
+import slug = require('slug');
 
 @Injectable()
 export class ExpertsService {
@@ -24,6 +25,8 @@ export class ExpertsService {
     @InjectModel(Expert) private expertRepository: typeof Expert,
     @InjectModel(ExpertTranslation)
     private expertTranslationRepository: typeof ExpertTranslation,
+    @InjectModel(ExpertCategory)
+    private expertCategoryRepository: typeof ExpertCategory,
     private fileService: FilesService,
   ) {}
 
@@ -33,13 +36,21 @@ export class ExpertsService {
     active = null,
     available = null,
     recommended = null,
-    category_id = null,
+    categoryId = null,
+    showIfNotTranslation = null,
   ) {
     const where = { project_id: AuthGuard.projectId, type: 'Employee' };
+    if (categoryId) {
+      const categoryExperts = await this.expertCategoryRepository.findAll({
+        where: { category_id: categoryId },
+      });
+      where['id'] = categoryExperts.map((categoryExpert) => {
+        return categoryExpert.expert_id;
+      });
+    }
     if (active) where['active'] = active;
     if (available) where['available'] = !!available;
     if (recommended) where['recommended'] = recommended;
-    if (category_id) where['category_id'] = category_id;
 
     const totalItems = await this.expertRepository.count({
       where: { ...where },
@@ -51,13 +62,17 @@ export class ExpertsService {
       offset = Math.floor((totalItems / totalPages) * page - limit);
     }
 
+    const whereTranslation = { lang_id: GlobalData.langId };
+    console.log(showIfNotTranslation, 'lorem');
+    if (showIfNotTranslation) whereTranslation['show'] = showIfNotTranslation;
+
     const data = await this.expertRepository.findAll({
       order: [['id', 'DESC']],
       where: { ...where },
       include: [
         {
           model: ExpertTranslation,
-          where: { lang_id: GlobalData.langId },
+          where: { ...whereTranslation },
         },
         {
           model: Category,
@@ -106,14 +121,7 @@ export class ExpertsService {
           where: { lang_id: GlobalData.langId },
         },
         {
-          model: Category,
-          include: [
-            {
-              model: CategoryTranslation,
-              where: { lang_id: GlobalData.langId },
-              required: false,
-            },
-          ],
+          model: ExpertCategory,
         },
         {
           model: ParameterExpert,
@@ -135,24 +143,23 @@ export class ExpertsService {
     return expert;
   }
 
-  public async findBySlug(slug: string): Promise<Expert> {
+  public async findBySlug(
+    slug: string,
+    showIfNotTranslation = null,
+  ): Promise<Expert> {
+    const whereTranslation = { lang_id: GlobalData.langId };
+    if (showIfNotTranslation) whereTranslation['show'] = showIfNotTranslation;
+
     const expert = await this.expertRepository.findOne({
       rejectOnEmpty: undefined,
       where: { slug, project_id: AuthGuard.projectId },
       include: [
         {
           model: ExpertTranslation,
-          where: { lang_id: GlobalData.langId },
+          where: whereTranslation,
         },
         {
-          model: Category,
-          include: [
-            {
-              model: CategoryTranslation,
-              where: { lang_id: GlobalData.langId },
-              required: false,
-            },
-          ],
+          model: ExpertCategory,
         },
         {
           model: ParameterExpert,
@@ -196,6 +203,13 @@ export class ExpertsService {
       });
     }
 
+    const categoriesIds = JSON.parse(expertDto.categoryIds);
+    const categories = categoriesIds.map((categoryId) => {
+      return { category_id: categoryId, expert_id: expert.id };
+    });
+
+    await this.expertCategoryRepository.bulkCreate(categories);
+
     return await this.findById(expert.id);
   }
 
@@ -226,6 +240,17 @@ export class ExpertsService {
         lang_id: expertDto.langId,
       },
     });
+
+    const categoriesIds = JSON.parse(expertDto.categoryIds);
+    const categories = categoriesIds.map((categoryId) => {
+      return { category_id: categoryId, expert_id: id };
+    });
+
+    await this.expertCategoryRepository.destroy({
+      where: { expert_id: id },
+    });
+
+    await this.expertCategoryRepository.bulkCreate(categories);
 
     return await this.findById(id);
   }
@@ -354,14 +379,7 @@ export class ExpertsService {
           where: { lang_id: GlobalData.langId },
         },
         {
-          model: Category,
-          include: [
-            {
-              model: CategoryTranslation,
-              where: { lang_id: GlobalData.langId },
-              required: false,
-            },
-          ],
+          model: ExpertCategory,
         },
         {
           model: ParameterExpert,
@@ -435,14 +453,7 @@ export class ExpertsService {
           where: { lang_id: GlobalData.langId },
         },
         {
-          model: Category,
-          include: [
-            {
-              model: CategoryTranslation,
-              where: { lang_id: GlobalData.langId },
-              required: false,
-            },
-          ],
+          model: ExpertCategory,
         },
       ],
     });
@@ -466,14 +477,7 @@ export class ExpertsService {
           where: { lang_id: GlobalData.langId },
         },
         {
-          model: Category,
-          include: [
-            {
-              model: CategoryTranslation,
-              where: { lang_id: GlobalData.langId },
-              required: false,
-            },
-          ],
+          model: ExpertCategory,
         },
       ],
     });

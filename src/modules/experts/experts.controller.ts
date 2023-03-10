@@ -47,14 +47,16 @@ export class ExpertsController {
     const active = query.active;
     const available = query.available;
     const recommended = query.recommended;
-    const category_id = query.category_id;
+    const categoryId = query.category_id;
+    const showIfNotTranslation = query.show_translation;
     const experts = await this.expertService.getAll(
       limit,
       page,
       active,
       available,
       recommended,
-      category_id,
+      categoryId,
+      showIfNotTranslation,
     );
     return ExpertsResource.collect(experts.data, experts.meta);
   }
@@ -95,8 +97,10 @@ export class ExpertsController {
   @Get('expert/slug/:slug')
   public async getBySlug(
     @Param('slug') slug: string,
+    @Query() query,
   ): Promise<ExpertsResource> {
-    const expert = await this.expertService.findBySlug(slug);
+    const showIfNotTranslation = query.show_translation;
+    const expert = await this.expertService.findBySlug(slug, showIfNotTranslation);
     return new ExpertsResource(expert);
   }
 
