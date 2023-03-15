@@ -63,7 +63,6 @@ export class ExpertsService {
     }
 
     const whereTranslation = { lang_id: GlobalData.langId };
-    console.log(showIfNotTranslation, 'lorem');
     if (showIfNotTranslation) whereTranslation['show'] = showIfNotTranslation;
 
     const data = await this.expertRepository.findAll({

@@ -58,7 +58,7 @@ export class ExpertsResource {
           ? process.env.BASE_URL + expert.translation.video
           : null
         : null;
-      this.profession = expert.translation ? expert.translation.profession: '';
+      this.profession = expert.translation ? expert.translation.profession : '';
       this.region = expert.translation ? expert.translation.region : '';
       this.language = expert.translation ? expert.translation.language : '';
       this.experience = expert.translation ? expert.translation.experience : '';
