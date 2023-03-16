@@ -23,7 +23,7 @@ export class ServiceResource {
         : '';
       this.video = service.translation
         ? service.translation.video
-          ? process.env.BASE_URL + service.video
+          ? process.env.BASE_URL + service.translation.video
           : null
         : '';
       this.price = service.price;
