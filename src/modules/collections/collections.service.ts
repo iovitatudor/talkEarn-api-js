@@ -12,6 +12,7 @@ import { CollectionTranslation } from './models/collection_translations.model';
 import { GlobalData } from '../auth/guards/global-data';
 import slug = require('slug');
 import { Language } from '../languages/models/languages.model';
+import {ServiceTranslation} from "../services/models/services-translations.model";
 
 @Injectable()
 export class CollectionsService {
@@ -74,7 +75,16 @@ export class CollectionsService {
         },
         {
           model: Service,
-          include: [{ model: Expert, include: [{ model: Category }] }],
+          include: [
+            {
+              model: Expert,
+              include: [{ model: Category }],
+            },
+            {
+              model: ServiceTranslation,
+              where: { lang_id: GlobalData.langId },
+            },
+          ],
         },
       ],
     });
