@@ -16,7 +16,12 @@ import { ExpertCategory } from './models/expert-categories.model';
   providers: [CategoriesService],
   imports: [
     FilesModule,
-    SequelizeModule.forFeature([Category, CategoryTranslation, Expert, ExpertCategory]),
+    SequelizeModule.forFeature([
+      Category,
+      CategoryTranslation,
+      Expert,
+      ExpertCategory,
+    ]),
     forwardRef(() => AuthModule),
     forwardRef(() => ProjectsModule),
     forwardRef(() => LanguagesModule),

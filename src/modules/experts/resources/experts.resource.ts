@@ -2,7 +2,8 @@ import { Model } from 'sequelize';
 import { CategoriesResource } from '../../categories/resources/categories.resource';
 import { ServiceResource } from '../../services/resources/services.resource';
 import { ParametersValueResource } from '../../parameters/resources/parameter-value.resource';
-import {ExpertCategoriesResource} from "../../categories/resources/expert-categories.resource";
+import { ExpertCategoriesResource } from '../../categories/resources/expert-categories.resource';
+import { SellerResource } from '../../sellers/resources/sellers.resource';
 
 export class ExpertsResource {
   public id: number;
@@ -30,6 +31,7 @@ export class ExpertsResource {
   public category: object;
   public parameters: object;
   public services: Array<any>;
+  public seller: object;
   public createdAt: string;
   public updatedAt: string;
 
@@ -74,6 +76,9 @@ export class ExpertsResource {
       }
       if (expert.services) {
         this.services = ServiceResource.collect(expert.services);
+      }
+      if (expert.seller) {
+        this.seller = new SellerResource(expert.seller);
       }
       this.createdAt = date.toDateString();
       this.updatedAt = updateDate.toDateString();

@@ -19,6 +19,7 @@ interface UserCreateAttrs {
   avatar: string;
   password: string;
   available: boolean;
+  calls: number;
   // duration: string;
   // path: string;
   // last_entry: Date;
@@ -75,6 +76,9 @@ export class User extends Model<User, UserCreateAttrs> {
 
   @Column({ type: DataType.STRING, allowNull: true })
   public path: string;
+
+  @Column({ type: DataType.NUMBER, defaultValue: 0 })
+  public calls: number;
 
   @Column({ type: DataType.DATE, allowNull: true, defaultValue: DataType.NOW })
   public last_entry: Date;

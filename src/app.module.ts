@@ -46,6 +46,11 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SupervisorNotifications } from './modules/notifications/models/supervisor-notifications.model';
 import { ExpertCategory } from './modules/categories/models/expert-categories.model';
+import { Seller } from './modules/sellers/models/sellers.model';
+import { SellersModule } from './modules/sellers/sellers.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { OrdersModule } from './modules/orders/orders.module';
+import { Order } from './modules/orders/models/orders.model';
 
 @Module({
   imports: [
@@ -105,6 +110,8 @@ import { ExpertCategory } from './modules/categories/models/expert-categories.mo
         AppointmentReservation,
         Room,
         SupervisorNotifications,
+        Seller,
+        Order,
       ],
     }),
     ProjectsModule,
@@ -122,6 +129,9 @@ import { ExpertCategory } from './modules/categories/models/expert-categories.mo
     LanguagesModule,
     ScheduleModule,
     NotificationsModule,
+    SellersModule,
+    PaymentsModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [],

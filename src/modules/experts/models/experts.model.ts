@@ -17,6 +17,7 @@ import { ContactExpert } from '../../contacts/models/contact-expert.model';
 import { ParameterExpert } from '../../parameters/models/parameter-expert.model';
 import { ExpertTranslation } from './experts-translations.model';
 import { ExpertCategory } from '../../categories/models/expert-categories.model';
+import {Seller} from "../../sellers/models/sellers.model";
 
 interface ExpertCreateAttrs {
   project_id: number;
@@ -32,6 +33,7 @@ interface ExpertCreateAttrs {
   token: string;
   recommended: boolean;
 }
+
 
 @Table({
   tableName: 'experts',
@@ -105,6 +107,9 @@ export class Expert extends Model<Expert, ExpertCreateAttrs> {
 
   @BelongsTo(() => Category, 'category_id')
   public category: Category;
+
+  @HasOne(() => Seller)
+  public seller: Seller;
 
   @HasMany(() => Service, { onDelete: 'cascade' })
   public services: Service[];

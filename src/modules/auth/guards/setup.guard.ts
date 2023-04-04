@@ -15,7 +15,6 @@ export class SetupGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     try {
       const langQuery = req.query.lang;
-
       if (langQuery) {
         const language = await this.languagesService.findByAbbr(langQuery);
         GlobalData.langId = language.id;

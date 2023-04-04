@@ -11,6 +11,7 @@ export class UsersResource {
   public avatar: string;
   public duration: string;
   public path: string;
+  public calls: number;
   public expert: object;
   public lastEntry: string;
   public createdAt: string;
@@ -30,6 +31,7 @@ export class UsersResource {
     this.avatar = user.avatar ? process.env.BASE_URL + user.avatar: null;
     this.duration = user.duration;
     this.path = user.path;
+    this.calls = user.calls;
     this.lastEntry = user.last_entry;
     this.createdAt = createdDate.toDateString();
     this.updatedAt = updatedDate.toDateString();

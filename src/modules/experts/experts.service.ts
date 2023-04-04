@@ -18,6 +18,7 @@ import { ExpertTranslation } from './models/experts-translations.model';
 import { Language } from '../languages/models/languages.model';
 import { ExpertCategory } from '../categories/models/expert-categories.model';
 import slug = require('slug');
+import { Seller } from '../sellers/models/sellers.model';
 
 @Injectable()
 export class ExpertsService {
@@ -71,6 +72,9 @@ export class ExpertsService {
       where: { ...where },
       include: [
         {
+          model: Seller,
+        },
+        {
           model: ExpertTranslation,
           where: { ...whereTranslation },
         },
@@ -117,11 +121,24 @@ export class ExpertsService {
       where: { id, project_id: AuthGuard.projectId },
       include: [
         {
+          model: Seller,
+        },
+        {
           model: ExpertTranslation,
           where: { lang_id: GlobalData.langId },
         },
         {
           model: ExpertCategory,
+        },
+        {
+          model: Category,
+          include: [
+            {
+              model: CategoryTranslation,
+              where: { lang_id: GlobalData.langId },
+              required: false,
+            },
+          ],
         },
         {
           model: ParameterExpert,
@@ -154,6 +171,9 @@ export class ExpertsService {
       rejectOnEmpty: undefined,
       where: { slug, project_id: AuthGuard.projectId },
       include: [
+        {
+          model: Seller,
+        },
         {
           model: ExpertTranslation,
           where: whereTranslation,
@@ -374,6 +394,9 @@ export class ExpertsService {
         type: 'Employee',
       },
       include: [
+        {
+          model: Seller,
+        },
         {
           model: ExpertTranslation,
           where: { lang_id: GlobalData.langId },

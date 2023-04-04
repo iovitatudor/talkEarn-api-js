@@ -85,6 +85,15 @@ export class CallsSocketsGateway
     );
   }
 
+  @SubscribeMessage('paymentNotification')
+  async sendPaymentNotification(@MessageBody() data: string) {
+    const dataObject = JSON.parse(data);
+    this.server.emit(
+      `payment-${dataObject.client.cookie}`,
+      JSON.stringify(dataObject.order),
+    );
+  }
+
   handleConnection(client: any, ...args: any[]): any {
     console.log('Connection');
   }
