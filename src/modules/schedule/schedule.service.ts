@@ -281,11 +281,15 @@ export class ScheduleService {
       link: reservationLink,
     };
 
-    await this.sendMail(reservation.email, emailData);
-    await this.sendMail(
-      reservation.appointment.schedule.expert.email,
-      emailData,
-    );
+    try {
+      await this.sendMail(reservation.email, emailData);
+    } catch (e) {
+      console.log(e);
+    }
+    // await this.sendMail(
+    //   reservation.appointment.schedule.expert.email,
+    //   emailData,
+    // );
 
     return await this.findAppointment(appointmentReservationDto.appointmentId);
   }
