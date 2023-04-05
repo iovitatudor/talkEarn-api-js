@@ -53,7 +53,7 @@ export class PaymentsService {
                 value: `${order.amount}`,
               },
               payee: {
-                email_address: 'iovitatudor@gmail.com',
+                email_address: order.expert.email,
               },
               payment_instruction: {
                 disbursement_mode: 'INSTANT',
