@@ -7,6 +7,7 @@ import { LanguagesModule } from '../languages/languages.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Order } from '../orders/models/orders.model';
 import {OrdersModule} from "../orders/orders.module";
+import {ScheduleModule} from "../schedule/schedule.module";
 
 @Module({
   controllers: [PaymentsController],
@@ -16,6 +17,7 @@ import {OrdersModule} from "../orders/orders.module";
     forwardRef(() => ProjectsModule),
     forwardRef(() => LanguagesModule),
     forwardRef(() => OrdersModule),
+    forwardRef(() => ScheduleModule),
   ],
 })
 export class PaymentsModule {}

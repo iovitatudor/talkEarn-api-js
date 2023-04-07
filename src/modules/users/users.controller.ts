@@ -63,11 +63,10 @@ export class UsersController {
   @Get('users')
   public async getAll(@Query() query) {
     const page = query.page;
-    const limit = query.limit;
     const online = query.online;
     const expert_id = query.expert_id;
 
-    const users = await this.userService.getAll(limit, page, online, expert_id);
+    const users = await this.userService.getAll(page, online, expert_id);
     return UsersResource.collect(users.data, users.meta);
   }
 

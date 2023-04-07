@@ -36,8 +36,11 @@ export class PaymentsController {
   @ApiResponse({ status: 200 })
   @ApiBearerAuth('Authorization')
   @UseGuards(ClientGuard, SetupGuard)
-  @Post('payments/order/:orderId/capture')
-  public async capturePayment(@Param('orderId') orderId: string) {
-    return this.paymentService.capturePayment(orderId, 1);
+  @Post('payments/order/:paypalOrderId/capture/:orderId')
+  public async capturePayment(
+    @Param('paypalOrderId') paypalOrderId: string,
+    @Param('orderId') orderId: number,
+  ) {
+    return this.paymentService.capturePayment(paypalOrderId, orderId);
   }
 }

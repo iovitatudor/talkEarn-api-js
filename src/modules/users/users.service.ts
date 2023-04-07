@@ -16,7 +16,8 @@ export class UsersService {
     private fileService: FilesService,
   ) {}
 
-  public async getAll(limit = 30, page = 1, online = null, expert_id = null) {
+  public async getAll(page = 1, online = null, expert_id = null) {
+    const limit = 15;
     const where = { project_id: AuthGuard.projectId };
     if (online) where['available'] = online;
     if (expert_id) where['expert_id'] = expert_id;
@@ -27,16 +28,20 @@ export class UsersService {
 
     const totalPages = totalItems / limit;
     let offset = 0;
-    if (totalItems > page) {
-      offset = Math.floor((totalItems / totalPages) * page - limit);
+    // if (totalItems > page) {
+    //   offset = Math.floor((totalItems / totalPages) * page - limit);
+    // }
+
+    if (page > 1) {
+      offset = limit * (page - 1);
     }
 
     const data = await this.userRepository.findAll({
-      order: [['available', 'DESC']],
+      order: [['id', 'DESC']],
       where: { ...where },
       include: { all: true },
-      limit: 20,
-      offset: 0,
+      limit,
+      offset,
     });
 
     return {

@@ -43,14 +43,12 @@ export class ExpertsController {
   @Get('experts')
   public async getAll(@Query() query) {
     const page = query.page;
-    const limit = query.limit;
     const active = query.active;
     const available = query.available;
     const recommended = query.recommended;
     const categoryId = query.category_id;
     const showIfNotTranslation = query.show_translation;
     const experts = await this.expertService.getAll(
-      limit,
       page,
       active,
       available,

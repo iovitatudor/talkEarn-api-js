@@ -32,7 +32,6 @@ export class ExpertsService {
   ) {}
 
   public async getAll(
-    limit = 30,
     page = 1,
     active = null,
     available = null,
@@ -57,10 +56,15 @@ export class ExpertsService {
       where: { ...where },
     });
 
+    const limit = 30;
     const totalPages = totalItems / limit;
     let offset = 0;
-    if (totalItems > page) {
-      offset = Math.floor((totalItems / totalPages) * page - limit);
+    // if (totalItems > page) {
+    //   offset = Math.floor((totalItems / totalPages) * page - limit);
+    // }
+
+    if (page > 1) {
+      offset = limit * (page - 1);
     }
 
     const whereTranslation = { lang_id: GlobalData.langId };
@@ -100,8 +104,8 @@ export class ExpertsService {
           ],
         },
       ],
-      limit: 50,
-      offset: 0,
+      limit,
+      offset,
     });
 
     return {

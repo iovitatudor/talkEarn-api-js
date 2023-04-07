@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import fetch from 'node-fetch';
 import { OrdersService } from '../orders/orders.service';
-import {OrderStatusesEnum} from "../orders/enums/order-statuses.enum";
+import { ScheduleService } from '../schedule/schedule.service';
+import { AppointmentStatusesEnum } from '../schedule/enums/appointment-statuses.enum';
 
 @Injectable()
 export class PaymentsService {
-  constructor(private orderService: OrdersService) {}
+  constructor(
+    private orderService: OrdersService,
+    private scheduleService: ScheduleService,
+  ) {}
 
   accessToken: string = null;
 
@@ -86,6 +90,12 @@ export class PaymentsService {
       },
     });
     const data = await response.json();
+
+    const order = await this.orderService.findById(orderId);
+    await this.scheduleService.updateAppointmentStatus(
+      order.appointment_id,
+      AppointmentStatusesEnum.paid,
+    );
 
     // const orderData = {
     //   status: OrderStatusesEnum.Completed,

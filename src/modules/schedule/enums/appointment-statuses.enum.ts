@@ -3,4 +3,5 @@ export enum AppointmentStatusesEnum {
   closed = 'closed',
   held = 'held',
   reserved = 'reserved',
+  paid = 'paid',
 }

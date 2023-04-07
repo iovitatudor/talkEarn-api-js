@@ -28,5 +28,6 @@ import { Room } from '../calls/models/rooms.model';
     forwardRef(() => ProjectsModule),
     forwardRef(() => CallsModule),
   ],
+  exports: [ScheduleService],
 })
 export class ScheduleModule {}

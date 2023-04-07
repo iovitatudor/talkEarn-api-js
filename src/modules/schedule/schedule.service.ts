@@ -447,6 +447,16 @@ export class ScheduleService {
     });
   }
 
+  public async updateAppointmentStatus(id: number, status: string) {
+    await this.appointmentRepository.update(
+      { status: AppointmentStatusesEnum[status] },
+      {
+        returning: undefined,
+        where: { id },
+      },
+    );
+  }
+
   private generateScheduleDates(day: number): Array<any> {
     const start = moment();
     const end = moment().add(31, 'd');
@@ -487,7 +497,7 @@ export class ScheduleService {
   private async sendMail(to: string, data: object) {
     await this.mailerService.sendMail({
       to: to,
-      from: 'iovitatudor@gmail.com',
+      from: 'office@instaservice.io',
       subject: 'Appointment instantexpert.online',
       template: 'conference-client',
       context: { data },
