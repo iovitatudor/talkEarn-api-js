@@ -39,7 +39,7 @@ export class PaymentsService {
     const platformFee = (Number(order.amount) / 100) * 20;
 
     const response = await fetch(
-      `${process.env.PAYPAL_URL}/v2/checkout/orders`,
+      `${process.env.PAYPAL_URL}/v2/checkout/orders?currency=EUR`,
       {
         method: 'POST',
         headers: {
@@ -53,24 +53,24 @@ export class PaymentsService {
           purchase_units: [
             {
               amount: {
-                currency_code: 'USD',
+                currency_code: 'EUR',
                 value: `${order.amount}`,
               },
               payee: {
                 email_address: order.expert.email,
-                // merchant_id: '9AL3RXJSF5PNU',
+                merchant_id: '9AL3RXJSF5PNU',
               },
               payment_instruction: {
                 disbursement_mode: 'INSTANT',
                 platform_fees: [
                   {
                     amount: {
-                      currency_code: 'USD',
+                      currency_code: 'EUR',
                       value: `${platformFee}`,
                     },
-                    // payee: {
-                    //   merchant_id: '3UJFNUNVNFUYC',
-                    // },
+                    payee: {
+                      merchant_id: '3UJFNUNVNFUYC',
+                    },
                   },
                 ],
               },
@@ -85,7 +85,7 @@ export class PaymentsService {
 
   async capturePayment(paypalOrderId, orderId) {
     await this.authorize();
-    const url = `${process.env.PAYPAL_URL}/v2/checkout/orders/${paypalOrderId}/capture`;
+    const url = `${process.env.PAYPAL_URL}/v2/checkout/orders/${paypalOrderId}/capture?currency=EUR`;
     const response = await fetch(url, {
       method: 'post',
       headers: {
