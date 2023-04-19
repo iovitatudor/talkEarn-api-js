@@ -53,7 +53,7 @@ export class PaymentsService {
           purchase_units: [
             {
               amount: {
-                currency_code: 'EUR',
+                currency_code: 'USD',
                 value: `${order.amount}`,
               },
               payee: {
@@ -65,7 +65,7 @@ export class PaymentsService {
                 platform_fees: [
                   {
                     amount: {
-                      currency_code: 'EUR',
+                      currency_code: 'USD',
                       value: `${platformFee}`,
                     },
                     payee: {
