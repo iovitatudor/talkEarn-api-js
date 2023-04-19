@@ -58,7 +58,7 @@ export class PaymentsService {
               },
               payee: {
                 email_address: order.expert.email,
-                merchant_id: '9AL3RXJSF5PNU',
+                // merchant_id: '9AL3RXJSF5PNU',
               },
               payment_instruction: {
                 disbursement_mode: 'INSTANT',
