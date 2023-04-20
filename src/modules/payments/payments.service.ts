@@ -34,6 +34,7 @@ export class PaymentsService {
 
   async createOrder(orderId: number) {
     await this.authorize();
+    const currencyCode = 'EUR';
 
     const order = await this.orderService.findById(orderId);
     const platformFee = (Number(order.amount) / 100) * 20;
@@ -53,8 +54,8 @@ export class PaymentsService {
           purchase_units: [
             {
               amount: {
-                currency_code: 'EUR',
-                value: `${order.amount}`,
+                currency_code: currencyCode,
+                value: order.amount,
               },
               payee: {
                 email_address: order.expert.email,
@@ -65,8 +66,8 @@ export class PaymentsService {
                 platform_fees: [
                   {
                     amount: {
-                      currency_code: 'EUR',
-                      value: `${platformFee}`,
+                      currency_code: currencyCode,
+                      value: platformFee,
                     },
                     payee: {
                       merchant_id: '3UJFNUNVNFUYC',
